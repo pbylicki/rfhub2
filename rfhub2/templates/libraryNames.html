@@ -1,0 +1,17 @@
+<div id='summary-libraries'>
+  <h1>Libraries</h1>
+  <table>
+    {% for item in libraries %}
+    <tr><td><a href="{{ url_for('collection_doc', collection_id=item.id) }}">{{item.name}}</a></td><td>{{item.synopsis}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+<div id='summary-resources'>
+  <h1>Resource Files</h1>
+  <table>
+    {% for item in resource_files %}
+    <tr><td><a href="{{ url_for('collection_doc', collection_id=item.id) }}">{{item.name}}</a></td><td>{{item.synopsis}}</td></tr>
+    {% endfor %}
+  </table>
+</div>

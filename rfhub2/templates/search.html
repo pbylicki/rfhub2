@@ -1,0 +1,22 @@
+<div>
+  <h1>Search results</h1>
+  <p id='result-count'>Searching for '{{pattern}}' found {{keywords|length}} keywords</p>
+  <table id='keyword-table' class="table-striped table-hover" border=0 width=100%>
+    <thead>
+      <tr><th>Library/Resource</th><th>Keyword Name</th><th>Synopsis</th></tr>
+    </thead>
+    <tbody>
+    {% for item in keywords %}
+      <tr id='row-{{item.id}}'>
+        <td>{{item.collection.name}}</td>
+        <td><a href="{{ url_for('keyword_doc', collection_id=item.collection.id, keyword_id=item.id) }}">{{item.name}}</a></td>
+        {% if item.synopsis == "" %}
+        <td valign="top"><small><i>no documentation available</i></small></td>
+        {% else %}
+        <td valign="top">{{item.synopsis}}</td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

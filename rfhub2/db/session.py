@@ -5,7 +5,13 @@ import sqlite3
 
 from rfhub2 import config
 
-engine = create_engine(config.SQLALCHEMY_DB_URI, pool_pre_ping=True, echo=False, connect_args={"check_same_thread": False})
+
+def create_sqlalchemy_engine(db_uri: str) -> Engine:
+    if db_uri.startswith("sqlite://"):
+        engine_kwargs = {"connect_args": {"check_same_thread": False}}
+    else:
+        engine_kwargs = {}
+    return create_engine(config.SQLALCHEMY_DB_URI, pool_pre_ping=True, echo=False, **engine_kwargs)
 
 
 @event.listens_for(Engine, "connect")
@@ -19,6 +25,8 @@ def set_sqlite_fk_pragma(db_api_connection, _):
         cursor.execute("PRAGMA foreign_keys=ON;")
         cursor.close()
 
+
+engine = create_sqlalchemy_engine(config.SQLALCHEMY_DB_URI)
 
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine)

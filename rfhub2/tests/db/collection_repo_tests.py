@@ -41,6 +41,14 @@ class CollectionRepositoryTest(BaseRepositoryTest):
         result: List[Collection] = self.collection_repo.get_all()
         self.assertEqual(result, self.collections)
 
+    def test_should_get_all_collections_ordered_by_name(self) -> None:
+        collection_a = Collection(name="A collection")
+        collection_z = Collection(name="Z collection")
+        self.collection_repo.add(collection_a)
+        self.collection_repo.add(collection_z)
+        result: List[Collection] = self.collection_repo.get_all()
+        self.assertEqual(result, [collection_a] + self.collections + [collection_z])
+
     def test_should_filter_collections_by_name(self) -> None:
         test_data = [
             ("collection", self.collections[:2]),
@@ -76,10 +84,10 @@ class CollectionRepositoryTest(BaseRepositoryTest):
         result: int = self.collection_repo.delete(self.collections[0].id)
         self.assertEqual(result, 1)
         self.assertEqual(db_session.query(Collection).count(), 2)
-        self.assertEqual(db_session.query(Keyword).count(), 0)
+        self.assertEqual(db_session.query(Keyword).count(), 1)
 
     def test_should_delete_collection_without_keywords(self) -> None:
-        result: int = self.collection_repo.delete(self.collections[1].id)
+        result: int = self.collection_repo.delete(self.collections[2].id)
         self.assertEqual(result, 1)
         self.assertEqual(db_session.query(Collection).count(), 2)
-        self.assertEqual(db_session.query(Keyword).count(), 3)
+        self.assertEqual(db_session.query(Keyword).count(), 4)

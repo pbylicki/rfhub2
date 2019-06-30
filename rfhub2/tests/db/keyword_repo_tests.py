@@ -30,14 +30,14 @@ class KeywordRepositoryTest(BaseRepositoryTest):
 
     def test_should_get_all_keywords(self) -> None:
         result: List[Keyword] = self.keyword_repo.get_all()
-        self.assertEqual(result, self.keywords)
+        self.assertEqual(result, self.sorted_keywords)
 
     def test_should_filter_keywords_by_name_and_doc(self) -> None:
         test_data = [
-            ("Environ", [self.keywords[0], self.keywords[2]]),
-            ("some_key", self.keywords[1:2]),
-            ("Teardown", [self.keywords[0], self.keywords[2]]),
-            ("", self.keywords)
+            ("Environ", [self.keywords[2], self.keywords[0]]),
+            ("login_key", self.keywords[1:2]),
+            ("Teardown", [self.keywords[2], self.keywords[0]]),
+            ("", self.sorted_keywords)
         ]
         for pattern, expected in test_data:
             with self.subTest(pattern=pattern, expected=expected):
@@ -47,9 +47,9 @@ class KeywordRepositoryTest(BaseRepositoryTest):
     def test_should_filter_keywords_by_name_only(self) -> None:
         test_data = [
             ("Environ", []),
-            ("some_key", self.keywords[1:2]),
+            ("login_key", self.keywords[1:2]),
             ("Teardown", self.keywords[2:]),
-            ("", self.keywords)
+            ("", self.sorted_keywords)
         ]
         for pattern, expected in test_data:
             with self.subTest(pattern=pattern, expected=expected):
@@ -58,8 +58,31 @@ class KeywordRepositoryTest(BaseRepositoryTest):
 
     def test_should_get_all_keywords_with_limit(self) -> None:
         result: List[Keyword] = self.keyword_repo.get_all(limit=2)
-        self.assertEqual(result, self.keywords[:2])
+        self.assertEqual(result, self.sorted_keywords[:2])
 
     def test_should_get_all_keywords_with_skip(self) -> None:
         result: List[Keyword] = self.keyword_repo.get_all(skip=2)
-        self.assertEqual(result, self.keywords[2:])
+        self.assertEqual(result, self.sorted_keywords[2:])
+
+    def test_should_get_all_keywords_with_collection_name(self) -> None:
+        test_data = [
+            ("third", []),
+            ("collec", self.sorted_keywords),
+            ("", self.sorted_keywords)
+        ]
+        for collection, expected in test_data:
+            with self.subTest(collection=collection, expected=expected):
+                result: List[Keyword] = self.keyword_repo.get_all(collection_name=collection)
+                self.assertEqual(result, expected)
+
+    def test_should_get_all_keywords_matching_pattern_and_collection_name(self) -> None:
+        test_data = [
+            ("Login", "collect", [self.keywords[1], self.app_keyword]),
+            ("Login", "second", [self.app_keyword]),
+            ("application", "Third", []),
+            ("application", "non-existing", [])
+        ]
+        for pattern, collection, expected in test_data:
+            with self.subTest(pattern=pattern, collection=collection, expected=expected):
+                result: List[Keyword] = self.keyword_repo.get_all(pattern=pattern, collection_name=collection)
+                self.assertEqual(result, expected)

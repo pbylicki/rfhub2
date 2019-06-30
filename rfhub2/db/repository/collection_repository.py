@@ -40,4 +40,9 @@ class CollectionRepository:
             filter_criteria.append(Collection.name.ilike(glob_to_sql(pattern)))
         if libtype:
             filter_criteria.append(Collection.type.ilike(glob_to_sql(libtype)))
-        return self._collections.filter(*filter_criteria).offset(skip).limit(limit).all()
+        return self._collections\
+            .filter(*filter_criteria)\
+            .order_by(Collection.name)\
+            .offset(skip)\
+            .limit(limit)\
+            .all()

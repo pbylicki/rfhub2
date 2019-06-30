@@ -7,6 +7,7 @@ from rfhub2.api.utils.db import get_collection_repository, get_keyword_repositor
 from rfhub2.api.utils.http import or_404
 from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.keyword_repository import KeywordRepository
+from rfhub2.ui.search_params import SearchParams
 from rfhub2.utils import abs_path
 from rfhub2.version import version
 
@@ -47,15 +48,25 @@ async def index(request: Request,
 
 @router.get("/search")
 async def search(request: Request,
-                 pattern: str = "*",
+                 params: SearchParams = Depends(),
                  repository: KeywordRepository = Depends(get_keyword_repository)):
-    # todo: extract name: and in: from pattern and pass as appropriate params to repo method
-    # todo: results should be sorted by keyword name
-    keywords = repository.get_all(pattern=pattern)
+    """
+    Search endpoint accepts query parameter 'pattern' which can optionally indicate that pattern should be searched for
+    only in keyword names with 'name:query'. It can also optionally indicate query used for filtering collections
+    of found keywords.
+
+    Example pattern values:
+    search?pattern=keyword
+    search?pattern=name: keyword
+    search?pattern=keyword in: some collection
+    """
+    keywords = repository.get_all(pattern=params.pattern,
+                                  collection_name=params.collection_name,
+                                  use_doc=params.use_doc)
     context = {
         "request": request,
         "keywords": keywords,
-        "pattern": pattern,
+        "pattern": params.raw_pattern,
         "version": version
     }
     return templates.TemplateResponse("search.html", context)

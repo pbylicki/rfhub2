@@ -2,14 +2,14 @@ FROM python:3.6-alpine
 
 COPY requirements*.txt /tmp/
 
-RUN apk add --no-cache gcc musl-dev make
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev make && \
+    pip install --disable-pip-version-check --no-cache-dir -r /tmp/requirements.txt && \
+    apk del .build-deps && \
+    rm /tmp/requirements*.txt && \
+    mkdir /app && \
+    chown 1001:1001 /app
 
-RUN pip install --no-cache-dir -r /tmp/requirements.txt && \
-    rm /tmp/requirements*.txt
-
-COPY rfhub2 /app/rfhub2
-
-CMD SQLALCHEMY_DB_URI="sqlite:///app/test.db"
+COPY --chown=1001 rfhub2 /app/rfhub2
 
 WORKDIR /app
 

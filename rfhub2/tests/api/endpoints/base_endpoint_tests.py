@@ -79,13 +79,52 @@ class BaseApiEndpointTest(unittest.TestCase):
         'collection': NESTED_COLLECTION_1,
         **NESTED_KEYWORD_3
     }
+    KEYWORD_TO_CREATE = {
+        'name': 'New Keyword',
+        'doc': 'New doc',
+        'args': None,
+        'collection_id': COLLECTION_2['id']
+    }
+    KEYWORD_CREATED = {
+        'id': 4,
+        'name': 'New Keyword',
+        'doc': 'New doc',
+        'args': None,
+        'collection': {
+            'id': COLLECTION_2['id'],
+            'name': COLLECTION_2['name']
+        }
+    }
+    KEYWORD_TO_UPDATE = {
+        'name': 'Updated Teardown',
+        'doc': 'Updated Clean up environment'
+    }
+    KEYWORD_UPDATED = {**KEYWORD_3, **KEYWORD_TO_UPDATE}
+    COLLECTION_TO_CREATE = {
+        'name': 'New Resource',
+        'type': 'Resource',
+        'version': "1.0.2",
+        'scope': None,
+        'named_args': "conn_string",
+        'path': "/some/file",
+        'doc': "New Resource collection",
+        'doc_format': None
+    }
+    COLLECTION_CREATED = {
+        **COLLECTION_TO_CREATE,
+        'id': 4,
+        'keywords': []
+    }
+    COLLECTION_TO_UPDATE = {
+        'name': 'Updated collection',
+        'version': '1.0.2-NEW',
+        'path': '/some/file'
+    }
+    COLLECTION_UPDATED = {**COLLECTION_3, **COLLECTION_TO_UPDATE}
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.app = create_app()
+    def setUp(self) -> None:
+        self.app = create_app()
         db_session.rollback()
         init_db(db_session)
         recreate_data(db_session)
-
-    def setUp(self) -> None:
         self.client: TestClient = TestClient(self.app)

@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.session import Session
@@ -46,3 +47,10 @@ class CollectionRepository:
             .offset(skip)\
             .limit(limit)\
             .all()
+
+    def update(self, collection: Collection, update_data: dict):
+        collection_data = jsonable_encoder(collection)
+        for field in collection_data:
+            if field in update_data:
+                setattr(collection, field, update_data[field])
+        return self.add(collection)

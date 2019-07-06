@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import or_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
@@ -24,6 +25,11 @@ class KeywordRepository:
         self.session.refresh(keyword)
         return keyword
 
+    def delete(self, keyword_id: int) -> int:
+        row_count = self._keywords.filter(Keyword.id == keyword_id).delete()
+        self.session.commit()
+        return row_count
+
     def get(self, keyword_id: int) -> Optional[Keyword]:
         return self._keywords.get(keyword_id)
 
@@ -46,3 +52,10 @@ class KeywordRepository:
             .offset(skip)\
             .limit(limit) \
             .all()
+
+    def update(self, keyword: Keyword, update_data: dict):
+        keyword_data = jsonable_encoder(keyword)
+        for field in keyword_data:
+            if field in update_data:
+                setattr(keyword, field, update_data[field])
+        return self.add(keyword)

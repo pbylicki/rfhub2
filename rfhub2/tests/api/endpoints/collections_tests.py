@@ -58,3 +58,28 @@ class CollectionsApiTest(BaseApiEndpointTest):
         response = self.client.get("api/v1/collections?pattern=nonexistent")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
+
+    def test_create_new_collection(self):
+        response = self.client.post("api/v1/collections/", json=self.COLLECTION_TO_CREATE)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), self.COLLECTION_CREATED)
+
+    def test_update_existing_collection(self):
+        response = self.client.put(f"api/v1/collections/{self.COLLECTION_3['id']}/", json=self.COLLECTION_TO_UPDATE)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.COLLECTION_UPDATED)
+
+    def test_get_404_when_updating_nonexistent_collection(self):
+        response = self.client.put("api/v1/collections/999/", json=self.COLLECTION_TO_UPDATE)
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_existing_collection(self):
+        response = self.client.delete("api/v1/collections/1/")
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.text, "")
+        response = self.client.get("api/v1/collections/")
+        self.assertEqual(len(response.json()), 2)
+
+    def test_get_404_when_deleting_nonexistent_collection(self):
+        response = self.client.delete("api/v1/collections/999/")
+        self.assertEqual(response.status_code, 404)

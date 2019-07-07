@@ -10,8 +10,7 @@ class NestedCollection(BaseModel):
         orm_mode = True
 
 
-class NestedKeyword(BaseModel):
-    id: int
+class KeywordUpdate(BaseModel):
     name: str
     doc: Optional[str]
     args: Optional[str]
@@ -20,7 +19,12 @@ class NestedKeyword(BaseModel):
         orm_mode = True
 
 
-class Collection(NestedCollection):
+class KeywordCreate(KeywordUpdate):
+    collection_id: int
+
+
+class CollectionUpdate(BaseModel):
+    name: str
     type: Optional[str]
     version: Optional[str]
     scope: Optional[str]
@@ -28,6 +32,13 @@ class Collection(NestedCollection):
     path: Optional[str]
     doc: Optional[str]
     doc_format: Optional[str]
+
+
+class NestedKeyword(KeywordUpdate):
+    id: int
+
+
+class Collection(NestedCollection, CollectionUpdate):
     keywords: List[NestedKeyword]
 
 

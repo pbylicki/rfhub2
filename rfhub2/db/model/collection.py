@@ -17,9 +17,9 @@ class Collection(Base, DocMixin):
     doc_format = Column(Text)
     keywords = relationship("Keyword", backref="collection", cascade="all, delete-orphan", passive_deletes=True)
 
-    def __str__(self):
+    def __str__(self):  # pragma: no cover
         return f'Collection({self.id},{self.name},{self.type},{self.version},' + \
                f'{self.scope},{self.named_args},{self.path},{self.doc},{self.doc_format})'
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return str(self)

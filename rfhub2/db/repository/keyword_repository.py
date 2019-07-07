@@ -1,37 +1,23 @@
 from typing import List, Optional
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy import or_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
-from sqlalchemy.orm.session import Session
+from sqlalchemy.sql.elements import BinaryExpression
 
 from rfhub2.db.base import Collection, Keyword
+from rfhub2.db.repository.base_repository import BaseRepository
 from rfhub2.db.repository.query_utils import glob_to_sql
 
 
-class KeywordRepository:
-
-    def __init__(self, db_session: Session):
-        self.session = db_session
+class KeywordRepository(BaseRepository):
 
     @property
-    def _keywords(self) -> Query:
+    def _items(self) -> Query:
         return self.session.query(Keyword).options(selectinload(Keyword.collection))
 
-    def add(self, keyword: Keyword) -> Keyword:
-        self.session.add(keyword)
-        self.session.commit()
-        self.session.refresh(keyword)
-        return keyword
-
-    def delete(self, keyword_id: int) -> int:
-        row_count = self._keywords.filter(Keyword.id == keyword_id).delete()
-        self.session.commit()
-        return row_count
-
-    def get(self, keyword_id: int) -> Optional[Keyword]:
-        return self._keywords.get(keyword_id)
+    def _id_filter(self, item_id: int) -> BinaryExpression:
+        return Keyword.id == item_id
 
     def get_all(self, *, pattern: Optional[str] = None,
                 collection_name: Optional[str] = None,
@@ -52,10 +38,3 @@ class KeywordRepository:
             .offset(skip)\
             .limit(limit) \
             .all()
-
-    def update(self, keyword: Keyword, update_data: dict):
-        keyword_data = jsonable_encoder(keyword)
-        for field in keyword_data:
-            if field in update_data:
-                setattr(keyword, field, update_data[field])
-        return self.add(keyword)

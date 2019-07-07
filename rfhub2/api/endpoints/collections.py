@@ -17,21 +17,21 @@ def get_collections(repository: CollectionRepository = Depends(get_collection_re
                     limit: int = 100,
                     pattern: str = None,
                     libtype: str = None):
-    collections: List[Collection] = repository.get_all(skip=skip, limit=limit, pattern=pattern, libtype=libtype)
+    collections: List[DBCollection] = repository.get_all(skip=skip, limit=limit, pattern=pattern, libtype=libtype)
     return collections
 
 
 @router.get("/{id}/", response_model=Collection)
 def get_collection(*, repository: CollectionRepository = Depends(get_collection_repository),
                    id: int):
-    collection: Optional[Collection] = repository.get(id)
+    collection: Optional[DBCollection] = repository.get(id)
     return or_404(collection)
 
 
 @router.post("/", response_model=Collection, status_code=201)
 def create_collection(*, repository: CollectionRepository = Depends(get_collection_repository),
                       collection: CollectionUpdate):
-    db_collection = DBCollection(**collection.dict())
+    db_collection: DBCollection = DBCollection(**collection.dict())
     return repository.add(db_collection)
 
 

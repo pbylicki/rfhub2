@@ -18,14 +18,14 @@ def get_keywords(repository: KeywordRepository = Depends(get_keyword_repository)
                  limit: int = 100,
                  pattern: str = None,
                  use_doc: bool = True):
-    keywords: List[Keyword] = repository.get_all(skip=skip, limit=limit, pattern=pattern, use_doc=use_doc)
+    keywords: List[DBKeyword] = repository.get_all(skip=skip, limit=limit, pattern=pattern, use_doc=use_doc)
     return keywords
 
 
 @router.get("/{id}/", response_model=Keyword)
 def get_keyword(*, repository: KeywordRepository = Depends(get_keyword_repository),
                 id: int):
-    keyword: Optional[Keyword] = repository.get(id)
+    keyword: Optional[DBKeyword] = repository.get(id)
     return or_404(keyword)
 
 
@@ -36,7 +36,7 @@ def create_keyword(*, repository: KeywordRepository = Depends(get_keyword_reposi
     collection: Optional[DBCollection] = collection_repository.get(keyword.collection_id)
     if not collection:
         raise HTTPException(status_code=400, detail='Collection does not exist')
-    db_keyword = DBKeyword(**keyword.dict())
+    db_keyword: DBKeyword = DBKeyword(**keyword.dict())
     return repository.add(db_keyword)
 
 
@@ -50,7 +50,7 @@ def update_keyword(*, repository: KeywordRepository = Depends(get_keyword_reposi
 
 
 @router.delete("/{id}/")
-def delete_collection(*, repository: KeywordRepository = Depends(get_keyword_repository),
+def delete_keyword(*, repository: KeywordRepository = Depends(get_keyword_repository),
                       id: int):
     deleted: int = repository.delete(id)
     if deleted:

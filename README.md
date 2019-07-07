@@ -36,7 +36,7 @@ docker run -it -p 8000:8000 rfhub-new
 ```
 To run application using docker image with Postgres database
 ```
-docker run -it -p 8000:8000 -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub-new-postgres
+docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub-new-postgres
 ```
 #### Run unit tests
 ```

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from rfhub2.db.base import Collection, Keyword
 from rfhub2.db.session import db_session
-from rfhub2.tests.db.base_repo_tests import BaseRepositoryTest
+from tests.db.base_repo_tests import BaseRepositoryTest
 
 
 class CollectionRepositoryTest(BaseRepositoryTest):

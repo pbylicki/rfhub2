@@ -54,6 +54,34 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(len(body), 1)
         self.assertEqual(body, [self.KEYWORD_3])
 
+    def test_search_keywords(self):
+        response = self.client.get("api/v1/keywords/search?pattern=name:%20teardown%20in:%20first")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(len(body), 1)
+        self.assertEqual(body, [self.KEYWORD_3])
+
+    def test_search_keywords_without_results(self):
+        response = self.client.get("api/v1/keywords/search?pattern=name:%20teardown%20in:%20second")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [])
+
+    def test_search_keywords_without_pattern_should_get_all(self):
+        response = self.client.get("api/v1/keywords/search/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), [self.KEYWORD_2, self.KEYWORD_3, self.KEYWORD_1])
+
+    def test_search_keywords_with_skip_and_limit(self):
+        cases = [
+            ("api/v1/keywords/search?pattern=teardown%20in:%20first&skip=1", [self.KEYWORD_1]),
+            ("api/v1/keywords/search?pattern=teardown%20in:%20first&limit=1", [self.KEYWORD_3])
+        ]
+        for url, results in cases:
+            with self.subTest(url=url, results=results):
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.json(), results)
+
     def test_get_empty_list_with_nonexistent_filter_pattern(self):
         response = self.client.get("api/v1/keywords?pattern=nonexistent")
         self.assertEqual(response.status_code, 200)

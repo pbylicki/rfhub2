@@ -8,6 +8,7 @@ from rfhub2.db.base import Collection as DBCollection, Keyword as DBKeyword
 from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.keyword_repository import KeywordRepository
 from rfhub2.model import Keyword, KeywordCreate, KeywordUpdate
+from rfhub2.ui.search_params import SearchParams
 
 router = APIRouter()
 
@@ -20,6 +21,18 @@ def get_keywords(repository: KeywordRepository = Depends(get_keyword_repository)
                  use_doc: bool = True):
     keywords: List[DBKeyword] = repository.get_all(skip=skip, limit=limit, pattern=pattern, use_doc=use_doc)
     return keywords
+
+
+@router.get("/search/", response_model=List[Keyword])
+def search_keywords(*, repository: KeywordRepository = Depends(get_keyword_repository),
+                    params: SearchParams = Depends(),
+                    skip: int = 0,
+                    limit: int = 100):
+    return repository.get_all(pattern=params.pattern,
+                              collection_name=params.collection_name,
+                              use_doc=params.use_doc,
+                              skip=skip,
+                              limit=limit)
 
 
 @router.get("/{id}/", response_model=Keyword)

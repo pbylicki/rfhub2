@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.responses import Response
 from typing import List, Optional
 
+from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_collection_repository, get_keyword_repository
 from rfhub2.api.utils.http import or_404
 from rfhub2.db.base import Collection as DBCollection, Keyword as DBKeyword
@@ -43,7 +44,8 @@ def get_keyword(*, repository: KeywordRepository = Depends(get_keyword_repositor
 
 
 @router.post("/", response_model=Keyword, status_code=201)
-def create_keyword(*, repository: KeywordRepository = Depends(get_keyword_repository),
+def create_keyword(*, _: bool = Depends(is_authenticated),
+                   repository: KeywordRepository = Depends(get_keyword_repository),
                    collection_repository: CollectionRepository = Depends(get_collection_repository),
                    keyword: KeywordCreate):
     collection: Optional[DBCollection] = collection_repository.get(keyword.collection_id)
@@ -54,7 +56,8 @@ def create_keyword(*, repository: KeywordRepository = Depends(get_keyword_reposi
 
 
 @router.put("/{id}/", response_model=Keyword)
-def update_keyword(*, repository: KeywordRepository = Depends(get_keyword_repository),
+def update_keyword(*, _: bool = Depends(is_authenticated),
+                   repository: KeywordRepository = Depends(get_keyword_repository),
                    id: int,
                    keyword_update: KeywordUpdate):
     db_keyword: DBKeyword = or_404(repository.get(id))
@@ -63,8 +66,9 @@ def update_keyword(*, repository: KeywordRepository = Depends(get_keyword_reposi
 
 
 @router.delete("/{id}/")
-def delete_keyword(*, repository: KeywordRepository = Depends(get_keyword_repository),
-                      id: int):
+def delete_keyword(*, _: bool = Depends(is_authenticated),
+                   repository: KeywordRepository = Depends(get_keyword_repository),
+                   id: int):
     deleted: int = repository.delete(id)
     if deleted:
         return Response(status_code=204)

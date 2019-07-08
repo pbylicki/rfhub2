@@ -1,6 +1,7 @@
 import unittest
 from starlette.testclient import TestClient
 
+from rfhub2 import config
 from rfhub2.app import create_app
 from rfhub2.db.init_db import init_db
 from rfhub2.db.sample_data import recreate_data
@@ -128,3 +129,5 @@ class BaseApiEndpointTest(unittest.TestCase):
         init_db(db_session)
         recreate_data(db_session)
         self.client: TestClient = TestClient(self.app)
+        self.auth_client: TestClient = TestClient(self.app)
+        self.auth_client.auth = (config.BASIC_AUTH_USER, config.BASIC_AUTH_PASSWORD)

@@ -40,5 +40,5 @@ docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgre
 ```
 #### Run unit tests
 ```
-python -m unittest rfhub2.tests
+python -m unittest tests
 ```

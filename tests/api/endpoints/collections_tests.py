@@ -1,4 +1,4 @@
-from rfhub2.tests.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
+from tests.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
 
 
 class CollectionsApiTest(BaseApiEndpointTest):

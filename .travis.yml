@@ -5,6 +5,6 @@ cache: pip
 install:
   - pip install -r requirements.txt -r requirements-dev.txt
 script:
-  - python -m coverage run --source rfhub2 -m unittest rfhub2.tests
+  - python -m coverage run --source rfhub2 -m unittest tests
 after_success:
   - codecov

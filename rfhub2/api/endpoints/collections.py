@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.responses import Response
 from typing import List, Optional
 
+from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_collection_repository
 from rfhub2.api.utils.http import or_404
 from rfhub2.db.base import Collection as DBCollection
@@ -29,14 +30,16 @@ def get_collection(*, repository: CollectionRepository = Depends(get_collection_
 
 
 @router.post("/", response_model=Collection, status_code=201)
-def create_collection(*, repository: CollectionRepository = Depends(get_collection_repository),
+def create_collection(*, _: bool = Depends(is_authenticated),
+                      repository: CollectionRepository = Depends(get_collection_repository),
                       collection: CollectionUpdate):
     db_collection: DBCollection = DBCollection(**collection.dict())
     return repository.add(db_collection)
 
 
 @router.put("/{id}/", response_model=Collection)
-def update_collection(*, repository: CollectionRepository = Depends(get_collection_repository),
+def update_collection(*, _: bool = Depends(is_authenticated),
+                      repository: CollectionRepository = Depends(get_collection_repository),
                       id: int,
                       collection_update: CollectionUpdate):
     db_collection: DBCollection = or_404(repository.get(id))
@@ -45,7 +48,8 @@ def update_collection(*, repository: CollectionRepository = Depends(get_collecti
 
 
 @router.delete("/{id}/")
-def delete_collection(*, repository: CollectionRepository = Depends(get_collection_repository),
+def delete_collection(*, _: bool = Depends(is_authenticated),
+                      repository: CollectionRepository = Depends(get_collection_repository),
                       id: int):
     deleted: int = repository.delete(id)
     if deleted:

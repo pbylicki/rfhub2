@@ -15,4 +15,4 @@ WORKDIR /app
 
 USER 1001
 
-ENTRYPOINT ["python", "-m", "rfhub2"]
+CMD ["python", "-m", "rfhub2"]

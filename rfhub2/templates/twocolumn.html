@@ -15,11 +15,11 @@
               <ul class="list-group  tree collapse" >
           {% endif %}
           <li class="overview">
-            <a href="{{ url_for('collection_doc', collection_id=collection.id) }}"><i>Overview</i></a>
+            <a href="/keywords/{{collection.id}}"><i>Overview</i></a>
           </li>
           {% for kw in collection.keywords %}
             <li class="keyword">
-              <a href="{{ url_for('keyword_doc', collection_id=collection.id, keyword_id=kw.id) }}">{{kw.name}}</a>
+              <a href="/keywords/{{collection.id}}/{{kw.id}}">{{kw.name}}</a>
             </li>
           {% endfor %}
           </ul>

@@ -8,3 +8,7 @@ script:
   - python -m coverage run --source rfhub2 -m unittest tests
 after_success:
   - codecov
+deploy:
+  provider: heroku
+  app: rfhub2-demo
+  api_key: $HEROKU_AUTH_TOKEN

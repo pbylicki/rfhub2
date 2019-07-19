@@ -9,7 +9,7 @@
     {% for item in keywords %}
       <tr id='row-{{item.id}}'>
         <td>{{item.collection.name}}</td>
-        <td><a href="{{ url_for('keyword_doc', collection_id=item.collection.id, keyword_id=item.id) }}">{{item.name}}</a></td>
+        <td><a href="/keywords/{{item.collection.id}}/{{item.id}}">{{item.name}}</a></td>
         {% if item.synopsis == "" %}
         <td valign="top"><small><i>no documentation available</i></small></td>
         {% else %}

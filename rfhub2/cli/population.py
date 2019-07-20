@@ -1,6 +1,5 @@
-# from pathlib import Path
+from typing import Tuple, Dict, List
 import robot.libraries
-from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
 from requests import session, post
 from rfhub2.config import APP_INTERFACE, APP_PORT, BASIC_AUTH_USER, BASIC_AUTH_PASSWORD
@@ -9,13 +8,14 @@ import re
 
 RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
 ALL_PATTERNS = (RESOURCE_PATTERNS | {".xml", ".py"})
+EXCLUDED_LIBRARIES = {"remote", "reserved", "dialogs", "dialogs_jy", "dialogs_py", "dialogs_ipy"}
 PROTOCOL = 'http://'
 API_V1 = 'api/v1'
 
 
 class LibraryPopulation(object):
 
-    def __init__(self, paths, no_installed_keywords):
+    def __init__(self, paths: Tuple[str, ...], no_installed_keywords: bool) -> None:
         self.paths = paths
         self.auth = (BASIC_AUTH_USER, BASIC_AUTH_PASSWORD)
         self.no_installed_keywords = no_installed_keywords
@@ -26,7 +26,7 @@ class LibraryPopulation(object):
         :return:
         """
 
-        def traverse_paths(path):
+        def traverse_paths(path: str) -> None:
             for item in os.listdir(path):
                 full_path = os.path.join(path, item)
                 if os.path.isdir(full_path):
@@ -45,13 +45,13 @@ class LibraryPopulation(object):
                 if not self._should_ignore(item):
                     self.add(os.path.join(libdir, item))
 
-    def add(self, path) -> None:
+    def add(self, path: str) -> None:
         """
         Adds library with keywords to rfhub.
         :return:
         """
 
-        def _serialise_libdoc() -> None:
+        def _serialise_libdoc() -> Dict:
             """
             Serialises libdoc object to dict object.
             :param libdoc: libdoc input object
@@ -59,18 +59,14 @@ class LibraryPopulation(object):
             :return: json object with parameters needed for request post method
             """
 
-            def _libdoc_to_dict():
-                lib_dict = libdoc.__dict__
-                lib_dict['doc_format'] = lib_dict.pop('_setter__doc_format')
-                for key in ('_setter__keywords', 'inits', 'named_args'):
-                    lib_dict.pop(key)
-                return lib_dict
-
-            lib_dict = _libdoc_to_dict()
+            lib_dict = libdoc.__dict__
+            lib_dict['doc_format'] = lib_dict.pop('_setter__doc_format')
+            for key in ('_setter__keywords', 'inits', 'named_args'):
+                lib_dict.pop(key)
             lib_dict['path'] = path
             return lib_dict
 
-        def _serialise_keywords():
+        def _serialise_keywords() -> List[Dict[str, str]]:
             keywords = [keyword.__dict__ for keyword in libdoc.keywords]
             for keyword in keywords:
                 keyword.pop('tags')
@@ -86,30 +82,30 @@ class LibraryPopulation(object):
         s = session()
         coll_req = self._post_request(s, 'collections', serialised_libdoc)
         if coll_req.status_code == 201:
-            print(f'{libdoc.name} library was loaded.')
             for keyword in serialised_keywords:
                 collection_id = coll_req.json()["id"]
                 keyword["collection_id"] = collection_id
                 kwd_req = self._post_request(s, 'keywords', keyword)
+            print(f'{libdoc.name} library with {len(serialised_keywords)} keywords loaded.')
         else:
-            print(f'{libdoc.name} library was not loaded.')
+            print(f'{libdoc.name} library was not loaded!')
 
     @staticmethod
-    def _is_library_with_init(path) -> bool:
+    def _is_library_with_init(path: str) -> bool:
         return os.path.isfile(os.path.join(path, '__init__.py')) and \
             len(LibraryDocumentation(path).keywords) > 0
 
-    def _is_robot_file(self, file) -> bool:
+    def _is_robot_file(self, file: str) -> bool:
         return self._is_library_file(file) or \
                self._is_libdoc_file(file) or \
                self._is_resource_file(file)
 
     @staticmethod
-    def _is_library_file(file) -> bool:
+    def _is_library_file(file: str) -> bool:
         return file.endswith(".py") and not file.endswith("__init__.py")
 
     @staticmethod
-    def _is_libdoc_file(file) -> bool:
+    def _is_libdoc_file(file: str) -> bool:
         """Return true if an xml file looks like a libdoc file"""
         # inefficient since we end up reading the file twice,
         # but it's fast enough for our purposes, and prevents
@@ -126,20 +122,18 @@ class LibraryPopulation(object):
         return False
 
     @staticmethod
-    def _should_ignore(name) -> bool:
+    def _should_ignore(file: str) -> bool:
         """Return True if a given library name should be ignored
         This is necessary because not all files we find in the library
-        folder are libraries. I wish there was a public robot API
-        for "give me a list of installed libraries"...
+        folder are libraries.
         """
-        filename, _ = os.path.splitext(name)
-        _name = filename.lower()
-        return (_name.startswith("deprecated") or
-                _name.startswith("_") or
-                _name in ("remote", "reserved", "dialogs", "dialogs_jy", "dialogs_py", "dialogs_ipy"))
+        filename = os.path.splitext(file)[0].lower()
+        return (filename.startswith("deprecated") or
+                filename.startswith("_") or
+                filename in EXCLUDED_LIBRARIES)
 
     @staticmethod
-    def _is_resource_file(file) -> bool:
+    def _is_resource_file(file: str) -> bool:
         """Return true if the file has a keyword table but not a testcase table"""
         # inefficient since we end up reading the file twice,
         # but it's fast enough for our purposes, and prevents
@@ -165,7 +159,7 @@ class LibraryPopulation(object):
                         found_keyword_table = True
         return found_keyword_table
 
-    def _post_request(self, session, endpoint, data):
+    def _post_request(self, session: session, endpoint: str, data: Dict) -> post:
         """
         Posts request to collections or keywords endpoint
         """

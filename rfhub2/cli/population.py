@@ -1,8 +1,7 @@
 from typing import Tuple, Dict, List
 import robot.libraries
 from robot.libdocpkg import LibraryDocumentation
-from requests import session, post
-from rfhub2.config import APP_INTERFACE, APP_PORT, BASIC_AUTH_USER, BASIC_AUTH_PASSWORD
+from requests import session, post, get, delete, exceptions
 import os
 import re
 
@@ -11,19 +10,47 @@ ALL_PATTERNS = (RESOURCE_PATTERNS | {".xml", ".py"})
 EXCLUDED_LIBRARIES = {"remote", "reserved", "dialogs", "dialogs_jy", "dialogs_py", "dialogs_ipy"}
 PROTOCOL = 'http://'
 API_V1 = 'api/v1'
+TEST_COLLECTION = {"name": "a", "type": "a", "version": "a", "scope": "a",
+                   "named_args": "a", "path": "a", "doc": "a", "doc_format": "a"}
 
 
-class LibraryPopulation(object):
+class AppPopulation(object):
 
-    def __init__(self, paths: Tuple[str, ...], no_installed_keywords: bool) -> None:
+    def __init__(self, app_interface: str, port: str, user: str, password: str,
+                 paths: Tuple[str, ...], no_installed_keywords: bool) -> None:
+        self.app_interface = app_interface
+        self.port = port
         self.paths = paths
-        self.auth = (BASIC_AUTH_USER, BASIC_AUTH_PASSWORD)
+        self.auth = (user, password)
         self.no_installed_keywords = no_installed_keywords
+        self.session = session()
+
+    def healthcheck_app(self) -> None:
+        try:
+            self._get_request(None)
+        except exceptions.RequestException:
+            print(f'Connection to application at {PROTOCOL}{self.app_interface}:{self.port}/ refused!\n'
+                  f'Check parameters for app-interace and port.')
+            exit(1)
+        req_check_auth = self._post_request('collections', TEST_COLLECTION)
+        if req_check_auth.status_code == 201:
+            self._delete_request('collections', req_check_auth.json()["id"])
+        else:
+            print(f'{req_check_auth.reason}! Check used credentials.')
+            exit(1)
+
+    def delete_collections(self) -> None:
+        """
+        Deletes all existing collections.
+        """
+        collections = self._get_request('collections')
+        collections_id = {collection['id'] for collection in collections.json()}
+        for id in collections_id:
+            self._delete_request('collections', id)
 
     def add_collections(self) -> None:
         """
         Traverses through paths and adds libraries to rfhub.
-        :return:
         """
 
         def traverse_paths(path: str) -> None:
@@ -34,7 +61,7 @@ class LibraryPopulation(object):
                         self.add(full_path)
                     else:
                         traverse_paths(full_path)
-                elif os.path.isfile(full_path) and self._is_robot_file(full_path):
+                elif os.path.isfile(full_path) and self._is_robot_keyword_file(full_path):
                     self.add(full_path)
 
         for path in self.paths:
@@ -79,13 +106,12 @@ class LibraryPopulation(object):
         libdoc = LibraryDocumentation(path)
         serialised_keywords = _serialise_keywords()
         serialised_libdoc = _serialise_libdoc()
-        s = session()
-        coll_req = self._post_request(s, 'collections', serialised_libdoc)
+        coll_req = self._post_request('collections', serialised_libdoc)
         if coll_req.status_code == 201:
             for keyword in serialised_keywords:
                 collection_id = coll_req.json()["id"]
                 keyword["collection_id"] = collection_id
-                kwd_req = self._post_request(s, 'keywords', keyword)
+                kwd_req = self._post_request('keywords', keyword)
             print(f'{libdoc.name} library with {len(serialised_keywords)} keywords loaded.')
         else:
             print(f'{libdoc.name} library was not loaded!')
@@ -95,7 +121,7 @@ class LibraryPopulation(object):
         return os.path.isfile(os.path.join(path, '__init__.py')) and \
             len(LibraryDocumentation(path).keywords) > 0
 
-    def _is_robot_file(self, file: str) -> bool:
+    def _is_robot_keyword_file(self, file: str) -> bool:
         return self._is_library_file(file) or \
                self._is_libdoc_file(file) or \
                self._is_resource_file(file)
@@ -159,11 +185,27 @@ class LibraryPopulation(object):
                         found_keyword_table = True
         return found_keyword_table
 
-    def _post_request(self, session: session, endpoint: str, data: Dict) -> post:
+    def _post_request(self, endpoint: str, data: Dict) -> post:
         """
-        Posts request to collections or keywords endpoint
+        Sends post request to collections or keywords endpoint.
         """
-        request = session.post(url=f'{PROTOCOL}{APP_INTERFACE}:{APP_PORT}/{API_V1}/{endpoint}/',
-                           auth=self.auth, json=data,
-                           headers={"Content-Type": "application/json", "accept": "application/json"})
+        request = self.session.post(url=f'{PROTOCOL}{self.app_interface}:{self.port}/{API_V1}/{endpoint}/',
+                                    auth=self.auth, json=data,
+                                    headers={"Content-Type": "application/json", "accept": "application/json"})
+        return request
+
+    def _delete_request(self, endpoint: str, id: int) -> delete:
+        """
+        Sends delete request to collections or keywords endpoint with item id.
+        """
+        request = self.session.delete(url=f'{PROTOCOL}{self.app_interface}:{self.port}/{API_V1}/{endpoint}/{id}/',
+                                      auth=self.auth, headers={"accept": "application/json"})
+        return request
+
+    def _get_request(self, endpoint: str) -> get:
+        """
+        Sends get request from given endpoint.
+        """
+        request = self.session.get(url=f'{PROTOCOL}{self.app_interface}:{self.port}/{API_V1}/{endpoint}',
+                                   headers={"accept": "application/json"})
         return request

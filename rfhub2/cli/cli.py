@@ -24,7 +24,6 @@ def main(app_interface: str, port: str, user: str, password: str, __paths: Tuple
        from libraries and resource files."""
 
     populate_app = AppPopulation(app_interface, port, user, password, __paths, no_installed_keywords)
-    populate_app.healthcheck_app()
     if not no_db_flush:
         populate_app.delete_collections()
     populate_app.add_collections()

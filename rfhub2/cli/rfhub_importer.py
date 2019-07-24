@@ -1,22 +1,24 @@
-from typing import Tuple, Dict, List
-import robot.libraries
-from robot.libdocpkg import LibraryDocumentation
-from .client import Client
 import os
 import re
+from robot.libdocpkg import LibraryDocumentation
+import robot.libraries
+from typing import Tuple, Dict, List
+
+from .api_client import Client
+from rfhub2.model import Collection, Keyword
+
 
 RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
 ALL_PATTERNS = (RESOURCE_PATTERNS | {".xml", ".py"})
 EXCLUDED_LIBRARIES = {"remote", "reserved", "dialogs", "dialogs_jy", "dialogs_py", "dialogs_ipy"}
 
 
-class AppPopulation(object):
+class RfhubImporter(object):
 
-    def __init__(self, app_interface: str, port: int, user: str, password: str,
-                 paths: Tuple[str, ...], no_installed_keywords: bool) -> None:
+    def __init__(self, paths: Tuple[str, ...], no_installed_keywords: bool, client: Client) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
-        self.client = Client(app_interface, port, user, password)
+        self.client = client
 
     def delete_collections(self) -> None:
         """
@@ -24,78 +26,87 @@ class AppPopulation(object):
         """
         self.client.check_communication_with_app()
         collections = self.client.get_collections()
-        collections_id = {collection['id'] for collection in collections.json()}
+        collections_id = {collection['id'] for collection in collections}
         for id in collections_id:
             self.client.delete_collection(id)
 
     def add_collections(self) -> None:
         """
-        Traverses through paths and adds libraries to rfhub.
+        Adds collections to rfhub.
         """
-
-        def traverse_paths(path: str) -> None:
-            for item in os.listdir(path):
-                full_path = os.path.join(path, item)
-                if os.path.isdir(full_path):
-                    if self._is_library_with_init(full_path):
-                        self.add(full_path)
-                    else:
-                        traverse_paths(full_path)
-                elif os.path.isfile(full_path) and self._is_robot_keyword_file(full_path):
-                    self.add(full_path)
 
         self.client.check_communication_with_app()
         for path in self.paths:
-            traverse_paths(path)
+            self._traverse_paths(path)
         if not self.no_installed_keywords:
             libdir = os.path.dirname(robot.libraries.__file__)
             for item in os.listdir(libdir):
                 if not self._should_ignore(item):
                     self.add(os.path.join(libdir, item))
 
+    def _traverse_paths(self, path: str) -> None:
+        """
+        Traverses through paths and adds libraries to rfhub.
+        Helper function for add_collections.
+        """
+        for item in os.listdir(path):
+            full_path = os.path.join(path, item)
+            if os.path.isdir(full_path):
+                if self._is_library_with_init(full_path):
+                    self.add(full_path)
+                else:
+                    self._traverse_paths(full_path)
+            elif os.path.isfile(full_path) and self._is_robot_keyword_file(full_path):
+                self.add(full_path)
+
     def add(self, path: str) -> None:
         """
         Adds library with keywords to rfhub.
-        :return:
         """
 
-        def _serialise_libdoc() -> Dict:
-            """
-            Serialises libdoc object to dict object.
-            :param libdoc: libdoc input object
-            :param path: library path
-            :return: json object with parameters needed for request post method
-            """
-
-            lib_dict = libdoc.__dict__
-            lib_dict['doc_format'] = lib_dict.pop('_setter__doc_format')
-            for key in ('_setter__keywords', 'inits', 'named_args'):
-                lib_dict.pop(key)
-            lib_dict['path'] = path
-            return lib_dict
-
-        def _serialise_keywords() -> List[Dict[str, str]]:
-            keywords = [keyword.__dict__ for keyword in libdoc.keywords]
-            for keyword in keywords:
-                keyword.pop('tags')
-                if keyword["args"]:
-                    keyword["args"] = str([str(item) for item in keyword["args"]]).replace("\'", "\"")
-                else:
-                    keyword["args"] = ""
-            return keywords
-
         libdoc = LibraryDocumentation(path)
-        serialised_keywords = _serialise_keywords()
-        serialised_libdoc = _serialise_libdoc()
+        serialised_keywords = self._serialise_keywords(libdoc)
+        serialised_libdoc = self._serialise_libdoc(libdoc, path)
         coll_req = self.client.add_collection(serialised_libdoc)
-        if coll_req.status_code == 201:
-            collection_id = coll_req.json()["id"]
+        if coll_req['name'] == serialised_libdoc['name']:
+            collection_id = coll_req['id']
             for keyword in serialised_keywords:
-                keyword["collection_id"] = collection_id
+                keyword['collection_id'] = collection_id
                 self.client.add_keyword(keyword)
             print(f'{libdoc.name} library with {len(serialised_keywords)} keywords loaded.')
         else:
             print(f'{libdoc.name} library was not loaded!')
+
+    def _serialise_libdoc(self, libdoc, path: str) -> Collection:
+        """
+        Serialises libdoc object to Collection object.
+        :param libdoc: libdoc input object
+        :param path: library path
+        :return: Collection object
+        """
+
+        lib_dict = libdoc.__dict__
+        lib_dict['doc_format'] = lib_dict.pop('_setter__doc_format')
+        for key in ('_setter__keywords', 'inits', 'named_args'):
+            lib_dict.pop(key)
+        lib_dict['path'] = path
+        return lib_dict
+
+    def _serialise_keywords(self, libdoc) -> Keyword:
+        """
+        Serialises keywords to Keyword object.
+        :param :libdoc input object
+        :return: Keyword object
+        """
+
+        keywords = [keyword.__dict__ for keyword in libdoc.keywords]
+        for keyword in keywords:
+            keyword.pop('tags')
+            if keyword["args"]:
+                keyword["args"] = str([str(item) for item in keyword["args"]]).replace("\'", "\"")
+            else:
+                keyword["args"] = ""
+        return keywords
 
     @staticmethod
     def _is_library_with_init(path: str) -> bool:

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<keywordspec name="Easter" type="library" format="ROBOT" generated="20190724 14:31:46">
+<version></version>
+<scope>global</scope>
+<namedargs>yes</namedargs>
+<doc>Documentation for library ``Easter``.</doc>
+<kw name="None Shall Pass">
+<arguments>
+<arg>who</arg>
+</arguments>
+<doc></doc>
+<tags>
+</tags>
+</kw>
+</keywordspec>

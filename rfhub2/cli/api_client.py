@@ -13,11 +13,9 @@ class Client(object):
     """
     API client with methods to populate rfhub2 application.
     """
-    def __init__(self, app_interface: str, port: int, user: str, password: str,):
-        self.app_interface = app_interface
-        self.port = port
+    def __init__(self, app_url: int, user: str, password: str,):
+        self.app_url = app_url
         self.session = session()
-        self.app_url = f'{self.app_interface}:{self.port}'
         self.api_url = f'{self.app_url}/{API_V1}'
         self.session.auth = (user, password)
         self.session.headers = {"Content-Type": "application/json", "accept": "application/json"}

@@ -1,21 +1,22 @@
-import os
+from pathlib import Path
 import re
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
-from typing import Tuple, Dict, List
+from typing import Tuple
 
 from .api_client import Client
 from rfhub2.model import Collection, Keyword
 
 
-RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
-ALL_PATTERNS = (RESOURCE_PATTERNS | {".xml", ".py"})
-EXCLUDED_LIBRARIES = {"remote", "reserved", "dialogs", "dialogs_jy", "dialogs_py", "dialogs_ipy"}
+RESOURCE_PATTERNS = {'.robot', '.txt', '.tsv', '.resource'}
+ALL_PATTERNS = (RESOURCE_PATTERNS | {'.xml', '.py'})
+EXCLUDED_LIBRARIES = {'remote.py', 'reserved.py', 'dialogs.py', 'dialogs_jy.py', 'dialogs_py.py', 'dialogs_ipy.py'}
+INIT_FILES = {'__init__.txt', '__init__.robot', '__init__.html', '__init__.tsv'}
 
 
 class RfhubImporter(object):
 
-    def __init__(self, paths: Tuple[str, ...], no_installed_keywords: bool, client: Client) -> None:
+    def __init__(self, paths: Tuple[Path, ...], no_installed_keywords: bool, client: Client) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.client = client
@@ -39,34 +40,33 @@ class RfhubImporter(object):
         for path in self.paths:
             self._traverse_paths(path)
         if not self.no_installed_keywords:
-            libdir = os.path.dirname(robot.libraries.__file__)
-            for item in os.listdir(libdir):
+            libdir = Path(robot.libraries.__file__).parent
+            for item in Path.iterdir(libdir):
                 if not self._should_ignore(item):
-                    self.add(os.path.join(libdir, item))
+                    self.add(item)
 
-    def _traverse_paths(self, path: str) -> None:
+    def _traverse_paths(self, path: Path) -> None:
         """
         Traverses through paths and adds libraries to rfhub.
         Helper function for add_collections.
         """
-        for item in os.listdir(path):
-            full_path = os.path.join(path, item)
-            if os.path.isdir(full_path):
-                if self._is_library_with_init(full_path):
-                    self.add(full_path)
+        for item in Path.iterdir(Path(path)):
+            if Path.is_dir(item):
+                if self._is_library_with_init(item):
+                    self.add(item)
                 else:
-                    self._traverse_paths(full_path)
-            elif os.path.isfile(full_path) and self._is_robot_keyword_file(full_path):
-                self.add(full_path)
+                    self._traverse_paths(item)
+            elif Path.is_file(item) and self._is_robot_keyword_file(item):
+                self.add(item)
 
-    def add(self, path: str) -> None:
+    def add(self, path: Path) -> None:
         """
         Adds library with keywords to rfhub.
         """
 
-        libdoc = LibraryDocumentation(path)
+        libdoc = LibraryDocumentation(str(path))
         serialised_keywords = self._serialise_keywords(libdoc)
-        serialised_libdoc = self._serialise_libdoc(libdoc, path)
+        serialised_libdoc = self._serialise_libdoc(libdoc, str(path))
         coll_req = self.client.add_collection(serialised_libdoc)
         if coll_req['name'] == serialised_libdoc['name']:
             collection_id = coll_req['id']
@@ -109,27 +109,27 @@ class RfhubImporter(object):
         return keywords
 
     @staticmethod
-    def _is_library_with_init(path: str) -> bool:
-        return os.path.isfile(os.path.join(path, '__init__.py')) and \
-            len(LibraryDocumentation(path).keywords) > 0
+    def _is_library_with_init(path: Path) -> bool:
+        return Path.is_file(path.joinpath('__init__.py')) and \
+           len(LibraryDocumentation(str(path)).keywords) > 0
 
-    def _is_robot_keyword_file(self, file: str) -> bool:
+    def _is_robot_keyword_file(self, file: Path) -> bool:
         return self._is_library_file(file) or \
                self._is_libdoc_file(file) or \
                self._is_resource_file(file)
 
     @staticmethod
-    def _is_library_file(file: str) -> bool:
-        return file.endswith(".py") and not file.endswith("__init__.py")
+    def _is_library_file(file: Path) -> bool:
+        return file.suffix == '.py' and file.name != "__init__.py"
 
     @staticmethod
-    def _is_libdoc_file(file: str) -> bool:
+    def _is_libdoc_file(file: Path) -> bool:
         """Return true if an xml file looks like a libdoc file"""
         # inefficient since we end up reading the file twice,
         # but it's fast enough for our purposes, and prevents
         # us from doing a full parse of files that are obviously
         # not libdoc files
-        if file.lower().endswith(".xml"):
+        if file.suffix == '.xml': #Path(file).suffix == ".xml":
             with open(file, "r") as f:
                 # read the first few lines; if we don't see
                 # what looks like libdoc data, return false
@@ -140,30 +140,29 @@ class RfhubImporter(object):
         return False
 
     @staticmethod
-    def _should_ignore(file: str) -> bool:
+    def _should_ignore(file: Path) -> bool:
         """Return True if a given library name should be ignored
         This is necessary because not all files we find in the library
         folder are libraries.
         """
-        filename = os.path.splitext(file)[0].lower()
-        return (filename.startswith("deprecated") or
-                filename.startswith("_") or
-                filename in EXCLUDED_LIBRARIES)
+        filename = file.name.lower()
+        return filename.startswith("deprecated") or \
+               filename.startswith("_") or \
+               filename in EXCLUDED_LIBRARIES
 
     @staticmethod
-    def _is_resource_file(file: str) -> bool:
+    def _is_resource_file(file: Path) -> bool:
         """Return true if the file has a keyword table but not a testcase table"""
         # inefficient since we end up reading the file twice,
         # but it's fast enough for our purposes, and prevents
         # us from doing a full parse of files that are obviously
         # not robot files
 
-        if re.search(r'__init__.(txt|robot|html|tsv)$', file):
-            # These are initialize files, not resource files
+        if file.name in INIT_FILES:
             return False
 
         found_keyword_table = False
-        if os.path.splitext(file)[1].lower() in RESOURCE_PATTERNS:
+        if file.suffix in RESOURCE_PATTERNS:
             with open(file, "r") as f:
                 data = f.read()
                 for match in re.finditer(r'^\*+\s*(Test Cases?|(?:User )?Keywords?)',

@@ -38,7 +38,7 @@ class RfhubImporter(object):
 
         self.client.check_communication_with_app()
         for path in self.paths:
-            self._traverse_paths(path)
+            self._traverse_paths(Path(path))
         if not self.no_installed_keywords:
             libdir = Path(robot.libraries.__file__).parent
             for item in Path.iterdir(libdir):
@@ -50,13 +50,13 @@ class RfhubImporter(object):
         Traverses through paths and adds libraries to rfhub.
         Helper function for add_collections.
         """
-        for item in Path.iterdir(Path(path)):
-            if Path.is_dir(item):
+        for item in path.iterdir():
+            if item.is_dir():
                 if self._is_library_with_init(item):
                     self.add(item)
                 else:
                     self._traverse_paths(item)
-            elif Path.is_file(item) and self._is_robot_keyword_file(item):
+            elif item.is_file() and self._is_robot_keyword_file(item):
                 self.add(item)
 
     def add(self, path: Path) -> None:
@@ -110,7 +110,7 @@ class RfhubImporter(object):
 
     @staticmethod
     def _is_library_with_init(path: Path) -> bool:
-        return Path.is_file(path.joinpath('__init__.py')) and \
+        return (path / '__init__.py').is_file() and \
            len(LibraryDocumentation(str(path)).keywords) > 0
 
     def _is_robot_keyword_file(self, file: Path) -> bool:
@@ -129,14 +129,13 @@ class RfhubImporter(object):
         # but it's fast enough for our purposes, and prevents
         # us from doing a full parse of files that are obviously
         # not libdoc files
-        if file.suffix == '.xml': #Path(file).suffix == ".xml":
+        if file.suffix == '.xml':
             with open(file, "r") as f:
                 # read the first few lines; if we don't see
                 # what looks like libdoc data, return false
                 data = f.read(200)
                 index = data.lower().find("<keywordspec ")
-                if index > 0:
-                    return True
+                return index > 0
         return False
 
     @staticmethod

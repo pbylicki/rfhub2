@@ -13,7 +13,7 @@ class Client(object):
     """
     API client with methods to populate rfhub2 application.
     """
-    def __init__(self, app_url: int, user: str, password: str,):
+    def __init__(self, app_url: str, user: str, password: str,):
         self.app_url = app_url
         self.session = session()
         self.api_url = f'{self.app_url}/{API_V1}'

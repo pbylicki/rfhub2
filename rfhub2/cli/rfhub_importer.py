@@ -151,26 +151,26 @@ class RfhubImporter(object):
 
     @staticmethod
     def _is_resource_file(file: Path) -> bool:
-        """Return true if the file has a keyword table but not a testcase table"""
+        """Returns true if the file has a keyword table but not a testcase table."""
         # inefficient since we end up reading the file twice,
         # but it's fast enough for our purposes, and prevents
         # us from doing a full parse of files that are obviously
         # not robot files
 
-        if file.name in INIT_FILES:
-            return False
-
-        found_keyword_table = False
-        if file.suffix in RESOURCE_PATTERNS:
+        if file.name not in INIT_FILES and file.suffix in RESOURCE_PATTERNS:
             with open(file, "r") as f:
                 data = f.read()
-                for match in re.finditer(r'^\*+\s*(Test Cases?|(?:User )?Keywords?)',
-                                         data, re.MULTILINE | re.IGNORECASE):
-                    if re.match(r'Test Cases?', match.group(1), re.IGNORECASE):
-                        # if there's a test case table, it's not a keyword file
-                        return False
+                return not RfhubImporter._has_test_case_table(data) and \
+                    RfhubImporter._has_keyword_table(data)
+        return False
 
-                    if (not found_keyword_table and
-                            re.match(r'(User )?Keywords?', match.group(1), re.IGNORECASE)):
-                        found_keyword_table = True
-        return found_keyword_table
+    @staticmethod
+    def _has_keyword_table(data: str) -> bool:
+        """Returns true if file has keyword or user keyword table"""
+        return len(re.findall(r'^\*+\s*((?:User )?Keywords?)',
+                              data, re.MULTILINE | re.IGNORECASE)) > 0
+
+    @staticmethod
+    def _has_test_case_table(data: str) -> bool:
+        """Returns true if file has keyword or user keyword table"""
+        return len(re.findall(r'^\*+\s*(Test Cases?)', data, re.MULTILINE | re.IGNORECASE)) > 0

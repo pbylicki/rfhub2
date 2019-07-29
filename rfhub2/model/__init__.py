@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
+class Healthcheck(BaseModel):
+    db: str
+
+
 class NestedCollection(BaseModel):
     id: int
     name: str

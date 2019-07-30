@@ -12,7 +12,7 @@ def get_keyword_repository(request: Request) -> KeywordRepository:
     return KeywordRepository(request.state.db)
 
 
-def db_healthcheck(request: Request):
+def db_healthcheck(request: Request) -> bool:
     try:
         result = request.state.db.execute("select 1")
         return next(result) == (1,)

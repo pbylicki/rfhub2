@@ -1,4 +1,5 @@
 from tests.api.endpoints.collections_tests import CollectionsApiTest
+from tests.api.endpoints.healthcheck_tests import HealthcheckApiTest
 from tests.api.endpoints.keywords_tests import KeywordsApiTest
 from tests.db.collection_repo_tests import CollectionRepositoryTest
 from tests.db.collection_tests import CollectionTest

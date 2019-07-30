@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=Healthcheck)
-def healthcheck(response: Response, db_status: str = Depends(db_healthcheck)):
+def healthcheck(response: Response, db_status: bool = Depends(db_healthcheck)):
     if db_status:
         return Healthcheck(**{"db": "ok"})
     else:

@@ -167,10 +167,9 @@ class RfhubImporter(object):
     @staticmethod
     def _has_keyword_table(data: str) -> bool:
         """Returns true if file has keyword or user keyword table"""
-        return len(re.findall(r'^\*+\s*((?:User )?Keywords?)',
-                              data, re.MULTILINE | re.IGNORECASE)) > 0
+        return re.search(r'^\*+\s*((?:User )?Keywords?)', data, re.MULTILINE | re.IGNORECASE) is not None
 
     @staticmethod
     def _has_test_case_table(data: str) -> bool:
         """Returns true if file has keyword or user keyword table"""
-        return len(re.findall(r'^\*+\s*(Test Cases?)', data, re.MULTILINE | re.IGNORECASE)) > 0
+        return re.search(r'^\*+\s*(Test Cases?)', data, re.MULTILINE | re.IGNORECASE) is not None

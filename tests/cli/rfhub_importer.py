@@ -1,8 +1,19 @@
 import unittest
 from pathlib import Path
+from robot.libdocpkg import LibraryDocumentation
 
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
+
+EXPECTED_LIBDOC = {'doc': 'Documentation for library ``Test Libdoc File``.',
+                   'doc_format': 'ROBOT', 'name': 'Test Libdoc File',
+                   'scope': 'global', 'type': 'library', 'version': ''}
+EXPECTED_KEYWORDS = [{'args': '', 'doc': 'This keyword was imported from file\n'
+                                         'with .resource extension, available since RFWK 3.1',
+                      'name': 'Keyword 1 Imported From Resource File'},
+                     {'args': '["arg_1", "arg_2"]', 'doc': 'This keyword was imported from file\n'
+                                                           'with .resource extension, available since RFWK 3.1',
+                      'name': 'Keyword 2 Imported From Resource File'}]
 
 
 class RfhubImporterTests(unittest.TestCase):
@@ -116,3 +127,16 @@ class RfhubImporterTests(unittest.TestCase):
         data = '*** Test ***'
         result = RfhubImporter._has_test_case_table(data=data)
         self.assertFalse(result, 'method should return false if Test Case were not found')
+
+    def test_serialise_libdoc_should_return_collection(self):
+        file = self.fixture_path / 'test_libdoc_file.xml'
+        libdoc = LibraryDocumentation(file)
+        serialised_libdoc = self.rfhub_importer._serialise_libdoc(libdoc, file)
+        serialised_libdoc.pop('path')
+        self.assertEqual(serialised_libdoc, EXPECTED_LIBDOC)
+
+    def test_serialise_keywords_should_return_keywords(self):
+        file = self.fixture_path / 'test_resource.resource'
+        libdoc = LibraryDocumentation(file)
+        serialised_keywords = self.rfhub_importer._serialise_keywords(libdoc)
+        self.assertEqual(serialised_keywords, EXPECTED_KEYWORDS)

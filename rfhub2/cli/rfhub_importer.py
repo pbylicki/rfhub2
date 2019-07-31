@@ -77,7 +77,7 @@ class RfhubImporter(object):
         else:
             print(f'{libdoc.name} library was not loaded!')
 
-    def _serialise_libdoc(self, libdoc, path: str) -> Collection:
+    def _serialise_libdoc(self, libdoc: LibraryDocumentation, path: str) -> Collection:
         """
         Serialises libdoc object to Collection object.
         :param libdoc: libdoc input object
@@ -92,7 +92,7 @@ class RfhubImporter(object):
         lib_dict['path'] = path
         return lib_dict
 
-    def _serialise_keywords(self, libdoc) -> Keyword:
+    def _serialise_keywords(self, libdoc: LibraryDocumentation) -> Keyword:
         """
         Serialises keywords to Keyword object.
         :param :libdoc input object

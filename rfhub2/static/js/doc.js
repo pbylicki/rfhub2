@@ -54,7 +54,7 @@ $(document).ready(function () {
 
   var params = queryString.parse(location.search);
   if (! _.isEmpty(params.pattern)) {
-    renderKeywords(params.pattern);
+    renderKeywords(params.pattern, $('#search-pattern'));
     setSearchFieldValue(params.pattern);
   }
   if ($('.selected').length > 0) {

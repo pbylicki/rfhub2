@@ -10,3 +10,12 @@ def get_collection_repository(request: Request) -> CollectionRepository:
 
 def get_keyword_repository(request: Request) -> KeywordRepository:
     return KeywordRepository(request.state.db)
+
+
+def db_healthcheck(request: Request) -> bool:
+    try:
+        result = request.state.db.execute("select 1")
+        return next(result) == (1,)
+    except Exception as e:
+        print(e)
+        return False

@@ -50,7 +50,7 @@ class Client(object):
         """
         Deletes collection with given id.
         """
-        self._delete_request(endpoint='collections', id=id)
+        return self._delete_request(endpoint='collections', id=id)
 
     def add_keyword(self, data: Keyword) -> Keyword:
         """

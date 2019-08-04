@@ -31,7 +31,7 @@ class Client(object):
         if req_check_auth['name'] == 'healtcheck_collection':
             self._delete_request('collections', req_check_auth["id"])
         else:
-            print(f'{req_check_auth.reason}! Check used credentials.')
+            print('Check used credentials!')
             exit(1)
 
     def get_collections(self) -> List[Collection]:
@@ -62,7 +62,7 @@ class Client(object):
         """
         Sends get request from given endpoint.
         """
-        request = self.session.get(url=f'{self.api_url}/{endpoint}')
+        request = self.session.get(url=f'{self.api_url}/{endpoint}/')
         return request.json()
 
     def _post_request(self, endpoint: str, data: Dict) -> post:

@@ -69,3 +69,7 @@ table th {
 .search-container {
     margin: 10px;
 }
+
+.list-group.tree {
+    display: none;
+}

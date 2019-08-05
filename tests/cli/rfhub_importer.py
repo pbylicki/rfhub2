@@ -79,7 +79,7 @@ class RfhubImporterTests(unittest.TestCase):
     def test_create_collections_should_return_collection_list(self):
         result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
                                                         FIXTURE_PATH / 'test_libdoc_file.xml'})
-        self.assertEqual(result, [EXPECTED_COLLECTION2, EXPECTED_COLLECTION])
+        self.assertCountEqual(result, [EXPECTED_COLLECTION2, EXPECTED_COLLECTION])
 
     def test_create_collection_should_return_collection(self):
         result = self.rfhub_importer.create_collection(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py')

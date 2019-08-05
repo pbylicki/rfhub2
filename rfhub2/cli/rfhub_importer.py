@@ -1,8 +1,9 @@
 from pathlib import Path
 import re
+from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
-from typing import Tuple, Set
+from typing import List, Set, Tuple
 
 from .api_client import Client
 from rfhub2.model import Collection, Keyword
@@ -32,43 +33,72 @@ class RfhubImporter(object):
         for id in collections_id:
             self.client.delete_collection(id)
 
-    def add_collections(self) -> None:
-        """
-        Adds collections to rfhub.
-        """
-
-        self.client.check_communication_with_app()
-        for path in self.paths:
-            self._traverse_paths(Path(path))
-        if not self.no_installed_keywords:
-            libdir = Path(robot.libraries.__file__).parent
-            for item in Path.iterdir(libdir):
-                if not self._should_ignore(item):
-                    self.add(item)
-
-    def get_library_paths(self) -> Set[Path]:
+    def get_libraries_paths(self) -> Set[Path]:
         """
         Traverses all given paths and returns set with paths
         pointing to libraries to import to app.
         :return: Set of Paths object pointing to libraries to import
         """
         self.client.check_communication_with_app()
+        libraries_paths = set()
         for path in self.paths:
-            self._traverse_paths(Path(path))
+            libraries_paths.update(self._traverse_paths(Path(path)))
+        # ToDo test that
+        # if not self.no_installed_keywords:
+        #     libdir = Path(robot.libraries.__file__).parent
+        #     libraries_paths.update(self._traverse_paths(Path(path)))
+        return libraries_paths
 
-    def _traverse_paths(self, path: Path) -> None:
+    def _traverse_paths(self, path: Path) -> Set[Path]:
         """
         Traverses through paths and adds libraries to rfhub.
         Helper function for get_library_paths.
         """
-        for item in path.iterdir():
-            if item.is_dir():
-                if self._is_library_with_init(item):
-                    self.add(item)
-                else:
-                    self._traverse_paths(item)
-            elif item.is_file() and self._is_robot_keyword_file(item) and not self._should_ignore(item):
-                self.add(item)
+        valid_lib_paths = set()
+        if self._is_library_with_init(path):
+            valid_lib_paths.add(path)
+        else:
+            for item in path.iterdir():
+                if item.is_dir():
+                    if self._is_library_with_init(item):
+                        valid_lib_paths.add(item)
+                    else:
+                        valid_lib_paths.update(self._traverse_paths(item))
+                elif item.is_file() and self._is_robot_keyword_file(item) and not self._should_ignore(item):
+                    valid_lib_paths.add(item)
+        return valid_lib_paths
+
+    def create_collections(self, paths: Set[Path]) -> List[Collection]:
+        """
+        Creates list of Collection objects from set of provided paths.
+        :param paths: set of paths
+        :return: list of Collection objects
+        """
+        return [self.create_collection(path) for path in paths]
+        # ToDo try except to handle problem with library creation
+
+    def create_collection(self, path: Path):
+        """
+        Creates Collection object from provided path.
+        :param path: Path
+        :return: Collection object
+        """
+        libdoc = LibraryDocumentation(str(path))
+        serialised_keywords = self._serialise_keywords(libdoc)
+        return self._serialise_libdoc(libdoc, str(path), serialised_keywords)
+
+    # def add_collections(self) -> None:
+    #     """
+    #     Adds collections to rfhub.
+    #     """
+    #     self.client.check_communication_with_app()
+    #     for path in self.paths:
+    #         self._traverse_paths(Path(path))
+    #     if not self.no_installed_keywords:
+    #         libdir = Path(robot.libraries.__file__).parent
+    #         for item in Path.iterdir(libdir):
+    #             if not self._should_ignore(item):
+    #                 self.add(item)
 
     def add(self, path: Path) -> None:
         """
@@ -88,7 +118,7 @@ class RfhubImporter(object):
         else:
             print(f'{libdoc.name} library was not loaded!')
 
-    def _serialise_libdoc(self, libdoc: LibraryDocumentation, path: str) -> Collection:
+    def _serialise_libdoc(self, libdoc: LibraryDocumentation, path: str, keywords: List[Keyword]) -> Collection:
         """
         Serialises libdoc object to Collection object.
         :param libdoc: libdoc input object
@@ -101,6 +131,7 @@ class RfhubImporter(object):
         for key in ('_setter__keywords', 'inits', 'named_args'):
             lib_dict.pop(key)
         lib_dict['path'] = path
+        lib_dict['keywords'] = keywords
         return lib_dict
 
     def _serialise_keywords(self, libdoc: LibraryDocumentation) -> Keyword:

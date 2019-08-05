@@ -5,23 +5,85 @@ from robot.libdocpkg import LibraryDocumentation
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
+FIXTURE_PATH = Path.cwd() / 'tests' / 'acceptance' / 'fixtures'
+# FIXTURE_PATH = Path.cwd() / '..' / 'acceptance' / 'fixtures'
 EXPECTED_LIBDOC = {'doc': 'Documentation for library ``Test Libdoc File``.',
                    'doc_format': 'ROBOT', 'name': 'Test Libdoc File',
-                   'scope': 'global', 'type': 'library', 'version': ''}
+                   'scope': 'global', 'type': 'library', 'version': '',
+                   'keywords': [{'name': 'Someone Shall Pass', 'args': '["who"]', 'doc': ''}]}
 EXPECTED_KEYWORDS = [{'args': '', 'doc': 'This keyword was imported from file\n'
                                          'with .resource extension, available since RFWK 3.1',
                       'name': 'Keyword 1 Imported From Resource File'},
                      {'args': '["arg_1", "arg_2"]', 'doc': 'This keyword was imported from file\n'
                                                            'with .resource extension, available since RFWK 3.1',
                       'name': 'Keyword 2 Imported From Resource File'}]
+EXPECTED_TRAVERSE_PATHS_INIT = {FIXTURE_PATH / 'LibWithInit'}
+EXPECTED_TRAVERSE_PATHS_NO_INIT = {FIXTURE_PATH / 'LibsWithEmptyInit' / 'LibWithEmptyInit1.py',
+                                   FIXTURE_PATH / 'LibsWithEmptyInit' / 'LibWithEmptyInit2.py'}
+EXPECTED_GET_LIBRARIES = (EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS_NO_INIT |
+                          {FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
+                           FIXTURE_PATH / 'test_libdoc_file.xml',
+                           FIXTURE_PATH / 'test_resource.resource',
+                           FIXTURE_PATH / 'test_robot.robot'})
+EXPECTED_COLLECTION = {'doc': 'Overview that should be imported for SingleClassLib.',
+                       'doc_format': 'ROBOT',
+                       'keywords': [{'args': '',
+                                     'doc': 'Docstring for single_class_lib_method_1',
+                                     'name': 'Single Class Lib Method 1'},
+                                    {'args': '',
+                                     'doc': 'Docstring for single_class_lib_method_2',
+                                     'name': 'Single Class Lib Method 2'},
+                                    {'args': '["param_1", "param_2"]',
+                                     'doc': 'Docstring for single_class_lib_method_3 with two params',
+                                     'name': 'Single Class Lib Method 3'}],
+                       'name': 'SingleClassLib',
+                       'path': str(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py'),
+                       'scope': 'test case',
+                       'type': 'library',
+                       'version': ''}
+EXPECTED_COLLECTION2 = {'doc': 'Documentation for library ``Test Libdoc File``.',
+                        'doc_format': 'ROBOT',
+                        'keywords': [{'args': '["who"]', 'doc': '', 'name': 'Someone Shall Pass'}],
+                        'name': 'Test Libdoc File',
+                        'path': str(FIXTURE_PATH / 'test_libdoc_file.xml'),
+                        'scope': 'global',
+                        'type': 'library',
+                        'version': ''}
 
 
 class RfhubImporterTests(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.fixture_path = Path.cwd() / 'tests' / 'acceptance' / 'fixtures'
-        self.client = Client('http//localhost:8000', 'rfhub', 'rfhub')
-        self.rfhub_importer = RfhubImporter(self.fixture_path, False, self.client)
+        self.fixture_path = FIXTURE_PATH
+        self.client = Client('http://localhost:8000', 'rfhub', 'rfhub')
+        self.rfhub_importer = RfhubImporter((self.fixture_path, ), False, self.client)
+
+    def test_traverse_paths_should_return_set_of_path_on_lib_with_init(self):
+        result = self.rfhub_importer._traverse_paths(self.fixture_path / 'LibWithInit')
+        self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_INIT)
+
+    def test_traverse_paths_should_return_set_of_paths_on_libs_with_empty_init(self):
+        result = self.rfhub_importer._traverse_paths(self.fixture_path / 'LibsWithEmptyInit')
+        self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_NO_INIT)
+
+    def test_get_libraries_paths_should_return_set_of_paths(self):
+        result = self.rfhub_importer.get_libraries_paths()
+        self.assertEqual(result, EXPECTED_GET_LIBRARIES)
+
+    def test_get_libraries_paths_should_return_set_of_paths_when_paths_are_tuple(self):
+        self.rfhub_importer = RfhubImporter((self.fixture_path / 'LibWithInit',
+                                             self.fixture_path / 'LibsWithEmptyInit'), False, self.client)
+        result = self.rfhub_importer.get_libraries_paths()
+        self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS_NO_INIT)
+
+    def test_create_collections_should_return_collection_list(self):
+        result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
+                                                        FIXTURE_PATH / 'test_libdoc_file.xml'})
+        self.assertEqual(result, [EXPECTED_COLLECTION2, EXPECTED_COLLECTION])
+
+    def test_create_collection_should_return_collection(self):
+        result = self.rfhub_importer.create_collection(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py')
+        self.assertEqual(result, EXPECTED_COLLECTION)
 
     def test_is_library_with_init_should_return_true_on_library_with_init(self):
         file = self.fixture_path / 'LibWithInit'
@@ -131,7 +193,8 @@ class RfhubImporterTests(unittest.TestCase):
     def test_serialise_libdoc_should_return_collection(self):
         file = self.fixture_path / 'test_libdoc_file.xml'
         libdoc = LibraryDocumentation(file)
-        serialised_libdoc = self.rfhub_importer._serialise_libdoc(libdoc, file)
+        serialised_keywords = self.rfhub_importer._serialise_keywords(libdoc)
+        serialised_libdoc = self.rfhub_importer._serialise_libdoc(libdoc, file, serialised_keywords)
         serialised_libdoc.pop('path')
         self.assertEqual(serialised_libdoc, EXPECTED_LIBDOC)
 

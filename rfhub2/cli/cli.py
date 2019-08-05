@@ -29,7 +29,3 @@ def main(app_url: str, user: str, password: str, __paths: Tuple[Path, ...],
     if not no_db_flush:
         rfhub_importer.delete_collections()
     rfhub_importer.add_collections()
-
-
-if __name__ == '__main__':
-    main()

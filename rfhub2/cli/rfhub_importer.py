@@ -52,11 +52,11 @@ class RfhubImporter(object):
         """
         for item in path.iterdir():
             if item.is_dir():
-                if self._is_library_with_init(item):
+                if self._is_library_with_init(item) and not self._should_ignore(item):
                     self.add(item)
                 else:
                     self._traverse_paths(item)
-            elif item.is_file() and self._is_robot_keyword_file(item):
+            elif item.is_file() and self._is_robot_keyword_file(item) and not self._should_ignore(item):
                 self.add(item)
 
     def add(self, path: Path) -> None:

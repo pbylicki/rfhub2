@@ -2,7 +2,7 @@ from pathlib import Path
 import re
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
-from typing import Tuple
+from typing import Tuple, Set
 
 from .api_client import Client
 from rfhub2.model import Collection, Keyword
@@ -10,7 +10,8 @@ from rfhub2.model import Collection, Keyword
 
 RESOURCE_PATTERNS = {'.robot', '.txt', '.tsv', '.resource'}
 ALL_PATTERNS = (RESOURCE_PATTERNS | {'.xml', '.py'})
-EXCLUDED_LIBRARIES = {'remote.py', 'reserved.py', 'dialogs.py', 'dialogs_jy.py', 'dialogs_py.py', 'dialogs_ipy.py'}
+EXCLUDED_LIBRARIES = {'remote.py', 'reserved.py', 'dialogs.py', 'dialogs_jy.py',
+                      'dialogs_py.py', 'dialogs_ipy.py', 'setup.py'}
 INIT_FILES = {'__init__.txt', '__init__.robot', '__init__.html', '__init__.tsv'}
 
 
@@ -45,14 +46,24 @@ class RfhubImporter(object):
                 if not self._should_ignore(item):
                     self.add(item)
 
+    def get_library_paths(self) -> Set[Path]:
+        """
+        Traverses all given paths and returns set with paths
+        pointing to libraries to import to app.
+        :return: Set of Paths object pointing to libraries to import
+        """
+        self.client.check_communication_with_app()
+        for path in self.paths:
+            self._traverse_paths(Path(path))
+
     def _traverse_paths(self, path: Path) -> None:
         """
         Traverses through paths and adds libraries to rfhub.
-        Helper function for add_collections.
+        Helper function for get_library_paths.
         """
         for item in path.iterdir():
             if item.is_dir():
-                if self._is_library_with_init(item) and not self._should_ignore(item):
+                if self._is_library_with_init(item):
                     self.add(item)
                 else:
                     self._traverse_paths(item)

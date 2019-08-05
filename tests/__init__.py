@@ -1,7 +1,6 @@
 from tests.api.endpoints.collections_tests import CollectionsApiTest
 from tests.api.endpoints.keywords_tests import KeywordsApiTest
 from tests.cli.api_client import ApiClientTests
-from tests.cli.cli import CliTests
 from tests.cli.rfhub_importer import RfhubImporterTests
 from tests.db.collection_repo_tests import CollectionRepositoryTest
 from tests.db.collection_tests import CollectionTest

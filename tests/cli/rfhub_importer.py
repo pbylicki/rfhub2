@@ -6,7 +6,7 @@ from robot.libdocpkg import LibraryDocumentation
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
-FIXTURE_PATH = Path.cwd() / '..' / 'acceptance' / 'fixtures'
+FIXTURE_PATH = Path.cwd() / 'tests' / 'acceptance' / 'fixtures'
 EXPECTED_LIBDOC = {'doc': 'Documentation for library ``Test Libdoc File``.',
                    'doc_format': 'ROBOT', 'name': 'Test Libdoc File',
                    'scope': 'global', 'type': 'library', 'version': '',

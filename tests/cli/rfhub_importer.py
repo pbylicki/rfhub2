@@ -2,11 +2,13 @@ import responses
 import unittest
 from pathlib import Path
 from robot.libdocpkg import LibraryDocumentation
+import robot.libraries
 
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
 FIXTURE_PATH = Path.cwd() / 'tests' / 'acceptance' / 'fixtures'
+# FIXTURE_PATH = Path.cwd() / '..' / 'acceptance' / 'fixtures'
 EXPECTED_LIBDOC = {'doc': 'Documentation for library ``Test Libdoc File``.',
                    'doc_format': 'ROBOT', 'name': 'Test Libdoc File',
                    'scope': 'global', 'type': 'library', 'version': '',
@@ -49,6 +51,17 @@ EXPECTED_COLLECTION2 = {'doc': 'Documentation for library ``Test Libdoc File``.'
                         'scope': 'global',
                         'type': 'library',
                         'version': ''}
+EXPECTED_ADD_COLLECTIONS = [{'Test Libdoc File': 1}]
+EXPECTED_BUILT_IN_LIBS = {Path(robot.libraries.__file__).parent / 'BuiltIn.py',
+                          Path(robot.libraries.__file__).parent / 'Collections.py',
+                          Path(robot.libraries.__file__).parent / 'DateTime.py',
+                          Path(robot.libraries.__file__).parent / 'Easter.py',
+                          Path(robot.libraries.__file__).parent / 'OperatingSystem.py',
+                          Path(robot.libraries.__file__).parent / 'Process.py',
+                          Path(robot.libraries.__file__).parent / 'Screenshot.py',
+                          Path(robot.libraries.__file__).parent / 'String.py',
+                          Path(robot.libraries.__file__).parent / 'Telnet.py',
+                          Path(robot.libraries.__file__).parent / 'XML.py'}
 
 
 class RfhubImporterTests(unittest.TestCase):
@@ -56,7 +69,25 @@ class RfhubImporterTests(unittest.TestCase):
     def setUp(self) -> None:
         self.fixture_path = FIXTURE_PATH
         self.client = Client('http://localhost:8000', 'rfhub', 'rfhub')
-        self.rfhub_importer = RfhubImporter((self.fixture_path, ), False, self.client)
+        self.rfhub_importer = RfhubImporter((self.fixture_path, ), True, self.client)
+
+    def test_delete_collections(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(responses.GET, f'{self.client.api_url}/collections/', json={},
+                     status=200, adding_headers={"Content-Type": "application/json"})
+            rsps.add(responses.POST, f'{self.client.api_url}/collections/',
+                     json={'name': 'healtcheck_collection', 'id': 1},
+                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(responses.DELETE, f'{self.client.api_url}/collections/1/', status=204,
+                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(responses.GET, f'{self.client.api_url}/collections/', json=[{'id': 2}, {'id': 66}],
+                     status=200, adding_headers={"Content-Type": "application/json"})
+            rsps.add(responses.DELETE, f'{self.client.api_url}/collections/2/', status=204,
+                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(responses.DELETE, f'{self.client.api_url}/collections/66/', status=204,
+                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            result = self.rfhub_importer.delete_collections()
+            self.assertEqual({2, 66}, result)
 
     def test_traverse_paths_should_return_set_of_path_on_lib_with_init(self):
         result = self.rfhub_importer._traverse_paths(self.fixture_path / 'LibWithInit')
@@ -77,6 +108,18 @@ class RfhubImporterTests(unittest.TestCase):
             result = self.rfhub_importer.get_libraries_paths()
             self.assertEqual(result, EXPECTED_GET_LIBRARIES)
 
+    def test_get_libraries_paths_should_return_set_of_paths_on_installed_keywords(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(responses.GET, f'{self.client.api_url}/collections/', json={},
+                     status=200, adding_headers={"Content-Type": "application/json"})
+            rsps.add(responses.POST, f'{self.client.api_url}/collections/', json={'name': 'healtcheck_collection', 'id': 1},
+                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(responses.DELETE, f'{self.client.api_url}/collections/1/', status=204,
+                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            self.rfhub_importer = RfhubImporter(tuple(), False, self.client)
+            result = self.rfhub_importer.get_libraries_paths()
+            self.assertEqual(result, EXPECTED_BUILT_IN_LIBS)
+
     def test_get_libraries_paths_should_return_set_of_paths_when_paths_are_tuple(self):
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, f'{self.client.api_url}/collections/', json={},
@@ -86,18 +129,28 @@ class RfhubImporterTests(unittest.TestCase):
             rsps.add(responses.DELETE, f'{self.client.api_url}/collections/1/', status=204,
                      adding_headers={"Content-Type": "application/json", "accept": "application/json"})
             self.rfhub_importer = RfhubImporter((self.fixture_path / 'LibWithInit',
-                                                 self.fixture_path / 'LibsWithEmptyInit'), False, self.client)
+                                                 self.fixture_path / 'LibsWithEmptyInit'), True, self.client)
             result = self.rfhub_importer.get_libraries_paths()
             self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS_NO_INIT)
 
-    def test_create_collections_should_return_collection_list(self):
+    def test__create_collections_should_return_collection_list(self):
         result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
                                                         FIXTURE_PATH / 'test_libdoc_file.xml'})
-        self.assertCountEqual(result, [EXPECTED_COLLECTION2, EXPECTED_COLLECTION])
+        self.assertCountEqual(result, [EXPECTED_COLLECTION, EXPECTED_COLLECTION2])
 
     def test_create_collection_should_return_collection(self):
         result = self.rfhub_importer.create_collection(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py')
-        self.assertEqual(result, EXPECTED_COLLECTION)
+        self.assertDictEqual(EXPECTED_COLLECTION, result)
+
+    def test_add_collections_should_return_loaded_collections_and_keywords_number(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(responses.POST, f'{self.client.api_url}/collections/',
+                     json={'name': EXPECTED_COLLECTION2['name'], 'id': 1},
+                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(responses.POST, f'{self.client.api_url}/keywords/', json=EXPECTED_COLLECTION2['keywords'][0],
+                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            result = self.rfhub_importer.add_collections([EXPECTED_COLLECTION2])
+            self.assertCountEqual(result, EXPECTED_ADD_COLLECTIONS)
 
     def test_is_library_with_init_should_return_true_on_library_with_init(self):
         file = self.fixture_path / 'LibWithInit'

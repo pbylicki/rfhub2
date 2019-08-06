@@ -25,7 +25,7 @@ class Client(object):
             self.get_collections()
         except exceptions.RequestException:
             print(f'Connection to application at {self.app_url} refused!\n'
-                  f'Check parameters for app-interace and port.')
+                  f'Check parameter for app_url.')
             exit(1)
         req_check_auth = self._post_request('collections', TEST_COLLECTION)
         if req_check_auth['name'] == 'healtcheck_collection':

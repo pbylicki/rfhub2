@@ -3,7 +3,7 @@ import re
 from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
-from typing import List, Set, Tuple
+from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
 from rfhub2.model import Collection, Keyword
@@ -23,7 +23,7 @@ class RfhubImporter(object):
         self.no_installed_keywords = no_installed_keywords
         self.client = client
 
-    def delete_collections(self) -> None:
+    def delete_collections(self) -> Set[int]:
         """
         Deletes all existing collections.
         """
@@ -32,6 +32,7 @@ class RfhubImporter(object):
         collections_id = {collection['id'] for collection in collections}
         for id in collections_id:
             self.client.delete_collection(id)
+        return collections_id
 
     def get_libraries_paths(self) -> Set[Path]:
         """
@@ -44,9 +45,9 @@ class RfhubImporter(object):
         for path in self.paths:
             libraries_paths.update(self._traverse_paths(Path(path)))
         # ToDo test that
-        # if not self.no_installed_keywords:
-        #     libdir = Path(robot.libraries.__file__).parent
-        #     libraries_paths.update(self._traverse_paths(Path(path)))
+        if not self.no_installed_keywords:
+            libdir = Path(robot.libraries.__file__).parent
+            libraries_paths.update(self._traverse_paths(Path(libdir)))
         return libraries_paths
 
     def _traverse_paths(self, path: Path) -> Set[Path]:
@@ -87,36 +88,25 @@ class RfhubImporter(object):
         serialised_keywords = self._serialise_keywords(libdoc)
         return self._serialise_libdoc(libdoc, str(path), serialised_keywords)
 
-    # def add_collections(self) -> None:
-    #     """
-    #     Adds collections to rfhub.
-    #     """
-    #     self.client.check_communication_with_app()
-    #     for path in self.paths:
-    #         self._traverse_paths(Path(path))
-    #     if not self.no_installed_keywords:
-    #         libdir = Path(robot.libraries.__file__).parent
-    #         for item in Path.iterdir(libdir):
-    #             if not self._should_ignore(item):
-    #                 self.add(item)
-
-    def add(self, path: Path) -> None:
+    def add_collections(self, collections: List[Collection]) -> List[Dict[str, int]]:
         """
-        Adds library with keywords to rfhub.
+        Adds collections and keywords from provided list to app.
+        :param collections: List of collections object
+        :return: list of dictionaries with collection name and number of keywords.
         """
-
-        libdoc = LibraryDocumentation(str(path))
-        serialised_keywords = self._serialise_keywords(libdoc)
-        serialised_libdoc = self._serialise_libdoc(libdoc, str(path))
-        coll_req = self.client.add_collection(serialised_libdoc)
-        if coll_req['name'] == serialised_libdoc['name']:
-            collection_id = coll_req['id']
-            for keyword in serialised_keywords:
-                keyword['collection_id'] = collection_id
-                self.client.add_keyword(keyword)
-            print(f'{libdoc.name} library with {len(serialised_keywords)} keywords loaded.')
-        else:
-            print(f'{libdoc.name} library was not loaded!')
+        loaded_collections = []
+        for collection in collections:
+            coll_req = self.client.add_collection(collection)
+            if coll_req['name'] == collection['name']:
+                collection_id = coll_req['id']
+                for keyword in collection['keywords']:
+                    keyword['collection_id'] = collection_id
+                    self.client.add_keyword(keyword)
+                loaded_collections.append({collection['name']: len(collection["keywords"])})
+                print(f'{collection["name"]} library with {len(collection["keywords"])} keywords loaded.')
+            else:
+                print(f'{collection.name} library was not loaded!')
+        return loaded_collections
 
     def _serialise_libdoc(self, libdoc: LibraryDocumentation, path: str, keywords: List[Keyword]) -> Collection:
         """

@@ -44,7 +44,6 @@ class RfhubImporter(object):
         libraries_paths = set()
         for path in self.paths:
             libraries_paths.update(self._traverse_paths(Path(path)))
-        # ToDo test that
         if not self.no_installed_keywords:
             libdir = Path(robot.libraries.__file__).parent
             libraries_paths.update(self._traverse_paths(Path(libdir)))

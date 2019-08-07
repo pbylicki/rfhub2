@@ -114,7 +114,7 @@ class RfhubImporter(object):
                 loaded_collections.append({collection['name']: len(collection["keywords"])})
                 print(f'{collection["name"]} library with {len(collection["keywords"])} keywords loaded.')
             else:
-                print(f'{collection.name} library was not loaded!')
+                print(f'{collection["name"]} library was not loaded!')
         return loaded_collections
 
     def _serialise_libdoc(self, libdoc: LibraryDocumentation, path: str, keywords: List[Keyword]) -> Collection:

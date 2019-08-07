@@ -87,7 +87,7 @@ class RfhubImporter(object):
         return [self.create_collection(path) for path in paths]
         # ToDo try except to handle problem with library creation
 
-    def create_collection(self, path: Path):
+    def create_collection(self, path: Path) -> Collection:
         """
         Creates Collection object from provided path.
         :param path: Path

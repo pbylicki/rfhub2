@@ -34,6 +34,16 @@ class RfhubImporter(object):
             self.client.delete_collection(id)
         return collections_id
 
+    def import_libraries(self) -> Tuple[int, int]:
+        """
+        Import libraries to application from paths specified when invoking client.
+        :return: Number of libraries loaded
+        """
+        libraries_paths = self.get_libraries_paths()
+        collections = self.create_collections(libraries_paths)
+        loaded_collections = self.add_collections(collections)
+        return len(loaded_collections), sum(v for dict in loaded_collections for v in dict.values())
+
     def get_libraries_paths(self) -> Set[Path]:
         """
         Traverses all given paths and returns set with paths

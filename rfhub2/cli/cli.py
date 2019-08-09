@@ -18,13 +18,13 @@ from rfhub2.cli.rfhub_importer import RfhubImporter
                    'such as such as BuiltIn, Collections, DateTime etc.')
 @click.option('--no-db-flush', type=click.BOOL, default=False, is_flag=True,
               help='Flag specifying if package should delete from rfhub2 all existing libraries.')
-@click.argument('--paths', nargs=-1, type=click.Path(exists=True))
-def main(app_url: str, user: str, password: str, __paths: Tuple[Path, ...],
+@click.argument('paths', nargs=-1, type=click.Path(exists=True))
+def main(app_url: str, user: str, password: str, paths: Tuple[Path, ...],
          no_db_flush: bool, no_installed_keywords: bool) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
-    rfhub_importer = RfhubImporter(__paths, no_installed_keywords, client)
+    rfhub_importer = RfhubImporter(client, paths, no_installed_keywords)
     if not no_db_flush:
         rfhub_importer.delete_collections()
     loaded_collections, loaded_keywords = rfhub_importer.import_libraries()

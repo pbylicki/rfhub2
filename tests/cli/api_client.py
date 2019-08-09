@@ -17,32 +17,6 @@ class ApiClientTests(unittest.TestCase):
         self.collection_endpoint = f'{self.client.api_url}/collections/'
         self.keyword_endpoint = f'{self.client.api_url}/keywords/'
 
-    def test_check_communication_with_app_with_wrong_url(self):
-        self.client = Client('http://localhost:8001', 'rfhub', 'rfhub')
-        with self.assertRaises(SystemExit) as cm:
-            self.client.check_communication_with_app()
-        self.assertEqual(cm.exception.code, 1)
-
-    def test_check_communication_with_app_with_wrong_credentials(self):
-        with responses.RequestsMock() as rsps:
-            with self.assertRaises(SystemExit) as cm:
-                rsps.add(responses.GET, self.collection_endpoint, json={},
-                         status=200, adding_headers={"Content-Type": "application/json"})
-                rsps.add(responses.POST, self.collection_endpoint, json={'name': 'not_healtcheck_collection'},
-                         status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
-                self.client.check_communication_with_app()
-            self.assertEqual(cm.exception.code, 1)
-
-    def test_check_communication_with_app(self):
-        with responses.RequestsMock() as rsps:
-            rsps.add(responses.GET, self.collection_endpoint, json={},
-                     status=200, adding_headers={"Content-Type": "application/json"})
-            rsps.add(responses.POST, self.collection_endpoint, json={'name': 'healtcheck_collection', 'id': 1},
-                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
-            rsps.add(responses.DELETE, f'{self.collection_endpoint}1/', status=204,
-                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
-            self.client.check_communication_with_app()
-
     def test_get_collections(self):
         with responses.RequestsMock() as rsps:
             rsps.add(responses.GET, self.collection_endpoint, json=COLLECTION,

@@ -18,7 +18,7 @@ INIT_FILES = {'__init__.txt', '__init__.robot', '__init__.html', '__init__.tsv'}
 
 class RfhubImporter(object):
 
-    def __init__(self, paths: Tuple[Path, ...], no_installed_keywords: bool, client: Client) -> None:
+    def __init__(self, client: Client, paths: Tuple[Path, ...], no_installed_keywords: bool) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.client = client
@@ -27,7 +27,6 @@ class RfhubImporter(object):
         """
         Deletes all existing collections.
         """
-        self.client.check_communication_with_app()
         collections = self.client.get_collections()
         collections_id = {collection['id'] for collection in collections}
         for id in collections_id:
@@ -42,7 +41,7 @@ class RfhubImporter(object):
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)
         loaded_collections = self.add_collections(collections)
-        return len(loaded_collections), sum(v for dict in loaded_collections for v in dict.values())
+        return len(loaded_collections), sum(d['keywords'] for d in loaded_collections)
 
     def get_libraries_paths(self) -> Set[Path]:
         """
@@ -50,7 +49,6 @@ class RfhubImporter(object):
         pointing to libraries to import to app.
         :return: Set of Paths object pointing to libraries to import
         """
-        self.client.check_communication_with_app()
         libraries_paths = set()
         for path in self.paths:
             libraries_paths.update(self._traverse_paths(Path(path)))
@@ -78,7 +76,7 @@ class RfhubImporter(object):
                     valid_lib_paths.add(item)
         return valid_lib_paths
 
-    def create_collections(self, paths: Set[Path]) -> List[Collection]:
+    def create_collections(self, paths: Set[Path]) -> List[Dict]:
         """
         Creates list of Collection objects from set of provided paths.
         :param paths: set of paths
@@ -87,7 +85,7 @@ class RfhubImporter(object):
         return [self.create_collection(path) for path in paths]
         # ToDo try except to handle problem with library creation
 
-    def create_collection(self, path: Path) -> Collection:
+    def create_collection(self, path: Path) -> Dict:
         """
         Creates Collection object from provided path.
         :param path: Path
@@ -97,7 +95,7 @@ class RfhubImporter(object):
         serialised_keywords = self._serialise_keywords(libdoc)
         return self._serialise_libdoc(libdoc, str(path), serialised_keywords)
 
-    def add_collections(self, collections: List[Collection]) -> List[Dict[str, int]]:
+    def add_collections(self, collections: Dict) -> List[Dict[str, int]]:
         """
         Adds collections and keywords from provided list to app.
         :param collections: List of collections object
@@ -106,18 +104,21 @@ class RfhubImporter(object):
         loaded_collections = []
         for collection in collections:
             coll_req = self.client.add_collection(collection)
+            if 'unauthorized' in coll_req.get('detail', '').lower():
+                print(coll_req['detail'])
+                exit(1)
             if coll_req['name'] == collection['name']:
                 collection_id = coll_req['id']
                 for keyword in collection['keywords']:
                     keyword['collection_id'] = collection_id
                     self.client.add_keyword(keyword)
-                loaded_collections.append({collection['name']: len(collection["keywords"])})
+                loaded_collections.append({'name': collection['name'], 'keywords': len(collection["keywords"])})
                 print(f'{collection["name"]} library with {len(collection["keywords"])} keywords loaded.')
             else:
                 print(f'{collection["name"]} library was not loaded!')
         return loaded_collections
 
-    def _serialise_libdoc(self, libdoc: LibraryDocumentation, path: str, keywords: List[Keyword]) -> Collection:
+    def _serialise_libdoc(self, libdoc: Dict, path: str, keywords: Dict) -> Dict:
         """
         Serialises libdoc object to Collection object.
         :param libdoc: libdoc input object
@@ -133,7 +134,7 @@ class RfhubImporter(object):
         lib_dict['keywords'] = keywords
         return lib_dict
 
-    def _serialise_keywords(self, libdoc: LibraryDocumentation) -> Keyword:
+    def _serialise_keywords(self, libdoc: Dict) -> Dict:
         """
         Serialises keywords to Keyword object.
         :param :libdoc input object

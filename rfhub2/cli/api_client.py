@@ -1,7 +1,5 @@
-from requests import session, post, get, delete, exceptions
-from typing import Dict, List
-
-from rfhub2.model import Collection, Keyword
+from requests import session, post, get, delete
+from typing import Dict
 
 
 API_V1 = 'api/v1'
@@ -20,27 +18,13 @@ class Client(object):
         self.session.auth = (user, password)
         self.session.headers = {"Content-Type": "application/json", "accept": "application/json"}
 
-    def check_communication_with_app(self) -> None:
-        try:
-            self.get_collections()
-        except exceptions.RequestException:
-            print(f'Connection to application at {self.app_url} refused!\n'
-                  f'Check parameter for app_url.')
-            exit(1)
-        req_check_auth = self._post_request('collections', TEST_COLLECTION)
-        if req_check_auth['name'] == 'healtcheck_collection':
-            self._delete_request('collections', req_check_auth["id"])
-        else:
-            print('Check used credentials!')
-            exit(1)
-
-    def get_collections(self) -> List[Collection]:
+    def get_collections(self) -> Dict:
         """
         Gets list of collections object using request get method.
         """
         return self._get_request(endpoint='collections')
 
-    def add_collection(self, data: Collection) -> Collection:
+    def add_collection(self, data: Dict) -> Dict:
         """
         Adds collection using request post method.
         """
@@ -52,7 +36,7 @@ class Client(object):
         """
         return self._delete_request(endpoint='collections', id=id)
 
-    def add_keyword(self, data: Keyword) -> Keyword:
+    def add_keyword(self, data: Dict) -> Dict:
         """
         Adds keyword using request post method.
         """

@@ -82,8 +82,14 @@ class RfhubImporter(object):
         :param paths: set of paths
         :return: list of Collection objects
         """
-        return [self.create_collection(path) for path in paths]
-        # ToDo try except to handle problem with library creation
+        collections = []
+        for path in paths:
+            try:
+                collection = self.create_collection(path)
+                collections.append(collection)
+            except DataError:
+                print(f'Failed to create collection from path {path}')
+        return collections
 
     def create_collection(self, path: Path) -> Dict:
         """

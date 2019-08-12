@@ -28,4 +28,4 @@ def main(app_url: str, user: str, password: str, paths: Tuple[Path, ...],
     if not no_db_flush:
         rfhub_importer.delete_collections()
     loaded_collections, loaded_keywords = rfhub_importer.import_libraries()
-    print(f'\nSuccessfully loaded {loaded_collections} with {loaded_keywords} keywords.')
+    print(f'\nSuccessfully loaded {loaded_collections} collections with {loaded_keywords} keywords.')

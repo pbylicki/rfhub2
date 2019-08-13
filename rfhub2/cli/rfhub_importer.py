@@ -87,8 +87,9 @@ class RfhubImporter(object):
             try:
                 collection = self.create_collection(path)
                 collections.append(collection)
-            except DataError:
+            except (DataError, SystemExit) as ex:
                 print(f'Failed to create collection from path {path}')
+                print(type(ex).__name__, ex.args)
         return collections
 
     def create_collection(self, path: Path) -> Dict:

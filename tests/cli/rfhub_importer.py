@@ -25,7 +25,9 @@ EXPECTED_GET_LIBRARIES = (EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS
                           {FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
                            FIXTURE_PATH / 'test_libdoc_file.xml',
                            FIXTURE_PATH / 'test_resource.resource',
-                           FIXTURE_PATH / 'test_robot.robot'})
+                           FIXTURE_PATH / 'test_robot.robot',
+                           FIXTURE_PATH / 'arg_parse.py',
+                           FIXTURE_PATH / 'data_error.py'})
 EXPECTED_COLLECTION = {'doc': 'Overview that should be imported for SingleClassLib.',
                        'doc_format': 'ROBOT',
                        'keywords': [{'args': '',
@@ -130,6 +132,14 @@ class RfhubImporterTests(unittest.TestCase):
         result = self.rfhub_importer.create_collection(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py')
         self.assertDictEqual(EXPECTED_COLLECTION, result)
 
+    def test_create_collections_should_retunr_empty_list_on_data_error(self):
+        result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'data_error.py'})
+        self.assertListEqual([], result)
+
+    def test_create_collections_should_retunr_empty_list_on_syste_exit(self):
+        result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'arg_parse.py'})
+        self.assertListEqual([], result)
+
     def test_add_collections_should_return_loaded_collections_and_keywords_number(self):
         with responses.RequestsMock() as rsps:
             rsps.add(responses.POST, f'{self.client.api_url}/collections/',
@@ -141,13 +151,13 @@ class RfhubImporterTests(unittest.TestCase):
             self.assertCountEqual(result, EXPECTED_ADD_COLLECTIONS)
 
     def test_add_collections_should_exit_when_unauthorized(self):
-        with self.assertRaises(SystemExit) as cm:
+        with self.assertRaises(StopIteration) as cm:
             with responses.RequestsMock() as rsps:
                 rsps.add(responses.POST, f'{self.client.api_url}/collections/',
                          json={'detail': 'Unauthorized to perform this action'},
                          status=401, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
                 self.rfhub_importer.add_collections([EXPECTED_COLLECTION2])
-        self.assertEqual(cm.exception.code, 1)
+        self.assertRaises(StopIteration)
 
     def test_is_library_with_init_should_return_true_on_library_with_init(self):
         file = self.fixture_path / 'LibWithInit'

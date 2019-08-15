@@ -6,7 +6,6 @@ import robot.libraries
 from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
-from rfhub2.model import Collection, Keyword
 
 
 RESOURCE_PATTERNS = {'.robot', '.txt', '.tsv', '.resource'}
@@ -88,8 +87,8 @@ class RfhubImporter(object):
                 collection = self.create_collection(path)
                 collections.append(collection)
             except (DataError, SystemExit) as ex:
-                print(f'Failed to create collection from path {path}')
-                print(type(ex).__name__, ex.args)
+                print(f'Failed to create collection from path {path}\n'
+                      f'{type(ex).__name__}, {ex.args}')
         return collections
 
     def create_collection(self, path: Path) -> Dict:
@@ -113,16 +112,13 @@ class RfhubImporter(object):
             coll_req = self.client.add_collection(collection)
             if 'unauthorized' in coll_req.get('detail', '').lower():
                 print(coll_req['detail'])
-                exit(1)
-            if coll_req['name'] == collection['name']:
-                collection_id = coll_req['id']
-                for keyword in collection['keywords']:
-                    keyword['collection_id'] = collection_id
-                    self.client.add_keyword(keyword)
-                loaded_collections.append({'name': collection['name'], 'keywords': len(collection["keywords"])})
-                print(f'{collection["name"]} library with {len(collection["keywords"])} keywords loaded.')
-            else:
-                print(f'{collection["name"]} library was not loaded!')
+                raise StopIteration
+            collection_id = coll_req['id']
+            for keyword in collection['keywords']:
+                keyword['collection_id'] = collection_id
+                self.client.add_keyword(keyword)
+            loaded_collections.append({'name': collection['name'], 'keywords': len(collection["keywords"])})
+            print(f'{collection["name"]} library with {len(collection["keywords"])} keywords loaded.')
         return loaded_collections
 
     def _serialise_libdoc(self, libdoc: Dict, path: str, keywords: Dict) -> Dict:

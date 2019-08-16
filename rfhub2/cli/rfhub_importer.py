@@ -110,10 +110,10 @@ class RfhubImporter(object):
         loaded_collections = []
         for collection in collections:
             coll_req = self.client.add_collection(collection)
-            if 'unauthorized' in coll_req.get('detail', '').lower():
-                print(coll_req['detail'])
+            if coll_req[0] != 201:
+                print(coll_req[1]['detail'])
                 raise StopIteration
-            collection_id = coll_req['id']
+            collection_id = coll_req[1]['id']
             for keyword in collection['keywords']:
                 keyword['collection_id'] = collection_id
                 self.client.add_keyword(keyword)

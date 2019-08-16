@@ -29,7 +29,7 @@ class ApiClientTests(unittest.TestCase):
             rsps.add(responses.POST, self.collection_endpoint, json=COLLECTION[0],
                      status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
             response = self.client.add_collection(data=COLLECTION[0])
-            self.assertEqual(response, COLLECTION[0])
+            self.assertEqual(response, (201, COLLECTION[0]))
 
     def test_delete_collection(self):
         with responses.RequestsMock() as rsps:
@@ -43,4 +43,4 @@ class ApiClientTests(unittest.TestCase):
             rsps.add(responses.POST, self.keyword_endpoint, json=KEYWORD, status=201,
                      adding_headers={"Content-Type": "application/json", "accept": "application/json"})
             response = self.client.add_keyword(data=KEYWORD)
-            self.assertEqual(response, KEYWORD)
+            self.assertEqual(response, (201, KEYWORD))

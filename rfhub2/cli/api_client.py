@@ -54,7 +54,7 @@ class Client(object):
         Sends post request to collections or keywords endpoint.
         """
         request = self.session.post(url=f'{self.api_url}/{endpoint}/', json=data)
-        return request.json()
+        return request.status_code, request.json()
 
     def _delete_request(self, endpoint: str, id: int) -> delete:
         """

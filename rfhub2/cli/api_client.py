@@ -1,5 +1,5 @@
-from requests import session, post, get, delete
-from typing import Dict
+from requests import session, post, get, delete, Response
+from typing import Dict, Tuple
 
 
 API_V1 = 'api/v1'
@@ -18,7 +18,7 @@ class Client(object):
         self.session.auth = (user, password)
         self.session.headers = {"Content-Type": "application/json", "accept": "application/json"}
 
-    def get_collections(self) -> Dict:
+    def get_collections(self) -> Response:
         """
         Gets list of collections object using request get method.
         """
@@ -30,7 +30,7 @@ class Client(object):
         """
         return self._post_request(endpoint='collections', data=data)
 
-    def delete_collection(self, id: int) -> delete:
+    def delete_collection(self, id: int) -> Response:
         """
         Deletes collection with given id.
         """
@@ -42,21 +42,21 @@ class Client(object):
         """
         return self._post_request(endpoint='keywords', data=data)
 
-    def _get_request(self, endpoint: str) -> get:
+    def _get_request(self, endpoint: str) -> Dict:
         """
         Sends get request from given endpoint.
         """
         request = self.session.get(url=f'{self.api_url}/{endpoint}/')
         return request.json()
 
-    def _post_request(self, endpoint: str, data: Dict) -> post:
+    def _post_request(self, endpoint: str, data: Dict) -> Tuple[int, Dict]:
         """
         Sends post request to collections or keywords endpoint.
         """
         request = self.session.post(url=f'{self.api_url}/{endpoint}/', json=data)
         return request.status_code, request.json()
 
-    def _delete_request(self, endpoint: str, id: int) -> delete:
+    def _delete_request(self, endpoint: str, id: int) -> Response:
         """
         Sends delete request to collections or keywords endpoint with item id.
         """

@@ -132,11 +132,11 @@ class RfhubImporterTests(unittest.TestCase):
         result = self.rfhub_importer.create_collection(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py')
         self.assertDictEqual(EXPECTED_COLLECTION, result)
 
-    def test_create_collections_should_retunr_empty_list_on_data_error(self):
+    def test_create_collections_should_return_empty_list_on_data_error(self):
         result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'data_error.py'})
         self.assertListEqual([], result)
 
-    def test_create_collections_should_retunr_empty_list_on_syste_exit(self):
+    def test_create_collections_should_return_empty_list_on_syste_exit(self):
         result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'arg_parse.py'})
         self.assertListEqual([], result)
 
@@ -157,7 +157,6 @@ class RfhubImporterTests(unittest.TestCase):
                          json={'detail': 'Unauthorized to perform this action'},
                          status=401, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
                 self.rfhub_importer.add_collections([EXPECTED_COLLECTION2])
-        self.assertRaises(StopIteration)
 
     def test_is_library_with_init_should_return_true_on_library_with_init(self):
         file = self.fixture_path / 'LibWithInit'

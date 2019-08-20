@@ -6,14 +6,16 @@ from rfhub2.db.model.doc_mixin import DocMixin
 
 
 class Keyword(Base, DocMixin):
-    id = Column(Integer, Sequence('keyword_id_seq'), primary_key=True)
+    id = Column(Integer, Sequence("keyword_id_seq"), primary_key=True)
     name = Column(Text, index=True)
     doc = Column(Text)
     args = Column(Text)
-    collection_id = Column(Integer, ForeignKey('collection.id', ondelete='CASCADE'), nullable=False)
+    collection_id = Column(
+        Integer, ForeignKey("collection.id", ondelete="CASCADE"), nullable=False
+    )
 
     def __str__(self):  # pragma: no cover
-        return f'Keyword({self.id},{self.name},{self.doc},{self.args},{self.collection_id})'
+        return f"Keyword({self.id},{self.name},{self.doc},{self.args},{self.collection_id})"
 
     def __repr__(self):  # pragma: no cover
         return str(self)

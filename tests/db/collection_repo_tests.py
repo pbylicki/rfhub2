@@ -6,12 +6,13 @@ from tests.db.base_repo_tests import BaseRepositoryTest
 
 
 class CollectionRepositoryTest(BaseRepositoryTest):
-
     def test_should_add_collection(self) -> None:
         name_to_add = "test_collection"
         collection = Collection(name=name_to_add)
         self.collection_repo.add(collection)
-        results: List[Collection] = db_session.query(Collection).filter_by(name=name_to_add).all()
+        results: List[Collection] = db_session.query(Collection).filter_by(
+            name=name_to_add
+        ).all()
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].name, name_to_add)
         self.assertIsNotNone(results[0].id)
@@ -21,12 +22,16 @@ class CollectionRepositoryTest(BaseRepositoryTest):
         collection = Collection(name=name_to_add)
         collection.keywords = [Keyword(name="Keyword1"), Keyword(name="Keyword2")]
         self.collection_repo.add(collection)
-        results: List[Collection] = db_session.query(Collection).filter_by(name=name_to_add).all()
+        results: List[Collection] = db_session.query(Collection).filter_by(
+            name=name_to_add
+        ).all()
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].name, name_to_add)
         self.assertIsNotNone(results[0].id)
         self.assertEqual(len(results[0].keywords), 2)
-        self.assertEqual([k.name for k in results[0].keywords], ["Keyword1", "Keyword2"])
+        self.assertEqual(
+            [k.name for k in results[0].keywords], ["Keyword1", "Keyword2"]
+        )
 
     def test_should_get_collection_by_id(self) -> None:
         result: Optional[Collection] = self.collection_repo.get(self.collections[-1].id)
@@ -54,7 +59,7 @@ class CollectionRepositoryTest(BaseRepositoryTest):
             ("collection", self.collections[:2]),
             ("thir", self.collections[2:]),
             ("second collection", self.collections[1:2]),
-            ("", self.collections)
+            ("", self.collections),
         ]
         for pattern, expected in test_data:
             with self.subTest(pattern=pattern, expected=expected):
@@ -65,7 +70,7 @@ class CollectionRepositoryTest(BaseRepositoryTest):
         test_data = [
             ("Robo", self.collections[:2]),
             ("library", self.collections[2:]),
-            ("", self.collections)
+            ("", self.collections),
         ]
         for libtype, expected in test_data:
             with self.subTest(libtype=libtype, expected=expected):

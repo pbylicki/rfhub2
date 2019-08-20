@@ -7,8 +7,13 @@ from rfhub2 import config
 security = HTTPBasic()
 
 
-def authenticated_user(user: HTTPBasicCredentials = Depends(security)) -> HTTPBasicCredentials:
-    if user.username == config.BASIC_AUTH_USER and user.password == config.BASIC_AUTH_PASSWORD:
+def authenticated_user(
+    user: HTTPBasicCredentials = Depends(security)
+) -> HTTPBasicCredentials:
+    if (
+        user.username == config.BASIC_AUTH_USER
+        and user.password == config.BASIC_AUTH_PASSWORD
+    ):
         return user
     else:
         raise HTTPException(

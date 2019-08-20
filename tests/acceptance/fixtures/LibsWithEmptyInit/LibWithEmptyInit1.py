@@ -1,8 +1,8 @@
-
 class LibWithEmptyInit1(object):
     """
     Overview that should be imported for LibWithEmptyInit1.
     """
+
     def __init__(self):
         self.b = None
 

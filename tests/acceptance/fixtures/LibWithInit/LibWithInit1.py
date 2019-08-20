@@ -1,8 +1,8 @@
-
 class LibWithInit1(object):
     """
     Overview that should not be imported for LibWithInit1.
     """
+
     def __init__(self):
         self.a = None
 

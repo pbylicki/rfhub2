@@ -7,7 +7,6 @@ from tests.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
 
 
 class HealthcheckApiTest(BaseApiEndpointTest):
-
     def test_get_successful_healthcheck_response(self):
         response = self.client.get("api/v1/health/")
         self.assertEqual(response.status_code, 200)

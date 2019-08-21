@@ -7,105 +7,189 @@ import robot.libraries
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
-FIXTURE_PATH = Path.cwd() / 'tests' / 'acceptance' / 'fixtures'
-EXPECTED_LIBDOC = {'doc': 'Documentation for library ``Test Libdoc File``.',
-                   'doc_format': 'ROBOT', 'name': 'Test Libdoc File',
-                   'scope': 'global', 'type': 'library', 'version': '',
-                   'keywords': [{'name': 'Someone Shall Pass', 'args': '["who"]', 'doc': ''}]}
-EXPECTED_KEYWORDS = [{'args': '', 'doc': 'This keyword was imported from file\n'
-                                         'with .resource extension, available since RFWK 3.1',
-                      'name': 'Keyword 1 Imported From Resource File'},
-                     {'args': '["arg_1", "arg_2"]', 'doc': 'This keyword was imported from file\n'
-                                                           'with .resource extension, available since RFWK 3.1',
-                      'name': 'Keyword 2 Imported From Resource File'}]
-EXPECTED_TRAVERSE_PATHS_INIT = {FIXTURE_PATH / 'LibWithInit'}
-EXPECTED_TRAVERSE_PATHS_NO_INIT = {FIXTURE_PATH / 'LibsWithEmptyInit' / 'LibWithEmptyInit1.py',
-                                   FIXTURE_PATH / 'LibsWithEmptyInit' / 'LibWithEmptyInit2.py'}
-EXPECTED_GET_LIBRARIES = (EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS_NO_INIT |
-                          {FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
-                           FIXTURE_PATH / 'test_libdoc_file.xml',
-                           FIXTURE_PATH / 'test_resource.resource',
-                           FIXTURE_PATH / 'test_robot.robot',
-                           FIXTURE_PATH / 'arg_parse.py',
-                           FIXTURE_PATH / 'data_error.py'})
-EXPECTED_COLLECTION = {'doc': 'Overview that should be imported for SingleClassLib.',
-                       'doc_format': 'ROBOT',
-                       'keywords': [{'args': '',
-                                     'doc': 'Docstring for single_class_lib_method_1',
-                                     'name': 'Single Class Lib Method 1'},
-                                    {'args': '',
-                                     'doc': 'Docstring for single_class_lib_method_2',
-                                     'name': 'Single Class Lib Method 2'},
-                                    {'args': '["param_1", "param_2"]',
-                                     'doc': 'Docstring for single_class_lib_method_3 with two params',
-                                     'name': 'Single Class Lib Method 3'}],
-                       'name': 'SingleClassLib',
-                       'path': str(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py'),
-                       'scope': 'test case',
-                       'type': 'library',
-                       'version': ''}
-EXPECTED_COLLECTION2 = {'doc': 'Documentation for library ``Test Libdoc File``.',
-                        'doc_format': 'ROBOT',
-                        'keywords': [{'args': '["who"]', 'doc': '', 'name': 'Someone Shall Pass'}],
-                        'name': 'Test Libdoc File',
-                        'path': str(FIXTURE_PATH / 'test_libdoc_file.xml'),
-                        'scope': 'global',
-                        'type': 'library',
-                        'version': ''}
-EXPECTED_ADD_COLLECTIONS = [{'name': 'Test Libdoc File', 'keywords': 1}]
-KEYWORDS_1 = [{'args': '', 'doc': 'Docstring for single_class_lib_method_1', 'name': 'Single Class Lib Method 1'},
-              {'args': '', 'doc': 'Docstring for single_class_lib_method_2', 'name': 'Single Class Lib Method 2'},
-              {'args': '["param_1", "param_2"]', 'doc': 'Docstring for single_class_lib_method_3 with two params',
-               'name': 'Single Class Lib Method 3'}]
-KEYWORDS_2 = [{'args': '["who"]', 'doc': '', 'name': 'Someone Shall Pass'}]
+FIXTURE_PATH = Path.cwd() / "tests" / "acceptance" / "fixtures"
+EXPECTED_LIBDOC = {
+    "doc": "Documentation for library ``Test Libdoc File``.",
+    "doc_format": "ROBOT",
+    "name": "Test Libdoc File",
+    "scope": "global",
+    "type": "library",
+    "version": "",
+    "keywords": [{"name": "Someone Shall Pass", "args": '["who"]', "doc": ""}],
+}
+EXPECTED_KEYWORDS = [
+    {
+        "args": "",
+        "doc": "This keyword was imported from file\n"
+        "with .resource extension, available since RFWK 3.1",
+        "name": "Keyword 1 Imported From Resource File",
+    },
+    {
+        "args": '["arg_1", "arg_2"]',
+        "doc": "This keyword was imported from file\n"
+        "with .resource extension, available since RFWK 3.1",
+        "name": "Keyword 2 Imported From Resource File",
+    },
+]
+EXPECTED_TRAVERSE_PATHS_INIT = {FIXTURE_PATH / "LibWithInit"}
+EXPECTED_TRAVERSE_PATHS_NO_INIT = {
+    FIXTURE_PATH / "LibsWithEmptyInit" / "LibWithEmptyInit1.py",
+    FIXTURE_PATH / "LibsWithEmptyInit" / "LibWithEmptyInit2.py",
+}
+EXPECTED_GET_LIBRARIES = (
+    EXPECTED_TRAVERSE_PATHS_INIT
+    | EXPECTED_TRAVERSE_PATHS_NO_INIT
+    | {
+        FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py",
+        FIXTURE_PATH / "test_libdoc_file.xml",
+        FIXTURE_PATH / "test_resource.resource",
+        FIXTURE_PATH / "test_robot.robot",
+        FIXTURE_PATH / "arg_parse.py",
+        FIXTURE_PATH / "data_error.py",
+    }
+)
+EXPECTED_COLLECTION = {
+    "doc": "Overview that should be imported for SingleClassLib.",
+    "doc_format": "ROBOT",
+    "keywords": [
+        {
+            "args": "",
+            "doc": "Docstring for single_class_lib_method_1",
+            "name": "Single Class Lib Method 1",
+        },
+        {
+            "args": "",
+            "doc": "Docstring for single_class_lib_method_2",
+            "name": "Single Class Lib Method 2",
+        },
+        {
+            "args": '["param_1", "param_2"]',
+            "doc": "Docstring for single_class_lib_method_3 with two params",
+            "name": "Single Class Lib Method 3",
+        },
+    ],
+    "name": "SingleClassLib",
+    "path": str(FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py"),
+    "scope": "test case",
+    "type": "library",
+    "version": "",
+}
+EXPECTED_COLLECTION2 = {
+    "doc": "Documentation for library ``Test Libdoc File``.",
+    "doc_format": "ROBOT",
+    "keywords": [{"args": '["who"]', "doc": "", "name": "Someone Shall Pass"}],
+    "name": "Test Libdoc File",
+    "path": str(FIXTURE_PATH / "test_libdoc_file.xml"),
+    "scope": "global",
+    "type": "library",
+    "version": "",
+}
+EXPECTED_ADD_COLLECTIONS = [{"name": "Test Libdoc File", "keywords": 1}]
+KEYWORDS_1 = [
+    {
+        "args": "",
+        "doc": "Docstring for single_class_lib_method_1",
+        "name": "Single Class Lib Method 1",
+    },
+    {
+        "args": "",
+        "doc": "Docstring for single_class_lib_method_2",
+        "name": "Single Class Lib Method 2",
+    },
+    {
+        "args": '["param_1", "param_2"]',
+        "doc": "Docstring for single_class_lib_method_3 with two params",
+        "name": "Single Class Lib Method 3",
+    },
+]
+KEYWORDS_2 = [{"args": '["who"]', "doc": "", "name": "Someone Shall Pass"}]
 
-EXPECTED_BUILT_IN_LIBS = {Path(robot.libraries.__file__).parent / 'BuiltIn.py',
-                          Path(robot.libraries.__file__).parent / 'Collections.py',
-                          Path(robot.libraries.__file__).parent / 'DateTime.py',
-                          Path(robot.libraries.__file__).parent / 'Easter.py',
-                          Path(robot.libraries.__file__).parent / 'OperatingSystem.py',
-                          Path(robot.libraries.__file__).parent / 'Process.py',
-                          Path(robot.libraries.__file__).parent / 'Screenshot.py',
-                          Path(robot.libraries.__file__).parent / 'String.py',
-                          Path(robot.libraries.__file__).parent / 'Telnet.py',
-                          Path(robot.libraries.__file__).parent / 'XML.py'}
+EXPECTED_BUILT_IN_LIBS = {
+    Path(robot.libraries.__file__).parent / "BuiltIn.py",
+    Path(robot.libraries.__file__).parent / "Collections.py",
+    Path(robot.libraries.__file__).parent / "DateTime.py",
+    Path(robot.libraries.__file__).parent / "Easter.py",
+    Path(robot.libraries.__file__).parent / "OperatingSystem.py",
+    Path(robot.libraries.__file__).parent / "Process.py",
+    Path(robot.libraries.__file__).parent / "Screenshot.py",
+    Path(robot.libraries.__file__).parent / "String.py",
+    Path(robot.libraries.__file__).parent / "Telnet.py",
+    Path(robot.libraries.__file__).parent / "XML.py",
+}
 
 
 class RfhubImporterTests(unittest.TestCase):
-
     def setUp(self) -> None:
         self.fixture_path = FIXTURE_PATH
-        self.client = Client('http://localhost:8000', 'rfhub', 'rfhub')
-        self.rfhub_importer = RfhubImporter(self.client, (self.fixture_path, ), True)
+        self.client = Client("http://localhost:8000", "rfhub", "rfhub")
+        self.rfhub_importer = RfhubImporter(self.client, (self.fixture_path,), True)
 
     def test_import_libraries(self):
         with responses.RequestsMock() as rsps:
-            rfhub_importer = RfhubImporter(self.client, (self.fixture_path / 'LibWithInit', ), True)
-            rsps.add(responses.POST, f'{self.client.api_url}/collections/',
-                     json={'name': 'LibWithInit', 'id': 2},
-                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
-            rsps.add(responses.POST, f'{self.client.api_url}/keywords/', json=KEYWORDS_2,
-                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rfhub_importer = RfhubImporter(
+                self.client, (self.fixture_path / "LibWithInit",), True
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/collections/",
+                json={"name": "LibWithInit", "id": 2},
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/keywords/",
+                json=KEYWORDS_2,
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
             result = rfhub_importer.import_libraries()
-            self.assertCountEqual(result, (1, 4), msg=f'{result}')
+            self.assertCountEqual(result, (1, 4), msg=f"{result}")
 
     def test_delete_collections(self):
         with responses.RequestsMock() as rsps:
-            rsps.add(responses.GET, f'{self.client.api_url}/collections/', json=[{'id': 2}, {'id': 66}],
-                     status=200, adding_headers={"Content-Type": "application/json"})
-            rsps.add(responses.DELETE, f'{self.client.api_url}/collections/2/', status=204,
-                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
-            rsps.add(responses.DELETE, f'{self.client.api_url}/collections/66/', status=204,
-                     adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(
+                responses.GET,
+                f"{self.client.api_url}/collections/",
+                json=[{"id": 2}, {"id": 66}],
+                status=200,
+                adding_headers={"Content-Type": "application/json"},
+            )
+            rsps.add(
+                responses.DELETE,
+                f"{self.client.api_url}/collections/2/",
+                status=204,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.DELETE,
+                f"{self.client.api_url}/collections/66/",
+                status=204,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
             result = self.rfhub_importer.delete_collections()
             self.assertEqual({2, 66}, result)
 
     def test_traverse_paths_should_return_set_of_path_on_lib_with_init(self):
-        result = self.rfhub_importer._traverse_paths(self.fixture_path / 'LibWithInit')
+        result = self.rfhub_importer._traverse_paths(self.fixture_path / "LibWithInit")
         self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_INIT)
 
     def test_traverse_paths_should_return_set_of_paths_on_libs_with_empty_init(self):
-        result = self.rfhub_importer._traverse_paths(self.fixture_path / 'LibsWithEmptyInit')
+        result = self.rfhub_importer._traverse_paths(
+            self.fixture_path / "LibsWithEmptyInit"
+        )
         self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_NO_INIT)
 
     def test_get_libraries_paths_should_return_set_of_paths(self):
@@ -118,161 +202,225 @@ class RfhubImporterTests(unittest.TestCase):
         self.assertEqual(result, EXPECTED_BUILT_IN_LIBS)
 
     def test_get_libraries_paths_should_return_set_of_paths_when_paths_are_tuple(self):
-        self.rfhub_importer = RfhubImporter(self.client, (self.fixture_path / 'LibWithInit',
-                                                          self.fixture_path / 'LibsWithEmptyInit'), True)
+        self.rfhub_importer = RfhubImporter(
+            self.client,
+            (
+                self.fixture_path / "LibWithInit",
+                self.fixture_path / "LibsWithEmptyInit",
+            ),
+            True,
+        )
         result = self.rfhub_importer.get_libraries_paths()
-        self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS_NO_INIT)
+        self.assertEqual(
+            result, EXPECTED_TRAVERSE_PATHS_INIT | EXPECTED_TRAVERSE_PATHS_NO_INIT
+        )
 
     def test__create_collections_should_return_collection_list(self):
-        result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py',
-                                                        FIXTURE_PATH / 'test_libdoc_file.xml'})
+        result = self.rfhub_importer.create_collections(
+            {
+                FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py",
+                FIXTURE_PATH / "test_libdoc_file.xml",
+            }
+        )
         self.assertCountEqual(result, [EXPECTED_COLLECTION, EXPECTED_COLLECTION2])
 
     def test_create_collection_should_return_collection(self):
-        result = self.rfhub_importer.create_collection(FIXTURE_PATH / 'SingleClassLib' / 'SingleClassLib.py')
+        result = self.rfhub_importer.create_collection(
+            FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py"
+        )
         self.assertDictEqual(EXPECTED_COLLECTION, result)
 
     def test_create_collections_should_return_empty_list_on_data_error(self):
-        result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'data_error.py'})
+        result = self.rfhub_importer.create_collections(
+            {FIXTURE_PATH / "data_error.py"}
+        )
         self.assertListEqual([], result)
 
     def test_create_collections_should_return_empty_list_on_syste_exit(self):
-        result = self.rfhub_importer.create_collections({FIXTURE_PATH / 'arg_parse.py'})
+        result = self.rfhub_importer.create_collections({FIXTURE_PATH / "arg_parse.py"})
         self.assertListEqual([], result)
 
     def test_add_collections_should_return_loaded_collections_and_keywords_number(self):
         with responses.RequestsMock() as rsps:
-            rsps.add(responses.POST, f'{self.client.api_url}/collections/',
-                     json={'name': EXPECTED_COLLECTION2['name'], 'id': 1},
-                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
-            rsps.add(responses.POST, f'{self.client.api_url}/keywords/', json=EXPECTED_COLLECTION2['keywords'][0],
-                     status=201, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/collections/",
+                json={"name": EXPECTED_COLLECTION2["name"], "id": 1},
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/keywords/",
+                json=EXPECTED_COLLECTION2["keywords"][0],
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
             result = self.rfhub_importer.add_collections([EXPECTED_COLLECTION2])
             self.assertCountEqual(result, EXPECTED_ADD_COLLECTIONS)
 
     def test_add_collections_should_exit_when_unauthorized(self):
         with self.assertRaises(StopIteration) as cm:
             with responses.RequestsMock() as rsps:
-                rsps.add(responses.POST, f'{self.client.api_url}/collections/',
-                         json={'detail': 'Unauthorized to perform this action'},
-                         status=401, adding_headers={"Content-Type": "application/json", "accept": "application/json"})
+                rsps.add(
+                    responses.POST,
+                    f"{self.client.api_url}/collections/",
+                    json={"detail": "Unauthorized to perform this action"},
+                    status=401,
+                    adding_headers={
+                        "Content-Type": "application/json",
+                        "accept": "application/json",
+                    },
+                )
                 self.rfhub_importer.add_collections([EXPECTED_COLLECTION2])
 
     def test_is_library_with_init_should_return_true_on_library_with_init(self):
-        file = self.fixture_path / 'LibWithInit'
+        file = self.fixture_path / "LibWithInit"
         result = self.rfhub_importer._is_library_with_init(file)
-        self.assertTrue(result, 'method should return true if file is python library with init')
+        self.assertTrue(
+            result, "method should return true if file is python library with init"
+        )
 
     def test_is_library_with_init_should_return_false_on_library_without_init(self):
-        file = self.fixture_path / 'LibsWithEmptyInit'
+        file = self.fixture_path / "LibsWithEmptyInit"
         result = self.rfhub_importer._is_library_with_init(file)
-        self.assertFalse(result, 'method should return false if file is python library without init')
+        self.assertFalse(
+            result, "method should return false if file is python library without init"
+        )
 
     def test_is_robot_keyword_file_should_return_true_on_library(self):
-        file = self.fixture_path / 'SingleClassLib' / 'SingleClassLib.py'
+        file = self.fixture_path / "SingleClassLib" / "SingleClassLib.py"
         result = self.rfhub_importer._is_robot_keyword_file(file)
-        self.assertTrue(result, 'method should return true if file is python library')
+        self.assertTrue(result, "method should return true if file is python library")
 
     def test_is_robot_keyword_file_should_return_true_on_libdoc(self):
-        file = self.fixture_path / 'test_libdoc_file.xml'
+        file = self.fixture_path / "test_libdoc_file.xml"
         result = self.rfhub_importer._is_robot_keyword_file(file)
-        self.assertTrue(result, 'method should return true if file is libdoc file')
+        self.assertTrue(result, "method should return true if file is libdoc file")
 
     def test_is_robot_keyword_file_should_return_true_on_resource(self):
-        file = self.fixture_path / 'test_resource.resource'
+        file = self.fixture_path / "test_resource.resource"
         result = self.rfhub_importer._is_robot_keyword_file(file)
-        self.assertTrue(result, 'method should return true if file is robot resource')
+        self.assertTrue(result, "method should return true if file is robot resource")
 
     def test_is_library_file_should_return_false_on_lib_with_init(self):
-        file = self.fixture_path / 'LibWithInit' / '__init__.py'
+        file = self.fixture_path / "LibWithInit" / "__init__.py"
         result = RfhubImporter._is_library_file(file)
-        self.assertFalse(result, 'method should return true if file is python library')
+        self.assertFalse(result, "method should return true if file is python library")
 
     def test_is_library_file_should_return_false_on_library_with_init(self):
-        file = self.fixture_path / 'LibWithInit' / '__init__.py'
+        file = self.fixture_path / "LibWithInit" / "__init__.py"
         result = RfhubImporter._is_library_file(file)
-        self.assertFalse(result, 'method should return false if file is python library with init')
+        self.assertFalse(
+            result, "method should return false if file is python library with init"
+        )
 
     def test_is_libdoc_file_should_return_true_on_libdoc(self):
-        file = self.fixture_path / 'test_libdoc_file.xml'
+        file = self.fixture_path / "test_libdoc_file.xml"
         result = RfhubImporter._is_libdoc_file(file)
-        self.assertTrue(result, 'method should return true if file is libdoc file')
+        self.assertTrue(result, "method should return true if file is libdoc file")
 
     def test_is_libdoc_file_should_return_false_on_non_libdoc(self):
-        file = self.fixture_path / 'not_libdoc_file.xml'
+        file = self.fixture_path / "not_libdoc_file.xml"
         result = RfhubImporter._is_libdoc_file(file)
-        self.assertFalse(result, 'method should return false if file is not libdoc file')
+        self.assertFalse(
+            result, "method should return false if file is not libdoc file"
+        )
 
     def test_is_libdoc_file_should_return_false_on_non_xml(self):
-        file = self.fixture_path / '_private_library.py'
+        file = self.fixture_path / "_private_library.py"
         result = RfhubImporter._is_libdoc_file(file)
-        self.assertFalse(result, 'method should return false if file is not libdoc file')
+        self.assertFalse(
+            result, "method should return false if file is not libdoc file"
+        )
 
     def test_should_ignore_should_return_true_on_deprecated(self):
-        file = self.fixture_path / 'deprecated_library.py'
+        file = self.fixture_path / "deprecated_library.py"
         result = RfhubImporter._should_ignore(file)
-        self.assertTrue(result, 'method should return true if file starts with \"deprecated\"')
+        self.assertTrue(
+            result, 'method should return true if file starts with "deprecated"'
+        )
 
     def test_should_ignore_should_return_true_on_private(self):
-        file = self.fixture_path / '_private_library.py'
+        file = self.fixture_path / "_private_library.py"
         result = RfhubImporter._should_ignore(file)
-        self.assertTrue(result, 'method should return true if file starts with \"_\"')
+        self.assertTrue(result, 'method should return true if file starts with "_"')
 
     def test_should_ignore_should_return_true_on_excluded(self):
-        file = self.fixture_path / 'remote.py'
+        file = self.fixture_path / "remote.py"
         result = RfhubImporter._should_ignore(file)
-        self.assertTrue(result, 'method should return true if file in EXCLUDED_LIBRARIES')
+        self.assertTrue(
+            result, "method should return true if file in EXCLUDED_LIBRARIES"
+        )
 
     def test_should_ignore_should_return_false_on_library_to_import(self):
-        file = self.fixture_path / 'SingleClassLib' / 'SingleClassLib.py'
+        file = self.fixture_path / "SingleClassLib" / "SingleClassLib.py"
         result = RfhubImporter._should_ignore(file)
-        self.assertFalse(result, 'method should return false if file should be imported')
+        self.assertFalse(
+            result, "method should return false if file should be imported"
+        )
 
     def test_is_resource_file_should_return_true(self):
-        file = self.fixture_path / 'test_resource.resource'
+        file = self.fixture_path / "test_resource.resource"
         result = RfhubImporter._is_resource_file(file)
-        self.assertTrue(result, 'method should return true if file is resource file')
+        self.assertTrue(result, "method should return true if file is resource file")
 
     def test_is_resource_file_should_return_false(self):
-        file = self.fixture_path / 'test_file_with_tests.robot'
+        file = self.fixture_path / "test_file_with_tests.robot"
         result = RfhubImporter._is_resource_file(file)
-        self.assertFalse(result, 'method should return false if file is not resource file')
+        self.assertFalse(
+            result, "method should return false if file is not resource file"
+        )
 
     def test_is_resource_file_should_return_false_on_init(self):
-        file = self.fixture_path / '__init__.robot'
+        file = self.fixture_path / "__init__.robot"
         result = RfhubImporter._is_resource_file(file)
-        self.assertFalse(result, 'method should return false if file is not resource file')
+        self.assertFalse(
+            result, "method should return false if file is not resource file"
+        )
 
     def test_has_keyword_table_should_return_true(self):
-        data = '*** Keywords ***'
+        data = "*** Keywords ***"
         result = RfhubImporter._has_keyword_table(data=data)
-        self.assertTrue(result, 'method should return true if Keywords were found')
+        self.assertTrue(result, "method should return true if Keywords were found")
 
     def test_has_keyword_table_should_return_false(self):
-        data = '*** Keys ***'
+        data = "*** Keys ***"
         result = RfhubImporter._has_keyword_table(data=data)
-        self.assertFalse(result, 'method should return false if Keywords were not found')
+        self.assertFalse(
+            result, "method should return false if Keywords were not found"
+        )
 
     def test_has_test_case_table_should_return_true(self):
-        data = '*** Test Case ***'
+        data = "*** Test Case ***"
         result = RfhubImporter._has_test_case_table(data=data)
-        self.assertTrue(result, 'method should return true if Test Case were found')
+        self.assertTrue(result, "method should return true if Test Case were found")
 
     def test_has_test_case_table_should_return_false(self):
-        data = '*** Test ***'
+        data = "*** Test ***"
         result = RfhubImporter._has_test_case_table(data=data)
-        self.assertFalse(result, 'method should return false if Test Case were not found')
+        self.assertFalse(
+            result, "method should return false if Test Case were not found"
+        )
 
     def test_serialise_libdoc_should_return_collection(self):
-        file = self.fixture_path / 'test_libdoc_file.xml'
+        file = self.fixture_path / "test_libdoc_file.xml"
         libdoc = LibraryDocumentation(file)
         serialised_keywords = self.rfhub_importer._serialise_keywords(libdoc)
-        serialised_libdoc = self.rfhub_importer._serialise_libdoc(libdoc, file, serialised_keywords)
-        serialised_libdoc.pop('path')
+        serialised_libdoc = self.rfhub_importer._serialise_libdoc(
+            libdoc, file, serialised_keywords
+        )
+        serialised_libdoc.pop("path")
         self.assertEqual(serialised_libdoc, EXPECTED_LIBDOC)
 
     def test_serialise_keywords_should_return_keywords(self):
-        file = self.fixture_path / 'test_resource.resource'
+        file = self.fixture_path / "test_resource.resource"
         libdoc = LibraryDocumentation(file)
         serialised_keywords = self.rfhub_importer._serialise_keywords(libdoc)
         self.assertEqual(serialised_keywords, EXPECTED_KEYWORDS)

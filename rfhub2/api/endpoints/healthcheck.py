@@ -7,7 +7,7 @@ from rfhub2.model import Healthcheck
 router = APIRouter()
 
 
-@router.get('/', response_model=Healthcheck)
+@router.get("/", response_model=Healthcheck)
 def healthcheck(response: Response, db_status: bool = Depends(db_healthcheck)):
     if db_status:
         return Healthcheck(**{"db": "ok"})

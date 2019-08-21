@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from typing import Optional, TypeVar
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def or_404(item: Optional[T]) -> T:

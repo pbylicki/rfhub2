@@ -8,7 +8,6 @@ from rfhub2.db.session import db_session
 
 
 class BaseRepositoryTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls) -> None:
         init_db(db_session)
@@ -20,18 +19,25 @@ class BaseRepositoryTest(unittest.TestCase):
         self.collection_repo = CollectionRepository(db_session)
         self.keyword_repo = KeywordRepository(db_session)
         self.keywords = [
-            Keyword(name="Test setup", doc="Prepare test environment, use teardown after this one"),
+            Keyword(
+                name="Test setup",
+                doc="Prepare test environment, use teardown after this one",
+            ),
             Keyword(name="Login keyword", doc="Perform some check"),
-            Keyword(name="Teardown", doc="Clean up environment")
+            Keyword(name="Teardown", doc="Clean up environment"),
         ]
         self.app_keyword = Keyword(name="Login to Application")
 
         self.collections = [
             Collection(name="First collection", type="robot", keywords=self.keywords),
-            Collection(name="Second collection", type="Robot", keywords=[self.app_keyword]),
-            Collection(name="Third", type="Library")
+            Collection(
+                name="Second collection", type="Robot", keywords=[self.app_keyword]
+            ),
+            Collection(name="Third", type="Library"),
         ]
-        self.sorted_keywords = sorted(self.keywords + [self.app_keyword], key=lambda k: k.name)
+        self.sorted_keywords = sorted(
+            self.keywords + [self.app_keyword], key=lambda k: k.name
+        )
         db_session.add_all(self.collections)
         db_session.commit()
         for item in self.collections:

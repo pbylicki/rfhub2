@@ -42,3 +42,13 @@ docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgre
 ```
 python -m unittest tests
 ```
+
+#### Formatting
+Black is used for code formatting. It is included in CI pipeline.
+To reformat code after edit, execute:
+```
+black -t py36 rfhub2 tests
+```
+
+You can consider adding a git hook or integrating it with your IDE for automated execution.
+

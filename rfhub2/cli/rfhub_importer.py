@@ -30,9 +30,18 @@ class RfhubImporter(object):
         self.no_installed_keywords = no_installed_keywords
         self.client = client
 
-    def delete_collections(self) -> Set[int]:
+    def delete_all_collections(self) -> Set[int]:
         """
         Deletes all existing collections.
+        """
+        collections_id = set()
+        while len(self.client.get_collections()) > 0:
+            collections_id.update(self._delete_collections())
+        return collections_id
+
+    def _delete_collections(self) -> Set[int]:
+        """
+        Helper method to delete all existing callections.
         """
         collections = self.client.get_collections()
         collections_id = {collection["id"] for collection in collections}

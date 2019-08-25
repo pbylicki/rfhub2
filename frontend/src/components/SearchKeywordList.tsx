@@ -13,7 +13,8 @@ import { StoreProps } from '../types/PropsTypes'
 export const SearchKeywordList: React.FC<StoreProps> = observer(({ store }) => {
   let table, title
   if (store.searchResults.length > 0) {
-    title = `Found ${store.searchResults.length} keywords matching "${store.searchTerm}"`
+    const resultCountLabel = store.searchResults.length === 100 ? "100+" : store.searchResults.length.toString()
+    title = `Found ${resultCountLabel} keywords matching "${store.searchTerm}"`
     table = (
       <Table size="small">
       <TableHead>
@@ -28,7 +29,7 @@ export const SearchKeywordList: React.FC<StoreProps> = observer(({ store }) => {
           <TableRow key={keyword.id}>
             <TableCell>{keyword.collection.name}</TableCell>
             <TableCell>{keyword.name}</TableCell>
-            <TableCell>{keyword.doc}</TableCell>
+            <TableCell>{keyword.synopsis}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -40,10 +40,15 @@ class CollectionUpdate(BaseModel):
 
 class NestedKeyword(KeywordUpdate):
     id: int
+    synopsis: Optional[str]
+    html_doc: Optional[str]
+    arg_string: Optional[str]
 
 
 class Collection(NestedCollection, CollectionUpdate):
     keywords: List[NestedKeyword]
+    synopsis: Optional[str]
+    html_doc: Optional[str]
 
 
 class Keyword(NestedKeyword):

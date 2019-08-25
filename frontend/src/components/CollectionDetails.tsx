@@ -10,13 +10,14 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 import { StoreProps } from '../types/PropsTypes'
 
-export const CollectionDetails: React.FC<StoreProps> = observer(({ store }) =>
-(<React.Fragment>
-  {store.collections.map(collection => (
-      <React.Fragment>
-        <Title>{store.collections[0].name}</Title>
-        <div>{store.collections[0].doc}</div>
-        <Title>Keywords ({store.collections[0].keywords.length})</Title>
+export const CollectionDetails: React.FC<StoreProps> = observer(({ store }) => {
+let view
+if (store.detailCollection) {
+  view = (
+    <React.Fragment>
+        <Title>{store.detailCollection.name}</Title>
+        <div dangerouslySetInnerHTML={{__html: store.detailCollection.html_doc}}></div>
+        <Title>Keywords ({store.detailCollection.keywords.length})</Title>
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -26,17 +27,23 @@ export const CollectionDetails: React.FC<StoreProps> = observer(({ store }) =>
             </TableRow>
           </TableHead>
           <TableBody>
-            {store.collections[0].keywords.map(keyword => (
+            {store.detailCollection.keywords.map(keyword => (
               <TableRow key={keyword.id}>
                 <TableCell>{keyword.name}</TableCell>
-                <TableCell>{keyword.args}</TableCell>
-                <TableCell>{keyword.doc}</TableCell>
+                <TableCell>{keyword.arg_string}</TableCell>
+                <TableCell dangerouslySetInnerHTML={{__html: keyword.html_doc}}></TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </React.Fragment>
-    ))}
-    </React.Fragment>)
-    );  
+  )
+}
+
+  return (
+    <React.Fragment>
+      {view}
+    </React.Fragment>
+    )
+});  
 export default CollectionDetails

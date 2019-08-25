@@ -6,6 +6,9 @@ interface Keyword {
   name: string
   doc: string
   args: string | null
+  arg_string: string
+  synopsis: string
+  html_doc: string
   collection: NestedCollection
 }
 
@@ -14,6 +17,9 @@ interface NestedKeyword {
     name: string
     doc: string
     args: string | null
+    arg_string: string
+    synopsis: string
+    html_doc: string
 }
 
 interface Collection {
@@ -21,6 +27,9 @@ interface Collection {
   name: string
   doc: string
   type: string
+  version: string | null
+  synopsis: string
+  html_doc: string
   keywords: NestedKeyword[]
 }
 
@@ -34,6 +43,7 @@ export class CollectionStore {
   @observable searchTerm: String = ""
   @observable searchResults: Keyword[] = []
   @observable drawerSelectedCollection: number = 0
+  @observable detailCollection: Collection | null = null
 
   constructor() {
       this.getCollections()
@@ -54,6 +64,7 @@ export class CollectionStore {
     axios.get(`http://localhost:8000/api/v1/collections/?skip=${skip}&limit=${limit}`)
     .then(resp => {
         this.collections = resp.data;
+        this.detailCollection = this.collections[0];
       })
   }
 

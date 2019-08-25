@@ -31,7 +31,7 @@ class KeywordTest(unittest.TestCase):
         self.assertEqual(self.empty_keyword.synopsis, "")
 
     def test_should_get_keyword_html_doc(self):
-        self.assertEqual(self.keyword.html_doc(), "<p>Keyword description</p>\n<p>Further description</p>")
+        self.assertEqual(self.keyword.html_doc, "<p>Keyword description</p>\n<p>Further description</p>")
 
     def test_should_get_empty_html_doc_when_keyword_has_no_doc(self):
-        self.assertEqual(self.empty_keyword.html_doc(), "")
+        self.assertEqual(self.empty_keyword.html_doc, "")

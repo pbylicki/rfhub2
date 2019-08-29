@@ -15,6 +15,6 @@ def create_app() -> FastAPI:
     app.mount("/static", StaticFiles(directory=abs_path("static")), name="static")
     app.include_router(ui_router)
     app.include_router(api_router, prefix="/api/v1")
-    app.add_middleware(CORSMiddleware, allow_origins=['*'])
+    app.add_middleware(CORSMiddleware, allow_origins=["*"])
     app.add_middleware(DbSessionMiddleware)
     return app

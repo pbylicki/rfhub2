@@ -13,13 +13,13 @@ interface Keyword {
 }
 
 interface NestedKeyword {
-    id: number
-    name: string
-    doc: string
-    args: string | null
-    arg_string: string
-    synopsis: string
-    html_doc: string
+  id: number
+  name: string
+  doc: string
+  args: string | null
+  arg_string: string
+  synopsis: string
+  html_doc: string
 }
 
 interface Collection {
@@ -35,7 +35,7 @@ interface Collection {
 
 interface NestedCollection {
   id: number
-  name: string 
+  name: string
 }
 
 export class CollectionStore {
@@ -44,9 +44,10 @@ export class CollectionStore {
   @observable searchResults: Keyword[] = []
   @observable drawerSelectedCollection: number = 0
   @observable detailCollection: Collection | null = null
+  @observable selectedKeywordId: number | null = null
 
   constructor() {
-      this.getCollections()
+    this.getCollections()
   }
 
   @action.bound
@@ -56,23 +57,37 @@ export class CollectionStore {
     } else {
       this.drawerSelectedCollection = colIndex;
     }
-    console.log(this.drawerSelectedCollection)
   }
 
   @action.bound
-  getCollections(skip: number = 0, limit: number = 100): void {
-    axios.get(`http://localhost:8000/api/v1/collections/?skip=${skip}&limit=${limit}`)
-    .then(resp => {
-        this.collections = resp.data;
-        this.detailCollection = this.collections[0];
+  getCollection(id: number): Promise<void> {
+    this.selectedKeywordId = null;
+    this.detailCollection = null;
+    return axios.get(`/api/v1/collections/${id}/`)
+      .then(resp => {
+        this.detailCollection = resp.data;
       })
   }
 
   @action.bound
-  searchKeywords(pattern: String, skip: number = 0, limit: number = 100): void {
-    if (pattern.length > 2) {
-      axios.get(`http://localhost:8000/api/v1/keywords/search/?pattern=${pattern}&skip=${skip}&limit=${limit}`)
+  getCollectionWithKeywordSelected(collectionId: number, keywordId: number): void {
+    this.getCollection(collectionId)
+    this.selectedKeywordId = keywordId
+  }
+
+  @action.bound
+  getCollections(skip: number = 0, limit: number = 100): void {
+    axios.get(`/api/v1/collections/?skip=${skip}&limit=${limit}`)
       .then(resp => {
+        this.collections = resp.data;
+      })
+  }
+
+  @action.bound
+  searchKeywords(pattern: string, skip: number = 0, limit: number = 100): void {
+    if (pattern.length > 2) {
+      axios.get(`/api/v1/keywords/search/?pattern=${pattern}&skip=${skip}&limit=${limit}`)
+        .then(resp => {
           this.searchResults = resp.data;
         })
     } else {

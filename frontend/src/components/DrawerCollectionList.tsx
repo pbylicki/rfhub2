@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
+import { Link } from 'react-router-dom';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -33,31 +34,33 @@ export const DrawerCollectionList: React.FC<StoreProps> = observer(({ store }) =
   }
 
   return (
-  <List>
-    {store.collections.map(collection => (
-      <React.Fragment key={collection.id}>
-        <ListItem
-          selected={isSelected(collection.id)}
-          onClick={event => handleListItemClick(event, collection.id)}
-        >
-        <ListItemText primary={collection.name} />
-        {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
-      <Collapse in={isSelected(collection.id)} timeout="auto" unmountOnExit>
-      <List component="div" disablePadding>
-        <ListItem button className={classes.nested}>
-          <ListItemText primary="Overview" />
-        </ListItem>
-        {collection.keywords.map(keyword => (
-          <ListItem button key={keyword.id} className={classes.nested}>
-          <ListItemText primary={keyword.name} />
-        </ListItem>
-        ))}
-      </List>
-      </Collapse>
-      </React.Fragment>
-    )
-    )}
-  </List>
+    <List>
+      {store.collections.map(collection => (
+        <React.Fragment key={collection.id}>
+          <ListItem
+            selected={isSelected(collection.id)}
+            onClick={event => handleListItemClick(event, collection.id)}
+          >
+            <ListItemText primary={collection.name} />
+            {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+          <Collapse in={isSelected(collection.id)} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem button className={classes.nested}>
+                <Link to={`/keywords/${collection.id}`}><ListItemText primary="Overview" /></Link>
+              </ListItem>
+              {collection.keywords.map(keyword => (
+                <ListItem button key={keyword.id} className={classes.nested}>
+                  <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                    <ListItemText primary={keyword.name} />
+                  </Link>
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
+        </React.Fragment>
+      )
+      )}
+    </List>
   )
 })

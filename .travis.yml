@@ -12,3 +12,4 @@ deploy:
   provider: heroku
   app: rfhub2-demo
   api_key: $HEROKU_AUTH_TOKEN
+  on: frontend-poc

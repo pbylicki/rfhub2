@@ -1,6 +1,8 @@
 import React from 'react';
+import { Route, RouteComponentProps, withRouter } from 'react-router-dom';
 import clsx from 'clsx';
-import { makeStyles, fade } from '@material-ui/core/styles';
+import queryString, { ParsedQuery } from 'query-string';
+import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
@@ -8,32 +10,39 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import InputBase from '@material-ui/core/InputBase';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
+import ExternalLink from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import SearchIcon from '@material-ui/icons/Search';
 import { DrawerCollectionList } from './components/DrawerCollectionList';
 import CollectionList from './components/CollectionList';
 import { collectionStore } from './stores/CollectionStore';
 import SearchKeywordList from './components/SearchKeywordList';
 import CollectionDetails from './components/CollectionDetails';
+import SearchBar from './components/SearchBar';
+
+interface CollectionDetailsMatchParams {
+  id: string
+}
+interface KeywordDetailsMatchParams {
+  id: string
+  keywordId: string
+}
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <ExternalLink color="inherit" href="https://material-ui.com/">
         Your Website
-      </Link>{' '}
+      </ExternalLink>{' '}
       {new Date().getFullYear()}
       {'. Built with '}
-      <Link color="inherit" href="https://material-ui.com/">
+      <ExternalLink color="inherit" href="https://material-ui.com/">
         Material-UI.
-      </Link>
+      </ExternalLink>
     </Typography>
   );
 }
@@ -115,46 +124,9 @@ const useStyles = makeStyles(theme => ({
   fixedHeight: {
     height: 240,
   },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(1),
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputRoot: {
-    color: 'inherit',
-  },
-  inputInput: {
-    padding: theme.spacing(1, 1, 1, 7),
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: 180,
-      '&:focus': {
-        width: 240,
-      },
-    },
-  },
 }));
 
-export default function App() {
+export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
   const store = collectionStore;
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
@@ -164,8 +136,29 @@ export default function App() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    store.searchKeywords(event.target.value.trim());
+
+  const handleSearchRoute = (props: RouteComponentProps) => {
+    const queryParams: ParsedQuery<string> = queryString.parse(props.location.search)
+    if (queryParams["q"]) {
+      store.searchKeywords(queryParams["q"] as string)
+    } else {
+      store.searchKeywords("")
+    }
+    return <SearchKeywordList {...props} store={store} />
+  }
+
+  const handleCollectionRoute = (props: RouteComponentProps<CollectionDetailsMatchParams>) => {
+    const collectionId = parseInt(props.match.params.id)
+    store.getCollection(collectionId)
+    return <CollectionDetails store={store} />
+  }
+
+  const handleKeywordRoute = (props: RouteComponentProps<KeywordDetailsMatchParams>) => {
+    const collectionId = parseInt(props.match.params.id)
+    const keywordId = parseInt(props.match.params.keywordId)
+    store.getCollectionWithKeywordSelected(collectionId, keywordId)
+    return <CollectionDetails store={store} />
+  }
 
   return (
     <div className={classes.root}>
@@ -184,20 +177,7 @@ export default function App() {
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             rfhub2
           </Typography>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div>
-            <InputBase
-              placeholder="Search…"
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-              onChange={handleSearchChange}
-            />
-          </div>
+          <SearchBar store={store} history={history} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -223,17 +203,10 @@ export default function App() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <SearchKeywordList store={store} />
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <CollectionList store={store} />
-              </Paper>
-            </Grid>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <CollectionDetails store={store} />
+                <Route path="/" exact render={(props) => <CollectionList {...props} store={store} />} />
+                <Route path="/search/" render={handleSearchRoute} />
+                <Route path="/keywords/:id/" exact render={handleCollectionRoute} />
+                <Route path="/keywords/:id/:keywordId" exact render={handleKeywordRoute} />
               </Paper>
             </Grid>
           </Grid>
@@ -244,3 +217,4 @@ export default function App() {
   );
 }
 
+export default withRouter(App);

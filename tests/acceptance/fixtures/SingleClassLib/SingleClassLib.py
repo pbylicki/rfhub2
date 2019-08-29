@@ -1,8 +1,8 @@
-
 class SingleClassLib(object):
     """
     Overview that should be imported for SingleClassLib.
     """
+
     def __init__(self):
         self.b = None
 
@@ -17,6 +17,7 @@ class SingleClassLib(object):
     def single_class_lib_method_3(self, param_1, param_2):
         """Docstring for single_class_lib_method_3 with two params"""
         pass
+
 
 class SingleClassLibThatShouldNotBeImported(object):
     """

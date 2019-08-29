@@ -2,7 +2,6 @@ from tests.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
 
 
 class KeywordsApiTest(BaseApiEndpointTest):
-
     def test_get_single_keyword(self):
         response = self.client.get("api/v1/keywords/1/")
         self.assertEqual(response.status_code, 200)
@@ -55,26 +54,38 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(body, [self.KEYWORD_3])
 
     def test_search_keywords(self):
-        response = self.client.get("api/v1/keywords/search?pattern=name:%20teardown%20in:%20first")
+        response = self.client.get(
+            "api/v1/keywords/search?pattern=name:%20teardown%20in:%20first"
+        )
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(len(body), 1)
         self.assertEqual(body, [self.KEYWORD_3])
 
     def test_search_keywords_without_results(self):
-        response = self.client.get("api/v1/keywords/search?pattern=name:%20teardown%20in:%20second")
+        response = self.client.get(
+            "api/v1/keywords/search?pattern=name:%20teardown%20in:%20second"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
 
     def test_search_keywords_without_pattern_should_get_all(self):
         response = self.client.get("api/v1/keywords/search/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), [self.KEYWORD_2, self.KEYWORD_3, self.KEYWORD_1])
+        self.assertEqual(
+            response.json(), [self.KEYWORD_2, self.KEYWORD_3, self.KEYWORD_1]
+        )
 
     def test_search_keywords_with_skip_and_limit(self):
         cases = [
-            ("api/v1/keywords/search?pattern=teardown%20in:%20first&skip=1", [self.KEYWORD_1]),
-            ("api/v1/keywords/search?pattern=teardown%20in:%20first&limit=1", [self.KEYWORD_3])
+            (
+                "api/v1/keywords/search?pattern=teardown%20in:%20first&skip=1",
+                [self.KEYWORD_1],
+            ),
+            (
+                "api/v1/keywords/search?pattern=teardown%20in:%20first&limit=1",
+                [self.KEYWORD_3],
+            ),
         ]
         for url, results in cases:
             with self.subTest(url=url, results=results):
@@ -88,7 +99,9 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.json(), [])
 
     def test_create_new_keyword_for_existing_collection(self):
-        response = self.auth_client.post("api/v1/keywords/", json=self.KEYWORD_TO_CREATE)
+        response = self.auth_client.post(
+            "api/v1/keywords/", json=self.KEYWORD_TO_CREATE
+        )
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), self.KEYWORD_CREATED)
 
@@ -97,21 +110,27 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 401)
 
     def test_get_400_when_creating_new_keyword_for_nonexistent_collection(self):
-        keyword_to_create = {**self.KEYWORD_TO_CREATE, 'collection_id': 999}
+        keyword_to_create = {**self.KEYWORD_TO_CREATE, "collection_id": 999}
         response = self.auth_client.post("api/v1/keywords/", json=keyword_to_create)
         self.assertEqual(response.status_code, 400)
 
     def test_update_existing_keyword(self):
-        response = self.auth_client.put(f"api/v1/keywords/{self.KEYWORD_3['id']}/", json=self.KEYWORD_TO_UPDATE)
+        response = self.auth_client.put(
+            f"api/v1/keywords/{self.KEYWORD_3['id']}/", json=self.KEYWORD_TO_UPDATE
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), self.KEYWORD_UPDATED)
 
     def test_should_not_update_existing_keyword_without_auth(self):
-        response = self.client.put(f"api/v1/keywords/{self.KEYWORD_3['id']}/", json=self.KEYWORD_TO_UPDATE)
+        response = self.client.put(
+            f"api/v1/keywords/{self.KEYWORD_3['id']}/", json=self.KEYWORD_TO_UPDATE
+        )
         self.assertEqual(response.status_code, 401)
 
     def test_get_404_when_updating_nonexistent_keyword(self):
-        response = self.auth_client.put("api/v1/keywords/999/", json=self.KEYWORD_TO_UPDATE)
+        response = self.auth_client.put(
+            "api/v1/keywords/999/", json=self.KEYWORD_TO_UPDATE
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_delete_existing_keyword(self):

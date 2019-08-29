@@ -13,32 +13,61 @@ To run app with Postgres db install additional dependencies:
 pip install -r requirements-postgres.txt
 ```
 #### Build docker image
-To build image using SQLite DB
+To build image using SQLite DB:
 ```
 docker build -f docker/Dockerfile -t rfhub-new .
 ```
-To build image using PostgreSQL DB
+To build image using PostgreSQL DB:
 ```
 docker build -f docker/Dockerfile-postgres -t rfhub-new-postgres .
 ```
 #### Run application (web server)
-To run with default (SQLite) database
+To run with default (SQLite) database:
 ```
 python -m rfhub2
 ```
-To run with Postgres database
+To run with Postgres database:
 ```
 RFHUB_DB_URI=postgresql://postgres:postgres@localhost:5432/postgres python -m rfhub2
 ```
-To run application using docker image with default (SQLite) database
+To run application using docker image with default (SQLite) database:
 ```
 docker run -it -p 8000:8000 rfhub-new
 ```
-To run application using docker image with Postgres database
+To run application using docker image with Postgres database:
 ```
 docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub-new-postgres
 ```
+
+#### Populate application with data
+To populate application running on localhost:
+```
+python -m rfhub2.cli ../your_repo ../your_other_repo
+```
+To populate app running on another host, with non-default credentials:
+```
+python -m rfhub2.cli -a http://your_host:8000 -u user -p password ../your_repo ../your_other_repo
+```
+To populate app but to skip loading RFWK installed libraries:
+```
+python -m rfhub2.cli --no-installed-keywords ../your_repo ../your_other_repo
+```
+To preserve previously loaded collections and add new ones:
+```
+python -m rfhub2.cli --no-db-flush ../your_repo ../your_other_repo
+```
+
 #### Run unit tests
 ```
 python -m unittest tests
 ```
+
+#### Formatting
+Black is used for code formatting. It is included in CI pipeline.
+To reformat code after edit, execute:
+```
+black -t py36 rfhub2 tests
+```
+
+You can consider adding a git hook or integrating it with your IDE for automated execution.
+

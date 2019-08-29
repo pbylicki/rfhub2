@@ -6,6 +6,7 @@ install:
   - pip install -r requirements.txt -r requirements-dev.txt
 script:
   - python -m coverage run --source rfhub2 -m unittest tests
+  - black --check -t py36 rfhub2 tests
 after_success:
   - codecov
 deploy:

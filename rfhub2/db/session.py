@@ -11,7 +11,9 @@ def create_sqlalchemy_engine(db_uri: str) -> Engine:
         engine_kwargs = {"connect_args": {"check_same_thread": False}}
     else:
         engine_kwargs = {}
-    return create_engine(config.SQLALCHEMY_DB_URI, pool_pre_ping=True, echo=False, **engine_kwargs)
+    return create_engine(
+        config.SQLALCHEMY_DB_URI, pool_pre_ping=True, echo=False, **engine_kwargs
+    )
 
 
 @event.listens_for(Engine, "connect")

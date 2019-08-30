@@ -12,6 +12,17 @@ To run app with Postgres db install additional dependencies:
 ```
 pip install -r requirements-postgres.txt
 ```
+
+##### Frontend
+
+Requirements:
+- Node.js
+- Yarn
+
+```
+cd frontend && yarn install
+```
+
 #### Build docker image
 To build image using SQLite DB:
 ```
@@ -37,6 +48,21 @@ docker run -it -p 8000:8000 rfhub-new
 To run application using docker image with Postgres database:
 ```
 docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub-new-postgres
+```
+
+##### Frontend
+To run frontend development server
+```
+cd frontend && yarn start
+```
+
+To create frontend build
+```
+yarn build
+```
+To create frontend build and add its files to rfhub2 package static files directory
+```
+./build_ui.sh
 ```
 
 #### Populate application with data

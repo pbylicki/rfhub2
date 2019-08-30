@@ -29,6 +29,7 @@ export default class CollectionDetails extends React.Component<StoreProps> {
       view = (
         <React.Fragment>
           <Title>{store.detailCollection.name}</Title>
+          <div>version: {store.detailCollection.version}</div>
           <div dangerouslySetInnerHTML={{ __html: store.detailCollection.html_doc }}></div>
           <Title>Keywords ({store.detailCollection.keywords.length})</Title>
           <Table size="small">

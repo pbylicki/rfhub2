@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Link, Route, RouteComponentProps, withRouter } from 'react-router-dom';
 import clsx from 'clsx';
 import queryString, { ParsedQuery } from 'query-string';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +22,7 @@ import { collectionStore } from './stores/CollectionStore';
 import SearchKeywordList from './components/SearchKeywordList';
 import CollectionDetails from './components/CollectionDetails';
 import SearchBar from './components/SearchBar';
+import './App.css';
 
 interface CollectionDetailsMatchParams {
   id: string
@@ -47,7 +48,7 @@ function Copyright() {
   );
 }
 
-const drawerWidth = 240;
+const drawerWidth = 300;
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -123,7 +124,7 @@ const useStyles = makeStyles(theme => ({
   },
   fixedHeight: {
     height: 240,
-  },
+  }
 }));
 
 export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
@@ -175,7 +176,9 @@ export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+          <Link to="/">
             rfhub2
+            </Link>
           </Typography>
           <SearchBar store={store} history={history} />
         </Toolbar>

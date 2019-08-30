@@ -19,6 +19,7 @@ export const CollectionList: React.FC<StoreProps> = observer(({ store }) => (
         <TableRow>
           <TableCell>Name</TableCell>
           <TableCell>Type</TableCell>
+          <TableCell>Version</TableCell>
           <TableCell align="right">Keywords</TableCell>
         </TableRow>
       </TableHead>
@@ -28,6 +29,7 @@ export const CollectionList: React.FC<StoreProps> = observer(({ store }) => (
           <TableRow key={collection.id}>
             <TableCell><Link to={`/keywords/${collection.id}`}>{collection.name}</Link></TableCell>
             <TableCell>{collection.type}</TableCell>
+            <TableCell>{collection.version}</TableCell>
             <TableCell align="right">{collection.keywords.length}</TableCell>
           </TableRow>
         ))}

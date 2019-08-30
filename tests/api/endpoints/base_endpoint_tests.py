@@ -15,19 +15,28 @@ class BaseApiEndpointTest(unittest.TestCase):
         "id": 1,
         "name": "Test setup",
         "doc": "Prepare test environment, use teardown after this one",
+        "synopsis": "Prepare test environment, use teardown after this one",
+        "html_doc": "<p>Prepare test environment, use teardown after this one</p>",
         "args": None,
+        "arg_string": "",
     }
     NESTED_KEYWORD_2 = {
         "id": 2,
         "name": "Some keyword",
         "doc": "Perform some check",
+        "synopsis": "Perform some check",
+        "html_doc": "<p>Perform some check</p>",
         "args": None,
+        "arg_string": "",
     }
     NESTED_KEYWORD_3 = {
         "id": 3,
         "name": "Teardown",
         "doc": "Clean up environment",
+        "synopsis": "Clean up environment",
+        "html_doc": "<p>Clean up environment</p>",
         "args": None,
+        "arg_string": "",
     }
     COLLECTION_1 = {
         "id": 1,
@@ -39,6 +48,8 @@ class BaseApiEndpointTest(unittest.TestCase):
         "path": None,
         "doc": None,
         "doc_format": None,
+        "synopsis": "",
+        "html_doc": "",
         "keywords": [NESTED_KEYWORD_1, NESTED_KEYWORD_2, NESTED_KEYWORD_3],
     }
     COLLECTION_2 = {
@@ -51,6 +62,8 @@ class BaseApiEndpointTest(unittest.TestCase):
         "path": None,
         "doc": None,
         "doc_format": None,
+        "synopsis": "",
+        "html_doc": "",
         "keywords": [],
     }
     COLLECTION_3 = {
@@ -63,6 +76,8 @@ class BaseApiEndpointTest(unittest.TestCase):
         "path": None,
         "doc": None,
         "doc_format": None,
+        "synopsis": "",
+        "html_doc": "",
         "keywords": [],
     }
     KEYWORD_1 = {"collection": NESTED_COLLECTION_1, **NESTED_KEYWORD_1}
@@ -78,12 +93,17 @@ class BaseApiEndpointTest(unittest.TestCase):
         "id": 4,
         "name": "New Keyword",
         "doc": "New doc",
+        "synopsis": "New doc",
+        "html_doc": "<p>New doc</p>",
         "args": None,
+        "arg_string": "",
         "collection": {"id": COLLECTION_2["id"], "name": COLLECTION_2["name"]},
     }
     KEYWORD_TO_UPDATE = {
         "name": "Updated Teardown",
         "doc": "Updated Clean up environment",
+        "synopsis": "Updated Clean up environment",
+        "html_doc": "<p>Updated Clean up environment</p>",
     }
     KEYWORD_UPDATED = {**KEYWORD_3, **KEYWORD_TO_UPDATE}
     COLLECTION_TO_CREATE = {
@@ -96,7 +116,13 @@ class BaseApiEndpointTest(unittest.TestCase):
         "doc": "New Resource collection",
         "doc_format": None,
     }
-    COLLECTION_CREATED = {**COLLECTION_TO_CREATE, "id": 4, "keywords": []}
+    COLLECTION_CREATED = {
+        **COLLECTION_TO_CREATE,
+        "id": 4,
+        "synopsis": "New Resource collection",
+        "html_doc": "<p>New Resource collection</p>",
+        "keywords": [],
+    }
     COLLECTION_TO_UPDATE = {
         "name": "Updated collection",
         "version": "1.0.2-NEW",

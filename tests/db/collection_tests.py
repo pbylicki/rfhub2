@@ -19,9 +19,9 @@ class CollectionTest(unittest.TestCase):
 
     def test_should_get_collection_html_doc(self):
         self.assertEqual(
-            self.collection.html_doc(),
+            self.collection.html_doc,
             "<p>Collection description</p>\n<p>Further description</p>",
         )
 
     def test_should_get_empty_html_doc_when_collection_has_no_doc(self):
-        self.assertEqual(self.empty_collection.html_doc(), "")
+        self.assertEqual(self.empty_collection.html_doc, "")

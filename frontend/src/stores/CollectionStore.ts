@@ -28,6 +28,7 @@ interface Collection {
   doc: string
   type: string
   version: string | null
+  scope: string | null
   synopsis: string
   html_doc: string
   keywords: NestedKeyword[]

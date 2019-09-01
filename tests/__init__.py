@@ -8,4 +8,5 @@ from tests.db.collection_tests import CollectionTest
 from tests.db.keyword_repo_tests import KeywordRepositoryTest
 from tests.db.keyword_tests import KeywordTest
 from tests.ui.search_params_tests import SearchParamsTest
+from tests.ui.ui_router_tests import UIRouterTest
 from tests.utils.path_ops_tests import PathOpsTest

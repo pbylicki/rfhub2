@@ -12,3 +12,7 @@ Keyword 2 Imported From Robot File
     ...    with .robot extension
     [Arguments]    ${arg_1}    ${arg_2}
     Log    This keyword was imported from file with .resource extension, available since RFWK 3.1
+
+Keyword With Args With Comma
+    [Documentation]    Keyword With Args With Comma
+    [Arguments]    ${ok_argument}    ${not_ok_argument}=Kill.${app.replace('-', '_')}

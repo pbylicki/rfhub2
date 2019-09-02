@@ -175,9 +175,9 @@ class RfhubImporter(object):
         for keyword in keywords:
             keyword.pop("tags")
             if keyword["args"]:
-                keyword["args"] = str([str(item) for item in keyword["args"]]).replace(
-                    "'", '"'
-                )
+                keyword["args"] = str(
+                    [str(item).replace("'", "") for item in keyword["args"]]
+                ).replace("'", '"')
             else:
                 keyword["args"] = ""
         return keywords

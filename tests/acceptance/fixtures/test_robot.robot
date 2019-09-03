@@ -13,6 +13,10 @@ Keyword 2 Imported From Robot File
     [Arguments]    ${arg_1}    ${arg_2}
     Log    This keyword was imported from file with .resource extension, available since RFWK 3.1
 
-Keyword With Args With Comma
-    [Documentation]    Keyword With Args With Comma
+Keyword With Args With Single Quotation Mark
+    [Documentation]    Keyword With Args With Single Quotation Mark
     [Arguments]    ${ok_argument}    ${not_ok_argument}=Kill.${app.replace('-', '_')}
+
+Keyword With Args With Double Quotation Mark
+    [Documentation]    Keyword With Args With Double Quotation Mark
+    [Arguments]    ${ok_argument}    ${not_ok_argument}=Kill.${app.replace("-", "_")}

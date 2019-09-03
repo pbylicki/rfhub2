@@ -180,7 +180,6 @@ class RfhubImporter(object):
                         str(item).replace("'", "").replace('"', "")
                         for item in keyword["args"]
                     ]
-
                 ).replace("'", '"')
             else:
                 keyword["args"] = ""

@@ -1,48 +1,13 @@
-import axios from 'axios';
-import { observable, action } from 'mobx';
-
-interface Keyword {
-  id: number
-  name: string
-  doc: string
-  args: string | null
-  arg_string: string
-  synopsis: string
-  html_doc: string
-  collection: NestedCollection
-}
-
-interface NestedKeyword {
-  id: number
-  name: string
-  doc: string
-  args: string | null
-  arg_string: string
-  synopsis: string
-  html_doc: string
-}
-
-interface Collection {
-  id: number
-  name: string
-  doc: string
-  type: string
-  version: string | null
-  scope: string | null
-  synopsis: string
-  html_doc: string
-  keywords: NestedKeyword[]
-}
-
-interface NestedCollection {
-  id: number
-  name: string
-}
+import axios, { AxiosResponse } from 'axios';
+import { observable, action, computed } from 'mobx';
+import { Collection, Keyword } from '../types/ModelTypes';
 
 export class CollectionStore {
-  @observable collections: Collection[] = []
-  @observable searchTerm: String = ""
-  @observable searchResults: Keyword[] = []
+  @observable collectionsMap: Map<number, Collection> = new Map()
+  @observable collectionHasMore: boolean = false
+  @observable searchTerm: string = ""
+  @observable searchHasMore: boolean = false
+  @observable searchResults: Map<number, Keyword> = new Map()
   @observable drawerSelectedCollection: number = 0
   @observable detailCollection: Collection | null = null
   @observable selectedKeywordId: number | null = null
@@ -50,6 +15,11 @@ export class CollectionStore {
   constructor() {
     this.getCollections()
   }
+
+  @computed
+  get collections(): Collection[] {
+    return Array.from(this.collectionsMap.values())
+  } 
 
   @action.bound
   toggleDrawerSelectedCollection(colIndex: number) {
@@ -77,24 +47,33 @@ export class CollectionStore {
   }
 
   @action.bound
-  getCollections(skip: number = 0, limit: number = 100): void {
-    axios.get(`/api/v1/collections/?skip=${skip}&limit=${limit}`)
+  getCollections(skip: number = 0, limit: number = 100): Promise<void> {
+    this.collectionHasMore = false
+    return axios.get<any, AxiosResponse<Collection[]>>(`/api/v1/collections/?skip=${skip}&limit=${limit}`)
       .then(resp => {
-        this.collections = resp.data;
+        const entries = new Map(resp.data.map((collection: Collection, index: number) => [skip + index, collection]));
+        this.collectionsMap = new Map([...Array.from(this.collectionsMap), ...Array.from(entries)]);
+        this.collectionHasMore = resp.data.length === limit;
       })
   }
 
   @action.bound
-  searchKeywords(pattern: string, skip: number = 0, limit: number = 100): void {
+  searchKeywords(pattern: string, skip: number = 0, limit: number = 100): Promise<void> {
     if (pattern.length > 2) {
-      axios.get(`/api/v1/keywords/search/?pattern=${pattern}&skip=${skip}&limit=${limit}`)
+      this.searchHasMore = false
+      return axios.get<any, AxiosResponse<Keyword[]>>(`/api/v1/keywords/search/?pattern=${pattern}&skip=${skip}&limit=${limit}`)
         .then(resp => {
-          this.searchResults = resp.data;
+          const entries = new Map(resp.data.map((keyword: Keyword, index: number) => [skip + index, keyword]));
+          this.searchResults = new Map([...Array.from(this.searchResults), ...Array.from(entries)]);
+          this.searchTerm = pattern;
+          this.searchHasMore = resp.data.length === limit;
         })
     } else {
-      this.searchResults = [];
+      this.searchResults = new Map();
+      this.searchTerm = pattern;
+      this.searchHasMore = false;
+      return Promise.resolve()
     }
-    this.searchTerm = pattern;
   }
 }
 

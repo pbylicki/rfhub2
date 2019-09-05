@@ -3,39 +3,55 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { Link } from 'react-router-dom';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import VisibilitySensor from 'react-visibility-sensor';
 import Title from './Title';
+import { Keyword } from '../types/ModelTypes';
 import { StoreProps } from '../types/PropsTypes';
+import { List } from '@material-ui/core';
+
+interface SearchKeywordItemProps {
+  keyword: Keyword;
+}
+
+const SearchKeywordItem: React.FC<SearchKeywordItemProps> = ({ keyword }) => {
+  const keywordPrimaryText = `${keyword.name} (${keyword.collection.name})`
+  return (
+    <ListItem key={keyword.id}>
+      <Link to={`/keywords/${keyword.collection.id}/${keyword.id}/`}>
+        <ListItemText primary={keywordPrimaryText} secondary={keyword.synopsis} />
+      </Link>
+    </ListItem>
+  );
+}
 
 export const SearchKeywordList: React.FC<StoreProps> = observer(({ store }) => {
+  const loadMore = () => store.searchKeywords(store.searchTerm, store.searchResults.size)
 
   let table, title
-  if (store.searchResults.length > 0) {
-    const resultCountLabel = store.searchResults.length === 100 ? "100+" : store.searchResults.length.toString()
+  if (store.searchResults.size > 0) {
+    const resultCountLabel = store.searchResults.size >= 100 ? "100+" : store.searchResults.size.toString()
     title = `Found ${resultCountLabel} keywords matching "${store.searchTerm}"`
     table = (
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Collection</TableCell>
-            <TableCell>Description</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {store.searchResults.map(keyword => (
-            <TableRow key={keyword.id}>
-              <TableCell><Link to={`/keywords/${keyword.collection.id}/${keyword.id}/`}>{keyword.name}</Link></TableCell>
-              <TableCell>{keyword.collection.name}</TableCell>
-              <TableCell>{keyword.synopsis}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <List>
+        {Array.from(store.searchResults.values()).map((keyword, index) => {
+          if (store.searchHasMore && index === store.searchResults.size - 3) {
+            return (
+              <VisibilitySensor key={keyword.id}>
+                {({ isVisible }) => {
+                  if (isVisible) {
+                    loadMore()
+                  }
+                  return (<SearchKeywordItem keyword={keyword} />)
+                }}
+              </VisibilitySensor>)
+          } else {
+            return (<SearchKeywordItem key={keyword.id} keyword={keyword} />)
+          }
+        }
+        )}
+      </List>
     )
   } else {
     title = "No keywords found"

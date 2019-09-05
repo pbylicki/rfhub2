@@ -141,6 +141,7 @@ export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
   const handleSearchRoute = (props: RouteComponentProps) => {
     const queryParams: ParsedQuery<string> = queryString.parse(props.location.search)
     if (queryParams["q"]) {
+      store.clearSearchResults()
       store.searchKeywords(queryParams["q"] as string)
     } else {
       store.searchKeywords("")

@@ -19,7 +19,7 @@ export class CollectionStore {
   @computed
   get collections(): Collection[] {
     return Array.from(this.collectionsMap.values())
-  } 
+  }
 
   @action.bound
   toggleDrawerSelectedCollection(colIndex: number) {
@@ -58,6 +58,12 @@ export class CollectionStore {
   }
 
   @action.bound
+  clearSearchResults(): void {
+    this.searchResults = new Map();
+    this.searchHasMore = false;
+  }
+
+  @action.bound
   searchKeywords(pattern: string, skip: number = 0, limit: number = 100): Promise<void> {
     if (pattern.length > 2) {
       this.searchHasMore = false
@@ -69,9 +75,8 @@ export class CollectionStore {
           this.searchHasMore = resp.data.length === limit;
         })
     } else {
-      this.searchResults = new Map();
+      this.clearSearchResults();
       this.searchTerm = pattern;
-      this.searchHasMore = false;
       return Promise.resolve()
     }
   }

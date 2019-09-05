@@ -28,10 +28,10 @@ const CollectionTableRow: React.FC<CollectionTableRowProps> = ({ collection }) =
 
 export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.getCollections(store.collections.length)
-  
+  const resultCountLabel = store.collectionHasMore ? `${store.collections.length}+` : store.collections.length.toString()
   return (
   <React.Fragment>
-    <Title>Collections ({store.collections.length})</Title>
+    <Title>Collections ({resultCountLabel})</Title>
     <Table size="small">
       <TableHead>
         <TableRow>

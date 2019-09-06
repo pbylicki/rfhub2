@@ -26,6 +26,7 @@ export interface Collection {
     type: string
     version: string | null
     scope: string | null
+    path: string | null
     synopsis: string
     html_doc: string
     keywords: NestedKeyword[]

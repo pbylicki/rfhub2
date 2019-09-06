@@ -31,6 +31,7 @@ export default class CollectionDetails extends React.Component<StoreProps> {
           <Title>{store.detailCollection.name}</Title>
           <div>version: {store.detailCollection.version}</div>
           <div>scope: {store.detailCollection.scope}</div>
+          <div>path: {store.detailCollection.path}</div>
           <div dangerouslySetInnerHTML={{ __html: store.detailCollection.html_doc }}></div>
           <Title>Keywords ({store.detailCollection.keywords.length})</Title>
           <Table size="small">

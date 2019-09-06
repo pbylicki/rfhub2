@@ -27,7 +27,7 @@ interface DrawerCollectionListItemProps {
   collection: Collection
 }
 
-const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = ({ store, collection }) => {
+const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observer(({ store, collection }) => {
   const classes = useStyles();
 
   function handleListItemClick(
@@ -66,7 +66,7 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = ({ sto
       </Collapse>
     </React.Fragment>
   )
-}
+})
 
 export const DrawerCollectionList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.getCollections(store.collections.length)

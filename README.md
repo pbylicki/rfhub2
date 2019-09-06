@@ -1,6 +1,6 @@
-# rfhub-new
+# rfhub2
 
-[![Build Status](https://travis-ci.org/pbylicki/rfhub-new.svg?branch=master)](https://travis-ci.org/pbylicki/rfhub-new)
+[![Build Status](https://travis-ci.org/pbylicki/rfhub2.svg?branch=master)](https://travis-ci.org/pbylicki/rfhub2)
 [![codecov](https://codecov.io/gh/pbylicki/rfhub-new/branch/master/graph/badge.svg)](https://codecov.io/gh/pbylicki/rfhub-new)
 ## Development
 
@@ -26,11 +26,11 @@ cd frontend && yarn install
 #### Build docker image
 To build image using SQLite DB:
 ```
-docker build -f docker/Dockerfile -t rfhub-new .
+docker build -f docker/Dockerfile -t rfhub2 .
 ```
 To build image using PostgreSQL DB:
 ```
-docker build -f docker/Dockerfile-postgres -t rfhub-new-postgres .
+docker build -f docker/Dockerfile-postgres -t rfhub2:postgres .
 ```
 #### Run application (web server)
 To run with default (SQLite) database:
@@ -43,11 +43,11 @@ RFHUB_DB_URI=postgresql://postgres:postgres@localhost:5432/postgres python -m rf
 ```
 To run application using docker image with default (SQLite) database:
 ```
-docker run -it -p 8000:8000 rfhub-new
+docker run -it -p 8000:8000 rfhub2
 ```
 To run application using docker image with Postgres database:
 ```
-docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub-new-postgres
+docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub2:postgres
 ```
 
 ##### Frontend

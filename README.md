@@ -1,7 +1,7 @@
 # rfhub2
 
 [![Build Status](https://travis-ci.org/pbylicki/rfhub2.svg?branch=master)](https://travis-ci.org/pbylicki/rfhub2)
-[![codecov](https://codecov.io/gh/pbylicki/rfhub-new/branch/master/graph/badge.svg)](https://codecov.io/gh/pbylicki/rfhub-new)
+[![codecov](https://codecov.io/gh/pbylicki/rfhub2/branch/master/graph/badge.svg)](https://codecov.io/gh/pbylicki/rfhub2)
 ## Development
 
 #### Install dependencies

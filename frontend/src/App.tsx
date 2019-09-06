@@ -13,7 +13,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import ExternalLink from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { DrawerCollectionList } from './components/DrawerCollectionList';
@@ -23,6 +22,9 @@ import SearchKeywordList from './components/SearchKeywordList';
 import CollectionDetails from './components/CollectionDetails';
 import SearchBar from './components/SearchBar';
 import './App.css';
+import Copyright from './components/Copyright';
+import { StoreProps } from './types/PropsTypes';
+import { observer } from 'mobx-react';
 
 interface CollectionDetailsMatchParams {
   id: string
@@ -30,22 +32,6 @@ interface CollectionDetailsMatchParams {
 interface KeywordDetailsMatchParams {
   id: string
   keywordId: string
-}
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <ExternalLink color="inherit" href="https://material-ui.com/">
-        Your Website
-      </ExternalLink>{' '}
-      {new Date().getFullYear()}
-      {'. Built with '}
-      <ExternalLink color="inherit" href="https://material-ui.com/">
-        Material-UI.
-      </ExternalLink>
-    </Typography>
-  );
 }
 
 const drawerWidth = 300;
@@ -127,6 +113,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const AppTitle: React.FC<StoreProps> = observer(({ store }) => {
+  const classes = useStyles();
+  const title = store.versionInfo ? store.versionInfo.title : "rfhub2"
+  return (
+    <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+      <Link to="/">
+        {title}
+      </Link>
+    </Typography>
+  )
+})
+
 export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
   const store = collectionStore;
   const classes = useStyles();
@@ -176,11 +174,7 @@ export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-          <Link to="/">
-            rfhub2
-            </Link>
-          </Typography>
+          <AppTitle store={store} />
           <SearchBar store={store} history={history} />
         </Toolbar>
       </AppBar>
@@ -215,7 +209,7 @@ export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
             </Grid>
           </Grid>
         </Container>
-        <Copyright />
+        <Copyright store={store} />
       </main>
     </div>
   );

@@ -2,6 +2,11 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
+class VersionInfo(BaseModel):
+    title: str
+    version: str
+
+
 class Healthcheck(BaseModel):
     db: str
 

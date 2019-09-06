@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { observable, action, computed } from 'mobx';
-import { Collection, Keyword } from '../types/ModelTypes';
+import { Collection, Keyword, VersionInfo } from '../types/ModelTypes';
 
 export class CollectionStore {
   @observable collectionsMap: Map<number, Collection> = new Map()
@@ -11,8 +11,10 @@ export class CollectionStore {
   @observable drawerSelectedCollection: number = 0
   @observable detailCollection: Collection | null = null
   @observable selectedKeywordId: number | null = null
+  @observable versionInfo: VersionInfo | null = null
 
   constructor() {
+    this.getVersionInfo()
     this.getCollections()
   }
 
@@ -28,6 +30,14 @@ export class CollectionStore {
     } else {
       this.drawerSelectedCollection = colIndex;
     }
+  }
+
+  @action.bound
+  getVersionInfo(): Promise<void> {
+    return axios.get(`/api/v1/version/`)
+      .then(resp => {
+        this.versionInfo = resp.data;
+      })
   }
 
   @action.bound

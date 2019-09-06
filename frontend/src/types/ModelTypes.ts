@@ -36,3 +36,8 @@ export interface NestedCollection {
     id: number
     name: string
 }
+
+export interface VersionInfo {
+    title: string
+    version: string
+}

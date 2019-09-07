@@ -50,7 +50,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "doc_format": None,
         "synopsis": "",
         "html_doc": "",
-        "keywords": [NESTED_KEYWORD_1, NESTED_KEYWORD_2, NESTED_KEYWORD_3],
+        "keywords": [NESTED_KEYWORD_2, NESTED_KEYWORD_3, NESTED_KEYWORD_1],
     }
     COLLECTION_2 = {
         "id": 2,

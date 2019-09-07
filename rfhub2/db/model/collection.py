@@ -20,6 +20,7 @@ class Collection(Base, DocMixin):
         backref="collection",
         cascade="all, delete-orphan",
         passive_deletes=True,
+        order_by="Keyword.name",
     )
 
     def __str__(self):  # pragma: no cover

@@ -16,12 +16,9 @@ setup(
     long_description_content_type='text/markdown',
     zip_safe=True,
     include_package_data=True,
-    install_requires=['aiofiles==0.4.0', 'Click==7.0', 'dataclasses==0.6', 'fastapi==0.30.0', 'h11==0.8.1',
-                      'httptools==0.0.13', 'jinja2==2.10.1', 'MarkupSafe==1.1.1', 'pydantic==0.28',
-                      'robotframework==3.1.2', 'SQLAlchemy==1.3.3', 'starlette==0.12.0', 'uvicorn==0.7.1',
-                      'uvloop==0.12.2', 'websockets==7.0', 'requests==2.22.0'],
+    install_requires=['Click>=7.0', 'fastapi>=0.30.0', 'robotframework>=3.0.0', 'SQLAlchemy>=1.1.0', 'requests>=2.10.0'],
     extras_require={
-        "postgresql": ["psycopg2-binary==2.8.3"]
+        "postgresql": ["psycopg2-binary>=2.7.4"]
     },
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -55,7 +52,7 @@ setup(
     entry_points={
         'console_scripts': [
             "rfhub2 = rfhub2.__main__:main",
-            "rfhub2.cli = rfhub2.cli.__main__:main",
+            "rfhub2-cli = rfhub2.cli.__main__:main",
         ]
     }
 )

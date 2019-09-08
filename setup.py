@@ -6,8 +6,8 @@ exec(open(filename).read())
 setup(
     name='rfhub2',
     version=version,
-    author=['Pawel Bylicki', 'Maciej Wiczk'],
-    author_email=['pawelkbylicki@gmail.com', 'maciejwiczk@gmail.com'],
+    author='Pawel Bylicki, Maciej Wiczk',
+    author_email='pawelkbylicki@gmail.com, maciejwiczk@gmail.com',
     url='https://github.com/pbylicki/rfhub2/',
     keywords='robotframework',
     license='Apache License 2.0',
@@ -16,7 +16,13 @@ setup(
     long_description_content_type='text/markdown',
     zip_safe=True,
     include_package_data=True,
-    install_requires=['Click>=7.0', 'fastapi>=0.30.0', 'robotframework>=3.0.0', 'SQLAlchemy>=1.1.0', 'requests>=2.10.0'],
+    install_requires=[
+        'Click>=7.0',
+        'fastapi>=0.30.0',
+        'robotframework>=3.0.0',
+        'SQLAlchemy>=1.1.0',
+        'requests>=2.10.0'
+    ],
     extras_require={
         "postgresql": ["psycopg2-binary>=2.7.4"]
     },

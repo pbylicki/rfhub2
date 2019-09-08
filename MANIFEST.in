@@ -1,0 +1,4 @@
+include README.md
+recursive-include rfhub2/static *
+recursive-include rfhub2/templates *
+recursive-exclude rfhub2 *~ #*#

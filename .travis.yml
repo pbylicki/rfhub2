@@ -7,6 +7,7 @@ install:
 script:
   - python -m coverage run --source rfhub2 -m unittest tests
   - black --check -t py36 rfhub2 tests
+  - python publish_pypi.py
 after_success:
   - codecov
 deploy:

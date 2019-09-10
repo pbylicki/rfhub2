@@ -75,18 +75,17 @@ export class CollectionStore {
 
   @action.bound
   searchKeywords(pattern: string, skip: number = 0, limit: number = 100): Promise<void> {
+    this.searchTerm = pattern;
     if (pattern.length > 2) {
       this.searchHasMore = false
       return axios.get<any, AxiosResponse<Keyword[]>>(`/api/v1/keywords/search/?pattern=${pattern}&skip=${skip}&limit=${limit}`)
         .then(resp => {
           const entries = new Map(resp.data.map((keyword: Keyword, index: number) => [skip + index, keyword]));
           this.searchResults = new Map([...Array.from(this.searchResults), ...Array.from(entries)]);
-          this.searchTerm = pattern;
           this.searchHasMore = resp.data.length === limit;
         })
     } else {
       this.clearSearchResults();
-      this.searchTerm = pattern;
       return Promise.resolve()
     }
   }

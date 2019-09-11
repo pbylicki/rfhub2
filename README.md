@@ -8,44 +8,43 @@
 ![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/pbylicki/rfhub2.svg)
 ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/pbylicki/rfhub2.svg)
 
-## Development
+## Introduction
+RfHub2 is an opensource project aimed to provide nice and easy way of collecting, browsing and sharing documentation 
+of existing keywords written in RobotFramework and python. Built with [Material-UI](https://material-ui.com/) 
+and [FastAPI](https://fastapi.tiangolo.com/), served by [Uvicorn](https://www.uvicorn.org/).\
+Project is inspired by [robotframework-hub](https://github.com/boakley/robotframework-hub) 
+created by Bryan Oakley and can be treated as its spiritual successor.
 
-#### Install dependencies
-```
-pip install -r requirements.txt -r requirements-dev.txt
-```
-To run app with Postgres db install additional dependencies:
-```
-pip install -r requirements-postgres.txt
-```
+RfHub2 is hosted on [GitHub](https://github.com/pbylicki/rfhub2), where sourcecode, current issues and additional documentation can be found.
 
-##### Frontend
-
-Requirements:
-- Node.js
-- Yarn
-
+## Installation
+#### As python package
+latest version can be installed from PyPi:
 ```
-cd frontend && yarn install
+pip install rfhub2
 ```
-
-#### Build docker image
-To build image using SQLite DB:
+or directly from source code:
 ```
-docker build -f docker/Dockerfile -t rfhub2 .
+python setup.py install
 ```
-To build image using PostgreSQL DB:
+#### With docker
+pull docker image with SQLite:
 ```
-docker build -f docker/Dockerfile-postgres -t rfhub2:postgres .
+docker pull pbylicki/rfhub2
 ```
+or PostgreSQL:
+```
+docker pull pbylicki/rfhub2:postgres
+```
+## Starting application
 #### Run application (web server)
 To run with default (SQLite) database:
 ```
-python -m rfhub2
+rfhub2
 ```
-To run with Postgres database:
+To run with PostgreSQL database:
 ```
-RFHUB_DB_URI=postgresql://postgres:postgres@localhost:5432/postgres python -m rfhub2
+RFHUB_DB_URI=postgresql://postgres:postgres@localhost:5432/postgres rfhub2
 ```
 To run application using docker image with default (SQLite) database:
 ```
@@ -55,51 +54,22 @@ To run application using docker image with Postgres database:
 ```
 docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub2:postgres
 ```
-
-##### Frontend
-To run frontend development server
-```
-cd frontend && yarn start
-```
-
-To create frontend build
-```
-yarn build
-```
-To create frontend build and add its files to rfhub2 package static files directory
-```
-./build_ui.sh
-```
-
 #### Populate application with data
 To populate application running on localhost:
 ```
-python -m rfhub2.cli ../your_repo ../your_other_repo
+rfhub2-cli ../your_repo ../your_other_repo
 ```
 To populate app running on another host, with non-default credentials:
 ```
-python -m rfhub2.cli -a http://your_host:8000 -u user -p password ../your_repo ../your_other_repo
+rfhub2-cli -a http://your_host:8000 -u user -p password ../your_repo ../your_other_repo
 ```
 To populate app but to skip loading RFWK installed libraries:
 ```
-python -m rfhub2.cli --no-installed-keywords ../your_repo ../your_other_repo
+rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ```
 To preserve previously loaded collections and add new ones:
 ```
-python -m rfhub2.cli --no-db-flush ../your_repo ../your_other_repo
+rfhub2-cli --no-db-flush ../your_repo ../your_other_repo
 ```
-
-#### Run unit tests
-```
-python -m unittest tests
-```
-
-#### Formatting
-Black is used for code formatting. It is included in CI pipeline.
-To reformat code after edit, execute:
-```
-black -t py36 rfhub2 tests
-```
-
-You can consider adding a git hook or integrating it with your IDE for automated execution.
-
+## License
+RfHub2 is an open source software provided under the [Apache License 2.0](http://apache.org/licenses/LICENSE-2.0)

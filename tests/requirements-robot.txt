@@ -1,0 +1,2 @@
+robotframework-requests==0.5.0
+robotframework-seleniumlibrary==3.3.1

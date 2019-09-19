@@ -1,6 +1,6 @@
 from rfhub2.config import APP_TITLE
 from rfhub2.version import version
-from tests.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
+from tests.unit.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
 
 
 class VersionApiTest(BaseApiEndpointTest):

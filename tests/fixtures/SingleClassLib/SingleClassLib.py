@@ -3,6 +3,8 @@ class SingleClassLib(object):
     Overview that should be imported for SingleClassLib.
     """
 
+    __version__ = "1.2.3"
+
     def __init__(self):
         self.b = None
 

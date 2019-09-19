@@ -7,14 +7,14 @@ import robot.libraries
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
-FIXTURE_PATH = Path.cwd() / "tests" / "acceptance" / "fixtures"
+FIXTURE_PATH = Path.cwd() / "tests" / "fixtures"
 EXPECTED_LIBDOC = {
     "doc": "Documentation for library ``Test Libdoc File``.",
     "doc_format": "ROBOT",
     "name": "Test Libdoc File",
     "scope": "global",
     "type": "library",
-    "version": "",
+    "version": "3.2.0",
     "keywords": [{"name": "Someone Shall Pass", "args": '["who"]', "doc": ""}],
 }
 EXPECTED_KEYWORDS = [
@@ -72,7 +72,7 @@ EXPECTED_COLLECTION = {
     "path": str(FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py"),
     "scope": "test case",
     "type": "library",
-    "version": "",
+    "version": "1.2.3",
 }
 EXPECTED_COLLECTION2 = {
     "doc": "Documentation for library ``Test Libdoc File``.",
@@ -82,7 +82,7 @@ EXPECTED_COLLECTION2 = {
     "path": str(FIXTURE_PATH / "test_libdoc_file.xml"),
     "scope": "global",
     "type": "library",
-    "version": "",
+    "version": "3.2.0",
 }
 EXPECTED_ADD_COLLECTIONS = [{"name": "Test Libdoc File", "keywords": 1}]
 KEYWORDS_1 = [

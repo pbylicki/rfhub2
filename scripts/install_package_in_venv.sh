@@ -1,4 +1,5 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
+set -e
 
 # using workaround for https://github.com/travis-ci/travis-ci/issues/8589
 /opt/python/3.6.7/bin/python -m venv atests-venv

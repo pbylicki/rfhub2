@@ -15,7 +15,7 @@ Start Rfhub2
     ...    Starts rfhub2 on the port given in the variable \${PORT}
     ...    As a side effect this creates a suite variable named \${rfhub process},
     ...    which is used by the 'Stop rfhub2' keyword.
-    ${rfhub2_process}    Start Process    ${activate_venv} rfhub2
+    ${rfhub2_process}    Start Process    ${activate_venv} rfhub2    shell=True
     # Sleep    2 seconds    # give the server a chance to start
     Set Suite Variable    ${rfhub2_process}
     Wait Until Keyword Succeeds    20 seconds    0.5 second

@@ -6,7 +6,7 @@ Library    RequestsLibrary
 Library    Collections
 
 *** Variables ***
-${activate_venv}    source atests-venv/bin/activate &&
+${activate_venv}    . atests-venv/bin/activate &&
 
 *** Keywords ***
 Start Rfhub2

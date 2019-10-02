@@ -5,6 +5,9 @@ Library    Process
 Library    RequestsLibrary
 Library    Collections
 
+*** Variables ***
+${activate_venv}    source atests-venv/bin/activate &&
+
 *** Keywords ***
 Start Rfhub2
     [Arguments]    @{options}
@@ -12,8 +15,7 @@ Start Rfhub2
     ...    Starts rfhub2 on the port given in the variable \${PORT}
     ...    As a side effect this creates a suite variable named \${rfhub process},
     ...    which is used by the 'Stop rfhub2' keyword.
-    ${python}    Evaluate    sys.executable    sys
-    ${rfhub2_process}    Start Process    ${python}    -m    rfhub2
+    ${rfhub2_process}    Start Process    ${activate_venv} rfhub2
     # Sleep    2 seconds    # give the server a chance to start
     Set Suite Variable    ${rfhub2_process}
     Wait Until Keyword Succeeds    20 seconds    0.5 second
@@ -44,7 +46,7 @@ Start Cli Package With Options
     ...    Attempt to start the rfhub2-cli package with the given options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    rfhub2-cli ${options}
+    ${output}    Run    ${activate_venv} rfhub2-cli ${options}
     Set Suite Variable    ${output}
 
 Start Cli Package
@@ -52,7 +54,7 @@ Start Cli Package
     ...    Attempt to start the rfhub2-cli package with the default options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    rfhub2-cli
+    ${output}    Run    ${activate_venv} rfhub2-cli
     Set Suite Variable    ${output}
 
 Output Should Contain

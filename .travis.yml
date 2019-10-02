@@ -17,9 +17,10 @@ before_script:
 script:
   - python -m coverage run --source rfhub2 -m unittest tests
   - black --check -t py36 rfhub2 tests
-  - python setup.py install
+  - python setup.py sdist bdist_wheel
   - pip install -r tests/requirements-robot.txt
   - rm test.db  #ensure we start clean slate
+  - ./scripts/install_package_in_venv.sh
   - robot -C ansi tests/acceptance
 after_success:
   - codecov

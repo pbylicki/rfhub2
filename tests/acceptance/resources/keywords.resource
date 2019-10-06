@@ -15,8 +15,7 @@ Start Rfhub2
     ...    Starts rfhub2 on the port given in the variable \${PORT}
     ...    As a side effect this creates a suite variable named \${rfhub process},
     ...    which is used by the 'Stop rfhub2' keyword.
-    ${rfhub2_process}    Start Process    ${activate_venv} rfhub2    shell=True
-    # Sleep    2 seconds    # give the server a chance to start
+    ${rfhub2_process}    Start Process    ${activate_venv} ${DB_URI} rfhub2    shell=True
     Set Suite Variable    ${rfhub2_process}
     Wait Until Keyword Succeeds    20 seconds    0.5 second
     ...    Verify URL Is Reachable    /api/v1/health
@@ -38,20 +37,21 @@ Navigate To Main Page
 
 Collections Count On Main Page Should Be ${n}
     Reload Page
+    Run Keyword If    '${n}'!='0'    Wait Until Element Is Visible    ${main_page_table}
     Element Text Should Be    ${main_page_collection_number}    Collections (${n})
 
-Start Cli Package With Options
+Run Cli Package With Options
     [Arguments]    ${options}
     [Documentation]
-    ...    Attempt to start the rfhub2-cli package with the given options
+    ...    Attempt to run the rfhub2-cli package with the given options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
     ${output}    Run    ${activate_venv} rfhub2-cli ${options}
     Set Suite Variable    ${output}
 
-Start Cli Package
+Run Cli Package
     [Documentation]
-    ...    Attempt to start the rfhub2-cli package with the default options
+    ...    Attempt to run the rfhub2-cli package with the default options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
     ${output}    Run    ${activate_venv} rfhub2-cli
@@ -85,6 +85,3 @@ ${endpoint} Endpoint Should Have ${n} Items
     Should Be Equal As Integers    ${response.status_code}    200
     ${response_content}    Set Variable    ${response.json()}
     Length Should Be    ${response_content}    ${n}
-    
-
-

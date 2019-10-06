@@ -1,0 +1,3 @@
+# default arguments; any other argument files should include
+# this file.
+-C ansi

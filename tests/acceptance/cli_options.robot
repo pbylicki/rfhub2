@@ -1,7 +1,7 @@
 *** Settings ***
 Library        OperatingSystem
 Resource       resources/keywords.resource
-Suite Setup    Start Package With Help Option
+Suite Setup    Run Package With Help Option
 
 *** Test Cases ***
 Documentation For Whole Package Should Be Displayed Properly
@@ -56,5 +56,5 @@ Documentation For Help Should Be Displayed Properly
     ...    Show this message and exit.
 
 *** Keywords ***
-Start Package With Help Option
-    Start Cli Package With Options    --help
+Run Package With Help Option
+    Run Cli Package With Options    --help

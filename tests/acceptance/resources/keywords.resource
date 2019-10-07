@@ -5,9 +5,6 @@ Library    Process
 Library    RequestsLibrary
 Library    Collections
 
-*** Variables ***
-${activate_venv}    . atests-venv/bin/activate &&
-
 *** Keywords ***
 Start Rfhub2
     [Arguments]    @{options}
@@ -15,7 +12,7 @@ Start Rfhub2
     ...    Starts rfhub2 on the port given in the variable \${PORT}
     ...    As a side effect this creates a suite variable named \${rfhub process},
     ...    which is used by the 'Stop rfhub2' keyword.
-    ${rfhub2_process}    Start Process    ${activate_venv} ${DB_URI} rfhub2    shell=True
+    ${rfhub2_process}    Start Process    ${ACTIVATE_VENV} ${DB_URI} rfhub2    shell=True
     Set Suite Variable    ${rfhub2_process}
     Wait Until Keyword Succeeds    20 seconds    0.5 second
     ...    Verify URL Is Reachable    /api/v1/health
@@ -46,7 +43,7 @@ Run Cli Package With Options
     ...    Attempt to run the rfhub2-cli package with the given options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    ${activate_venv} rfhub2-cli ${options}
+    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli ${options}
     Set Suite Variable    ${output}
 
 Run Cli Package
@@ -54,7 +51,7 @@ Run Cli Package
     ...    Attempt to run the rfhub2-cli package with the default options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    ${activate_venv} rfhub2-cli
+    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli
     Set Suite Variable    ${output}
 
 Output Should Contain

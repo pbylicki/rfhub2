@@ -86,6 +86,7 @@ Search Should Return Expected Results
 *** Keywords ***
 Table Should Contain Library Data
     [Arguments]    @{Library_data}
+    Wait Until Element Is Visible    ${main_page_table}
     ${list_len}    Get Length    ${Library_data}
     FOR    ${i}    IN RANGE    1    ${list_len}
         Table Column Should Contain    ${main_page_table}    ${i}    @{Library_data}[${i-1}]
@@ -102,6 +103,7 @@ Left Panel Should Contain Every Library
 Open ${library} In Left Panel
     ${is_visible}    Run Keyword And Return Status     Element Should Not Be Visible    ${hamburger}
     Run Keyword Unless    ${is_visible}    Click Element    ${hamburger}
+    Wait Until Element Is Visible    ${library}
     Click Element    ${library}
     Wait Until Element Is Visible    //*[contains(text(),'Overview')]
 

@@ -8,7 +8,13 @@ from rfhub2.app import create_app
 class UIRouterTest(unittest.TestCase):
 
     INDEX_FILE = (
-        Path(__file__).parent / ".." / ".." / "rfhub2" / "templates" / "index.html"
+        Path(__file__).parent
+        / ".."
+        / ".."
+        / ".."
+        / "rfhub2"
+        / "templates"
+        / "index.html"
     )
 
     def setUp(self) -> None:

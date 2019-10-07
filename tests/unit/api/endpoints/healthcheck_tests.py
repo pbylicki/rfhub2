@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from rfhub2.api.utils.db import db_healthcheck
 from rfhub2.db.session import Session
-from tests.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
+from tests.unit.api.endpoints.base_endpoint_tests import BaseApiEndpointTest
 
 
 class HealthcheckApiTest(BaseApiEndpointTest):

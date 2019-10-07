@@ -3,6 +3,8 @@ class LibWithEmptyInit1(object):
     Overview that should be imported for LibWithEmptyInit1.
     """
 
+    __version__ = "2.1.0"
+
     def __init__(self):
         self.b = None
 

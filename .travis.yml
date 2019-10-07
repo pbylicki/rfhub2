@@ -6,9 +6,10 @@ addons:
   chrome: stable
 services:
   - xvfb
+  - postgresql
 cache: pip
 install:
-  - pip install -r requirements.txt -r requirements-dev.txt
+  - pip install -r requirements.txt -r requirements-dev.txt -r requirements-postgres.txt
 before_script:
   - wget "https://chromedriver.storage.googleapis.com/77.0.3865.40/chromedriver_linux64.zip"
   - unzip chromedriver_linux64.zip
@@ -18,10 +19,10 @@ script:
   - python -m coverage run --source rfhub2 -m unittest tests
   - black --check -t py36 rfhub2 tests
   - python setup.py sdist bdist_wheel
-  - pip install -r tests/requirements-robot.txt
   - rm test.db  #ensure we start clean slate
   - ./scripts/install_package_in_venv.sh
-  - robot -C ansi tests/acceptance
+  - robot -A tests/acceptance/conf/default.args tests/acceptance
+  - robot -A tests/acceptance/conf/postgres.args tests/acceptance
 after_success:
   - codecov
   - python publish_pypi.py

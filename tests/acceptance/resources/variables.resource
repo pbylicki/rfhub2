@@ -15,6 +15,5 @@ ${detail_view_library_keywords}    ${main_page_prefix}/div/div/div/h2[2]
 ${single_class_lib_items}          ${left_panel_list}/div/div/div/div
 ${search_field}                    //*[@id="root"]/div/header/div/div/div[2]/input
 ${search_hits_number}              ${main_page_collection_number}
-${search_result_table}             ${main_page_prefix}/div/div/div/table/tbody/tr    #${main_page_table}
-                                   # //*[@id="root"]/div/main/div[2]/div/div/div/table/tbody/tr
+${search_result_table}             ${main_page_prefix}/div/div/div/table/tbody/tr
 ${hamburger}                       //*[@id="root"]/div/header/div/button/span[1]/svg/path

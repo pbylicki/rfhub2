@@ -16,7 +16,7 @@ App Should Start With No Collections
     Collections Count On Main Page Should Be 0
 
 Populated App Should Show Number Of Collections
-    Start Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures
+    Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures
     Collections Count On Main Page Should Be 7
 
 First Page Table Should Contain Proper Libraries Data
@@ -38,10 +38,11 @@ Left Panel Should Contain Expected Libraries Library
     ...    to shorten execution time.
     Left Panel Should Contain Every Library
 
-Left Panel Should Contain Library Keywords After Click
+Left Panel Should Contain Library Keywords In Alphabetical Order After Click
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
+    [Tags]    rfhub2-46    regression
     Open ${single_class_lib} In Left Panel
     Left Panel For Single Library Should Contain Expected Keywords    @{expected_keywords}
 
@@ -92,6 +93,7 @@ Table Should Contain Library Data
 
 Left Panel Should Contain Every Library
     [Arguments]    @{Library_data}
+    Wait Until Element Is Visible    ${main_page_table}
     ${list_len}    Get Length    ${expected_libraries}
     FOR    ${i}    IN RANGE    1    ${list_len}
         Element Text Should Be    ${left_panel_list}/li[${i}]/div/span    @{expected_libraries}[${i-1}]

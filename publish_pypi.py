@@ -17,7 +17,6 @@ def execute_cmd(cmd: str):
 
 
 def publish_to_pypi() -> None:
-    execute_cmd("python setup.py sdist bdist_wheel")
     execute_cmd("twine upload dist/*")
     execute_cmd("rm -rf build dist rfhub2.egg-info")
 

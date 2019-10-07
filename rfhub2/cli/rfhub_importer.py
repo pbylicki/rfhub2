@@ -210,7 +210,7 @@ class RfhubImporter(object):
         # us from doing a full parse of files that are obviously
         # not libdoc files
         if file.suffix == ".xml":
-            with open(file, "r") as f:
+            with open(file, "r", encoding="utf-8", errors="ignore") as f:
                 # read the first few lines; if we don't see
                 # what looks like libdoc data, return false
                 data = f.read(200)

@@ -240,7 +240,7 @@ class RfhubImporter(object):
         # not robot files
 
         if file.name not in INIT_FILES and file.suffix in RESOURCE_PATTERNS:
-            with open(file, "r") as f:
+            with open(file, "r", encoding="utf-8", errors="ignore") as f:
                 data = f.read()
                 return not RfhubImporter._has_test_case_table(
                     data

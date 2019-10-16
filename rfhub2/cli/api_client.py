@@ -30,11 +30,11 @@ class Client(object):
             "accept": "application/json",
         }
 
-    def get_collections(self) -> Response:
+    def get_collections(self, skip: int = 0, limit: int = 100) -> Response:
         """
         Gets list of collections object using request get method.
         """
-        return self._get_request(endpoint="collections")
+        return self._get_request(endpoint="collections", params={"skip": skip, "limit": limit})
 
     def add_collection(self, data: Dict) -> Dict:
         """
@@ -66,11 +66,11 @@ class Client(object):
         """
         return self._put_request(endpoint="keywords", data=data, id=id)
 
-    def _get_request(self, endpoint: str) -> Dict:
+    def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """
         Sends get request from given endpoint.
         """
-        request = self.session.get(url=f"{self.api_url}/{endpoint}/")
+        request = self.session.get(url=f"{self.api_url}/{endpoint}/", params=params)
         return request.json()
 
     def _post_request(self, endpoint: str, data: Dict) -> Tuple[int, Dict]:

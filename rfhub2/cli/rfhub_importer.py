@@ -44,6 +44,16 @@ class RfhubImporter(object):
             collections_id.update(self._delete_collections())
         return collections_id
 
+    def get_all_collections(self) -> List[Dict]:
+        """Gets all collections from application"""
+        collections = []
+        for i in range(0, 999999, 100):
+            collection_slice = self.client.get_collections(i, i+100)
+            if len(collection_slice) == 0:
+                break
+            collections += collection_slice
+        return collections
+
     def _delete_collections(self) -> Set[int]:
         """
         Helper method to delete all existing callections.
@@ -64,7 +74,7 @@ class RfhubImporter(object):
         if not self.no_db_flush:
             loaded_collections = self.add_collections(collections)
         else:
-            existing_collections = self.client.get_collections()
+            existing_collections = self.get_all_collections()
             self.delete_outdated_collections(existing_collections, collections)
             loaded_collections = self.update_collections(
                 existing_collections, collections

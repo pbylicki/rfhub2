@@ -7,7 +7,7 @@ import robot.libraries
 from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
-FIXTURE_PATH = Path.cwd() / "tests" / "fixtures"
+FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "initial"
 EXPECTED_LIBDOC = {
     "doc": "Documentation for library ``Test Libdoc File``.",
     "doc_format": "ROBOT",
@@ -122,12 +122,14 @@ class RfhubImporterTests(unittest.TestCase):
     def setUp(self) -> None:
         self.fixture_path = FIXTURE_PATH
         self.client = Client("http://localhost:8000", "rfhub", "rfhub")
-        self.rfhub_importer = RfhubImporter(self.client, (self.fixture_path,), True)
+        self.rfhub_importer = RfhubImporter(
+            self.client, (self.fixture_path,), True, False
+        )
 
     def test_import_libraries(self):
         with responses.RequestsMock() as rsps:
             rfhub_importer = RfhubImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True
+                self.client, (self.fixture_path / "LibWithInit",), True, False
             )
             rsps.add(
                 responses.POST,
@@ -235,7 +237,7 @@ class RfhubImporterTests(unittest.TestCase):
         self.assertEqual(result, EXPECTED_GET_LIBRARIES)
 
     def test_get_libraries_paths_should_return_set_of_paths_on_installed_keywords(self):
-        self.rfhub_importer = RfhubImporter(self.client, tuple(), False)
+        self.rfhub_importer = RfhubImporter(self.client, tuple(), False, False)
         result = self.rfhub_importer.get_libraries_paths()
         self.assertEqual(result, EXPECTED_BUILT_IN_LIBS)
 
@@ -247,6 +249,7 @@ class RfhubImporterTests(unittest.TestCase):
                 self.fixture_path / "LibsWithEmptyInit",
             ),
             True,
+            False,
         )
         result = self.rfhub_importer.get_libraries_paths()
         self.assertEqual(

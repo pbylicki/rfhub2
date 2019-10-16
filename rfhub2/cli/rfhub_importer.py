@@ -24,10 +24,15 @@ INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
 
 class RfhubImporter(object):
     def __init__(
-        self, client: Client, paths: Tuple[Path, ...], no_installed_keywords: bool
+        self,
+        client: Client,
+        paths: Tuple[Path, ...],
+        no_installed_keywords: bool,
+        no_db_flush: bool,
     ) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
+        self.no_db_flush = no_db_flush
         self.client = client
 
     def delete_all_collections(self) -> Set[int]:
@@ -56,7 +61,14 @@ class RfhubImporter(object):
         """
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)
-        loaded_collections = self.add_collections(collections)
+        if not self.no_db_flush:
+            loaded_collections = self.add_collections(collections)
+        else:
+            existing_collections = self.client.get_collections()
+            self.delete_outdated_collections(existing_collections, collections)
+            loaded_collections = self.update_collections(
+                existing_collections, collections
+            )
         return len(loaded_collections), sum(d["keywords"] for d in loaded_collections)
 
     def get_libraries_paths(self) -> Set[Path]:
@@ -124,7 +136,32 @@ class RfhubImporter(object):
         serialised_keywords = self._serialise_keywords(libdoc)
         return self._serialise_libdoc(libdoc, str(path), serialised_keywords)
 
-    def add_collections(self, collections: Dict) -> List[Dict[str, int]]:
+    def update_collections(
+        self, existing_collections: List[Dict], new_collections: List[Dict]
+    ) -> List[Dict[str, int]]:
+        """
+        Updates collections already existing in app.
+        :param collections: List of collections object
+        :return: list of dictionaries with collection name and number of keywords.
+        """
+        collections_to_update = self._get_collections_to_update(
+            existing_collections, new_collections
+        )
+        collections_to_insert = self._get_new_collections(
+            existing_collections, new_collections
+        )
+        return self.add_collections(collections_to_update + collections_to_insert)
+
+    def delete_outdated_collections(
+        self, existing_collections: List[Dict], collections: List[Dict]
+    ) -> None:
+        collections_to_delete = self._get_outdated_collections(
+            existing_collections, collections
+        ) | self._get_obsolete_collections(existing_collections, collections)
+        for collection in collections_to_delete:
+            self.client.delete_collection(collection)
+
+    def add_collections(self, collections: List[Dict]) -> List[Dict[str, int]]:
         """
         Adds collections and keywords from provided list to app.
         :param collections: List of collections object
@@ -264,3 +301,124 @@ class RfhubImporter(object):
             re.search(r"^\*+\s*(Test Cases?)", data, re.MULTILINE | re.IGNORECASE)
             is not None
         )
+
+    @staticmethod
+    def _get_obsolete_collections(
+        existing_collections: List[Dict], new_collections: List[Dict]
+    ) -> Set[int]:
+        """Returns set of collection ids that were found in application but not in paths"""
+        return {
+            existing_collection["id"]
+            for existing_collection in existing_collections
+            if all(
+                existing_collection["path"] != new_collection["path"]
+                for new_collection in new_collections
+            )
+        }
+
+    @staticmethod
+    def _get_outdated_collections(
+        existing_collections: List[Dict], new_collections: List[Dict]
+    ) -> Set[int]:
+        """Returns set of collection ids that were found in application but are outdated"""
+        outdated_collections = set()
+        if len(existing_collections) > 0:
+            outdated_collections = set()
+            for new_collection in new_collections:
+                for existing_collection in existing_collections:
+                    reduced_collection = RfhubImporter._reduce_collection_items(
+                        new_collection, existing_collection
+                    )
+                    if RfhubImporter._collection_path_and_name_match(
+                        new_collection, reduced_collection
+                    ) and RfhubImporter._library_or_resource_changed(
+                        new_collection, reduced_collection
+                    ):
+                        outdated_collections.add(existing_collection["id"])
+        return outdated_collections
+
+    @staticmethod
+    def _get_collections_to_update(
+        existing_collections: List[Dict], new_collections: List[Dict]
+    ) -> List[Dict]:
+        """Returns list of collections to update that were found in paths and application"""
+        collections_to_insert = []
+        if len(existing_collections) >= 0:
+            for new_collection in new_collections:
+                for existing_collection in existing_collections:
+                    reduced_collection = RfhubImporter._reduce_collection_items(
+                        new_collection, existing_collection
+                    )
+                    if RfhubImporter._collection_path_and_name_match(
+                        new_collection, reduced_collection
+                    ):
+                        if RfhubImporter._library_or_resource_changed(
+                            new_collection, reduced_collection
+                        ):
+                            collections_to_insert.append(new_collection)
+        return collections_to_insert
+
+    @staticmethod
+    def _get_new_collections(
+        existing_collections: List[Dict], new_collections: List[Dict]
+    ) -> List[Dict]:
+        """Returns list of collections to insert that were found in paths but not in application"""
+        return [
+            new_collection
+            for new_collection in new_collections
+            if all(
+                new_collection["path"] != existing_collection["path"]
+                for existing_collection in existing_collections
+            )
+        ]
+
+    @staticmethod
+    def _reduce_collection_items(
+        new_collection: Dict, existing_collection: Dict
+    ) -> Dict:
+        reduced_collection = RfhubImporter._get_reduced_collection(
+            new_collection, existing_collection
+        )
+        reduced_collection["keywords"] = RfhubImporter._get_reduced_keywords(
+            new_collection["keywords"], reduced_collection["keywords"]
+        )
+        return reduced_collection
+
+    @staticmethod
+    def _get_reduced_collection(
+        new_collection: Dict, existing_collection: Dict
+    ) -> Dict:
+        """Returns existing_collection dictionary with key/value pairs reduced to the ones from new_collection"""
+        return {k: existing_collection[k] for k in new_collection.keys()}
+
+    @staticmethod
+    def _get_reduced_keywords(
+        new_collection_keywords: List[Dict], existing_collection_keywords: List[Dict]
+    ) -> List[Dict]:
+        if min(len(new_collection_keywords), len(existing_collection_keywords)) > 0:
+            return [
+                {
+                    k: v
+                    for k, v in keyword.items()
+                    if k in new_collection_keywords[0].keys()
+                }
+                for keyword in existing_collection_keywords
+            ]
+
+    @staticmethod
+    def _collection_path_and_name_match(
+        new_collection: Dict, existing_collection: Dict
+    ) -> bool:
+        return (
+            new_collection["name"] == existing_collection["name"]
+            and new_collection["path"] == existing_collection["path"]
+        )
+
+    @staticmethod
+    def _library_or_resource_changed(
+        new_collection: Dict, existing_collection: Dict
+    ) -> bool:
+        if new_collection["type"] == "library":
+            return new_collection["version"] != existing_collection["version"]
+        else:
+            return new_collection != existing_collection

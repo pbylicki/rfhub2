@@ -1,10 +1,15 @@
 *** Settings ***
 Resource          resources/keywords.resource
 
+*** Variables ***
+${INITIAL_FIXTURES}    ${CURDIR}/../fixtures/initial/
+${BACKUP_FIXTURES}     ${CURDIR}/../fixtures/initial_bkp/
+${UPDATED_FIXTURES}    ${CURDIR}/../fixtures/updated/
+
 *** Test Cases ***
 Cli Should Populate App With Keywords From Provided Paths Only
     [Documentation]    Cli Should Populate App With Keywords From Provided Paths Only
-    Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures
+    Run Cli Package Without Installed Keywords
     Output Should Contain
     ...    LibWithInit library with 4 keywords loaded.
     ...    Test Libdoc File library with 1 keywords loaded.
@@ -64,7 +69,43 @@ Cli Should Return Connection Error When Wrong Url Given
     Run Cli Package With Options    -a 123.456.789.123:666
     Should Contain    ${output}    No connection adapters were found
 
+Cli Should Update Existing Collections, Delete Obsolete And Add New
+    [Documentation]     Cli Should Update Existing Collections, 
+    ...    Delete Obsolete And Add New.
+    [Tags]    rfhub2-64
+    [Setup]    Run Keywords
+    ...    Run Cli Package Without Installed Keywords
+    ...    Backup And Switch Initial With Updated Fixtures
+    Run Cli Package With Options
+    ...    --no-db-flush --no-installed-keywords ${INITIAL_FIXTURES}
+    Output Should Contain
+    ...    SingleClassLib library with 4 keywords loaded.
+    ...    test_resource library with 2 keywords loaded.
+    ...    Test Libdoc File library with 1 keywords loaded.
+    ...    Test Libdoc File Copy library with 1 keywords loaded.
+    [Teardown]    Restore Initial Fixtures
+
+Cli Update Mode Should Leave Application With New Set Of Collections
+    [Documentation]     Cli Update Mode Should Leave Application 
+    ...    With New Set Of Collections. This test bases on 
+    ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
+    ...    to speed up execution
+    [Tags]    rfhub2-64
+    Api Should Have With 7 Collections And 16 Keywords
+
 *** Keywords ***
 Api Should Have With ${n} Collections And ${m} Keywords
     collections Endpoint Should Have ${n} Items
     keywords Endpoint Should Have ${m} Items
+
+Run Cli Package Without Installed Keywords
+    Run Cli Package With Options    --no-installed-keywords ${INITIAL_FIXTURES}
+
+Backup And Switch Initial With Updated Fixtures
+    Move Directory      ${INITIAL_FIXTURES}    ${BACKUP_FIXTURES}
+    Copy Directory      ${UPDATED_FIXTURES}    ${INITIAL_FIXTURES}
+
+Restore Initial Fixtures
+    Remove Directory    ${INITIAL_FIXTURES}    recursive=True
+    Copy Directory      ${BACKUP_FIXTURES}     ${INITIAL_FIXTURES}
+    Remove Directory    ${BACKUP_FIXTURES}     recursive=True

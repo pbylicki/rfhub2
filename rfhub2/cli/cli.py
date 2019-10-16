@@ -55,7 +55,7 @@ def main(
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
-    rfhub_importer = RfhubImporter(client, paths, no_installed_keywords)
+    rfhub_importer = RfhubImporter(client, paths, no_installed_keywords, no_db_flush)
     if not no_db_flush:
         rfhub_importer.delete_all_collections()
     loaded_collections, loaded_keywords = rfhub_importer.import_libraries()

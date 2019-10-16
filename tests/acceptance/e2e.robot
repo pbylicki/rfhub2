@@ -16,7 +16,7 @@ App Should Start With No Collections
     Collections Count On Main Page Should Be 0
 
 Populated App Should Show Number Of Collections
-    Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures
+    Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures/initial
     Collections Count On Main Page Should Be 7
 
 First Page Table Should Contain Proper Libraries Data

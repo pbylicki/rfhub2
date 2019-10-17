@@ -42,12 +42,6 @@ class Client(object):
         """
         return self._post_request(endpoint="collections", data=data)
 
-    def update_collection(self, data: Dict, id: int) -> Dict:
-        """
-        Updates collection using request post method.
-        """
-        return self._put_request(endpoint="collections", data=data, id=id)
-
     def delete_collection(self, id: int) -> Response:
         """
         Deletes collection with given id.
@@ -59,12 +53,6 @@ class Client(object):
         Adds keyword using request post method.
         """
         return self._post_request(endpoint="keywords", data=data)
-
-    def update_keyword(self, data: Dict, id: int) -> Dict:
-        """
-        Updates keyword using request post method.
-        """
-        return self._put_request(endpoint="keywords", data=data, id=id)
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """
@@ -78,13 +66,6 @@ class Client(object):
         Sends post request to collections or keywords endpoint.
         """
         request = self.session.post(url=f"{self.api_url}/{endpoint}/", json=data)
-        return request.status_code, request.json()
-
-    def _put_request(self, endpoint: str, data: Dict, id: int) -> Tuple[int, Dict]:
-        """
-        Sends put request to collections or keywords endpoint.
-        """
-        request = self.session.put(url=f"{self.api_url}/{endpoint}/{id}/", json=data)
         return request.status_code, request.json()
 
     def _delete_request(self, endpoint: str, id: int) -> Response:

@@ -151,7 +151,8 @@ class RfhubImporter(object):
     ) -> List[Dict[str, int]]:
         """
         Updates collections already existing in app.
-        :param collections: List of collections object
+        :param existing_collections: List of existing collections object
+        :param new_collections: List of new collections object
         :return: list of dictionaries with collection name and number of keywords.
         """
         collections_to_update = self._get_collections_to_update(
@@ -163,13 +164,14 @@ class RfhubImporter(object):
         return self.add_collections(collections_to_update + collections_to_insert)
 
     def delete_outdated_collections(
-        self, existing_collections: List[Dict], collections: List[Dict]
+        self, existing_collections: List[Dict], new_collections: List[Dict]
     ) -> None:
         collections_to_delete = self._get_outdated_collections(
-            existing_collections, collections
-        ) | self._get_obsolete_collections(existing_collections, collections)
+            existing_collections, new_collections
+        ) | self._get_obsolete_collections(existing_collections, new_collections)
         for collection in collections_to_delete:
             self.client.delete_collection(collection)
+        return collections_to_delete
 
     def add_collections(self, collections: List[Dict]) -> List[Dict[str, int]]:
         """
@@ -352,7 +354,7 @@ class RfhubImporter(object):
         existing_collections: List[Dict], new_collections: List[Dict]
     ) -> List[Dict]:
         """Returns list of collections to update that were found in paths and application"""
-        collections_to_insert = []
+        collections_to_update = []
         if len(existing_collections) >= 0:
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
@@ -365,8 +367,8 @@ class RfhubImporter(object):
                         if RfhubImporter._library_or_resource_changed(
                             new_collection, reduced_collection
                         ):
-                            collections_to_insert.append(new_collection)
-        return collections_to_insert
+                            collections_to_update.append(new_collection)
+        return collections_to_update
 
     @staticmethod
     def _get_new_collections(

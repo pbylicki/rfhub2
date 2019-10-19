@@ -20,6 +20,8 @@ EXCLUDED_LIBRARIES = {
     "setup.py",
 }
 INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
+# COLLECTION_KEYS = ("doc", "doc_format", "keywords", "name", "path", "scope", "type", "version")
+# KEYWORD_KEYS = ("name", "doc", "args")
 
 
 class RfhubImporter(object):
@@ -28,11 +30,11 @@ class RfhubImporter(object):
         client: Client,
         paths: Tuple[Path, ...],
         no_installed_keywords: bool,
-        no_db_flush: bool,
+        mode: str,
     ) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
-        self.no_db_flush = no_db_flush
+        self.mode = mode
         self.client = client
 
     def delete_all_collections(self) -> Set[int]:
@@ -48,7 +50,7 @@ class RfhubImporter(object):
         """Gets all collections from application"""
         collections = []
         for i in range(0, 999999, 100):
-            collection_slice = self.client.get_collections(i, i+100)
+            collection_slice = self.client.get_collections(i, i + 100)
             if len(collection_slice) == 0:
                 break
             collections += collection_slice
@@ -71,7 +73,10 @@ class RfhubImporter(object):
         """
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)
-        if not self.no_db_flush:
+        if self.mode == "append":
+            loaded_collections = self.add_collections(collections)
+        elif self.mode == "insert":
+            self.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:
             existing_collections = self.get_all_collections()

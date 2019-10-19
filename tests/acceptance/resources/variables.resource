@@ -1,4 +1,5 @@
 *** Variables ***
+#LOCATORS
 ${main_page_prefix}                //*[@id="root"]/div/main/div[2]
 ${main_page_collection_number}     ${main_page_prefix}/div/div/div/h2
 ${main_page_table}                 ${main_page_prefix}/div/div/div/table/tbody/tr[1]/td[1]
@@ -6,6 +7,7 @@ ${left_panel_list}                 //*[@id="root"]/div/div/div/ul
 ${single_class_lib}                //*[contains(text(),"SingleClassLib")]
 ${lib_with_init}                   //*[contains(text(),"LibWithInit")]
 ${lib_with_init_2_method_1}        //*[contains(text(),"Lib With Init 2 Method 1")]
+${overview}                        //*[contains(text(),"Overview")]
 ${test_libdoc_file}                //a[contains(text(), "Test Libdoc File")]
 ${detail_view_library_title}       ${main_page_prefix}/div/div/div/h2[1]
 ${detail_view_library_version}     ${main_page_prefix}/div/div/div/div[1]
@@ -17,3 +19,9 @@ ${search_field}                    //*[@id="root"]/div/header/div/div/div[2]/inp
 ${search_hits_number}              ${main_page_collection_number}
 ${search_result_table}             ${main_page_prefix}/div/div/div/table/tbody/tr
 ${hamburger}                       //*[@id="root"]/div/header/div/button/span[1]/svg/path
+${hamburger_menu}                  //*[@id="root"]/div/div/div/div/button
+
+#VARIABLES
+${INITIAL_FIXTURES}                ${CURDIR}/../../fixtures/initial/
+${BACKUP_FIXTURES}                 ${CURDIR}/../../fixtures/initial_bkp/
+${UPDATED_FIXTURES}                ${CURDIR}/../../fixtures/updated/

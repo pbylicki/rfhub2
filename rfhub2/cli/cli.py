@@ -37,11 +37,14 @@ from rfhub2.cli.rfhub_importer import RfhubImporter
     "such as such as BuiltIn, Collections, DateTime etc.",
 )
 @click.option(
-    "--no-db-flush",
-    type=click.BOOL,
-    default=False,
-    is_flag=True,
-    help="Flag specifying if package should delete from rfhub2 all existing libraries.",
+    "--mode",
+    "-m",
+    type=click.Choice(["insert", "append", "update"], case_sensitive=False),
+    default="insert",
+    help="""Choice parameter specifying in what mode package should run:\n
+             - `insert` - default value, removes all existing collections from app and add ones found in paths\n
+             - `append` - adds collections found in paths without removal of existing ones\n
+             - `update` - removes collections not found in paths, adds new ones and updates existing ones.""",
 )
 @click.argument("paths", nargs=-1, type=click.Path(exists=True))
 def main(
@@ -49,15 +52,13 @@ def main(
     user: str,
     password: str,
     paths: Tuple[Path, ...],
-    no_db_flush: bool,
+    mode: str,
     no_installed_keywords: bool,
 ) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
-    rfhub_importer = RfhubImporter(client, paths, no_installed_keywords, no_db_flush)
-    if not no_db_flush:
-        rfhub_importer.delete_all_collections()
+    rfhub_importer = RfhubImporter(client, paths, no_installed_keywords, mode)
     loaded_collections, loaded_keywords = rfhub_importer.import_libraries()
     print(
         f"\nSuccessfully loaded {loaded_collections} collections with {loaded_keywords} keywords."

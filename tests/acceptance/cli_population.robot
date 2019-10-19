@@ -1,10 +1,8 @@
 *** Settings ***
-Resource          resources/keywords.resource
+Resource    resources/keywords.resource
+Resource    resources/variables.resource
 
 *** Variables ***
-${INITIAL_FIXTURES}    ${CURDIR}/../fixtures/initial/
-${BACKUP_FIXTURES}     ${CURDIR}/../fixtures/initial_bkp/
-${UPDATED_FIXTURES}    ${CURDIR}/../fixtures/updated/
 
 *** Test Cases ***
 Cli Should Populate App With Keywords From Provided Paths Only
@@ -42,7 +40,7 @@ Cli Should Preserve All Keywords When Paths And No Db Flush Set
     [Documentation]    Cli Should Preserve All Keywords When Paths And No Db Flush Set
     ...                This test is dependant on one above:
     ...                'Cli Should Populate App With Installed Keywords'
-    Run Cli Package With Options    --no-db-flush --no-installed-keywords
+    Run Cli Package With Options    --mode=append --no-installed-keywords
     Output Should Contain
     ...    Successfully loaded 0 collections with 0 keywords.
     Api Should Have With 10 Collections And 100 Keywords
@@ -77,7 +75,7 @@ Cli Should Update Existing Collections, Delete Obsolete And Add New
     ...    Run Cli Package Without Installed Keywords
     ...    Backup And Switch Initial With Updated Fixtures
     Run Cli Package With Options
-    ...    --no-db-flush --no-installed-keywords ${INITIAL_FIXTURES}
+    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Output Should Contain
     ...    SingleClassLib library with 4 keywords loaded.
     ...    test_resource library with 2 keywords loaded.
@@ -92,20 +90,10 @@ Cli Update Mode Should Leave Application With New Set Of Collections
     ...    to speed up execution
     [Tags]    rfhub2-64
     Api Should Have With 7 Collections And 16 Keywords
+    [Teardown]    Run Cli Package With Options
+    ...    --mode=insert --no-installed-keywords
 
 *** Keywords ***
 Api Should Have With ${n} Collections And ${m} Keywords
     collections Endpoint Should Have ${n} Items
     keywords Endpoint Should Have ${m} Items
-
-Run Cli Package Without Installed Keywords
-    Run Cli Package With Options    --no-installed-keywords ${INITIAL_FIXTURES}
-
-Backup And Switch Initial With Updated Fixtures
-    Move Directory      ${INITIAL_FIXTURES}    ${BACKUP_FIXTURES}
-    Copy Directory      ${UPDATED_FIXTURES}    ${INITIAL_FIXTURES}
-
-Restore Initial Fixtures
-    Remove Directory    ${INITIAL_FIXTURES}    recursive=True
-    Copy Directory      ${BACKUP_FIXTURES}     ${INITIAL_FIXTURES}
-    Remove Directory    ${BACKUP_FIXTURES}     recursive=True

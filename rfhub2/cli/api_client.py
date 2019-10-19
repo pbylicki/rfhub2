@@ -34,7 +34,9 @@ class Client(object):
         """
         Gets list of collections object using request get method.
         """
-        return self._get_request(endpoint="collections", params={"skip": skip, "limit": limit})
+        return self._get_request(
+            endpoint="collections", params={"skip": skip, "limit": limit}
+        )
 
     def add_collection(self, data: Dict) -> Dict:
         """

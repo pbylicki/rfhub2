@@ -45,6 +45,7 @@ Documentation For No Installed Keywords Should Be Displayed Properly
 
 Documentation For Mode Should Be Displayed Properly
     [Documentation]    Documentation For Mode Should Be Displayed Properly
+    [Tags]    rfhub2-64
     Output Should Contain
     ...    -m, --mode [insert|append|update]
     ...    Choice parameter specifying in what mode

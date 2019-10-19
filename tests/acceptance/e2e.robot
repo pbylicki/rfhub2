@@ -87,14 +87,15 @@ First Page Table After Update Should Contain Proper Libraries Data
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
+    [Tags]    rfhub2-64
     [Setup]    Test Setup For Collections Update
     [Template]    Table Should Contain Library Data
-    LibWithEmptyInit1       library     2.1.0       2
-    LibWithEmptyInit2       library     1.0.0       2
-    LibWithInit             library     6.6.6       4
-    SingleClassLib          library     1.2.8       4
-    Test Libdoc File        library     3.2.1       1
-    Test Libdoc File Copy	library     3.2.1       1
+    LibWithEmptyInit1        library    2.1.0       2
+    LibWithEmptyInit2        library    1.0.0       2
+    LibWithInit              library    6.6.6       4
+    SingleClassLib           library    1.2.8       4
+    Test Libdoc File         library    3.2.1       1
+    Test Libdoc File Copy    library    3.2.1       1
     test_resource           resource    ${EMPTY}    2
     [Teardown]    Restore Initial Fixtures
 
@@ -102,6 +103,7 @@ Single Class Library Details Should Be Updated On Frontend
     [Documentation]    This test bases on 
     ...    'First Page Table After Update Should Contain Proper Libraries Data'
     ...    to shorten execution time.
+    [Tags]    rfhub2-64
     Open ${single_class_lib} In Left Panel
     Click ${overview} In Left Panel
     Click Element    ${single_class_lib}

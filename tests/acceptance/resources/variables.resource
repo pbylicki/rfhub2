@@ -19,7 +19,6 @@ ${search_field}                    //*[@id="root"]/div/header/div/div/div[2]/inp
 ${search_hits_number}              ${main_page_collection_number}
 ${search_result_table}             ${main_page_prefix}/div/div/div/table/tbody/tr
 ${hamburger}                       //*[@id="root"]/div/header/div/button/span[1]/svg/path
-${hamburger_menu}                  //*[@id="root"]/div/div/div/div/button
 
 #VARIABLES
 ${INITIAL_FIXTURES}                ${CURDIR}/../../fixtures/initial/

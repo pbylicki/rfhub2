@@ -20,8 +20,6 @@ EXCLUDED_LIBRARIES = {
     "setup.py",
 }
 INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
-# COLLECTION_KEYS = ("doc", "doc_format", "keywords", "name", "path", "scope", "type", "version")
-# KEYWORD_KEYS = ("name", "doc", "args")
 
 
 class RfhubImporter(object):
@@ -171,6 +169,7 @@ class RfhubImporter(object):
     def delete_outdated_collections(
         self, existing_collections: List[Dict], new_collections: List[Dict]
     ) -> None:
+        """Deletes outdated collections"""
         collections_to_delete = self._get_outdated_collections(
             existing_collections, new_collections
         ) | self._get_obsolete_collections(existing_collections, new_collections)

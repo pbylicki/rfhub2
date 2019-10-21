@@ -81,7 +81,6 @@ Cli Should Update Existing Collections, Delete Obsolete And Add New
     ...    test_resource library with 2 keywords loaded.
     ...    Test Libdoc File library with 1 keywords loaded.
     ...    Test Libdoc File Copy library with 1 keywords loaded.
-    [Teardown]    Restore Initial Fixtures
 
 Cli Update Mode Should Leave Application With New Set Of Collections
     [Documentation]     Cli Update Mode Should Leave Application 
@@ -90,7 +89,17 @@ Cli Update Mode Should Leave Application With New Set Of Collections
     ...    to speed up execution
     [Tags]    rfhub2-64
     Api Should Have With 7 Collections And 16 Keywords
-    [Teardown]    Run Cli Package With Options
+    
+Running Cli Update Mode Second Time Should Leave Collections Untouched
+    [Documentation]    Running Cli Update Mode Second Time 
+    ...    Should Leave Collections Untouched. This test bases on 
+    ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
+    ...    to speed up execution
+    Run Cli Package With Options
+    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
+    Output Should Contain    Successfully loaded 0 collections with 0 keywords.
+    [Teardown]    Run Keywords    Restore Initial Fixtures    AND
+    ...    Run Cli Package With Options
     ...    --mode=insert --no-installed-keywords
 
 *** Keywords ***

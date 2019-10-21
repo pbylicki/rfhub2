@@ -48,7 +48,7 @@ class RfhubImporter(object):
         """Gets all collections from application"""
         collections = []
         for i in range(0, 999999, 100):
-            collection_slice = self.client.get_collections(i, i + 100)
+            collection_slice = self.client.get_collections(i, 100)
             if len(collection_slice) == 0:
                 break
             collections += collection_slice
@@ -339,7 +339,6 @@ class RfhubImporter(object):
         """Returns set of collection ids that were found in application but are outdated"""
         outdated_collections = set()
         if len(existing_collections) > 0:
-            outdated_collections = set()
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
                     reduced_collection = RfhubImporter._reduce_collection_items(
@@ -437,4 +436,5 @@ class RfhubImporter(object):
         if new_collection["type"] == "library":
             return new_collection["version"] != existing_collection["version"]
         else:
-            return new_collection != existing_collection
+            return any(keyword not in new_collection["keywords"] for keyword in existing_collection["keywords"]) or\
+                   any(keyword not in existing_collection["keywords"] for keyword in new_collection["keywords"])

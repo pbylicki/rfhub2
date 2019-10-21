@@ -333,17 +333,17 @@ class RfhubImporterTests(unittest.TestCase):
 
     def test_get_all_collections_should_return_all_collections(self):
         with responses.RequestsMock() as rsps:
-            for i, j in zip([0, 100], [100, 200]):
+            for i in (0, 100):
                 rsps.add(
                     responses.GET,
-                    f"{self.client.api_url}/collections/?skip={i}&limit={j}",
+                    f"{self.client.api_url}/collections/?skip={i}&limit=100",
                     json=[{"id": i}],
                     status=200,
                     adding_headers={"Content-Type": "application/json"},
                 )
             rsps.add(
                 responses.GET,
-                f"{self.client.api_url}/collections/?skip=200&limit=300",
+                f"{self.client.api_url}/collections/?skip=200&limit=100",
                 json=[],
                 status=200,
                 adding_headers={"Content-Type": "application/json"},

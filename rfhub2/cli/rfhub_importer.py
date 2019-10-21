@@ -436,5 +436,15 @@ class RfhubImporter(object):
         if new_collection["type"] == "library":
             return new_collection["version"] != existing_collection["version"]
         else:
-            return any(keyword not in new_collection["keywords"] for keyword in existing_collection["keywords"]) or\
-                   any(keyword not in existing_collection["keywords"] for keyword in new_collection["keywords"])
+            return (
+                any(
+                    keyword not in new_collection["keywords"]
+                    for keyword in existing_collection["keywords"]
+                )
+                or any(
+                    keyword not in existing_collection["keywords"]
+                    for keyword in new_collection["keywords"]
+                )
+                or {k: v for k, v in new_collection.items() if k != "keywords"}
+                != {k: v for k, v in existing_collection.items() if k != "keywords"}
+            )

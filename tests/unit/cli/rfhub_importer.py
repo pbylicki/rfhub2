@@ -862,7 +862,9 @@ class RfhubImporterTests(unittest.TestCase):
         )
         self.assertTrue(result)
 
-    def test_library_or_resource_doc_changed_should_return_true_when_resource_changed(self):
+    def test_library_or_resource_doc_changed_should_return_true_when_resource_changed(
+        self
+    ):
         EXPECTED_COLLECTION["type"] = "resource"
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
         collection2["doc"] = "abc"

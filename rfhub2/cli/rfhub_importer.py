@@ -323,7 +323,9 @@ class RfhubImporter(object):
         existing_collections: List[Dict], new_collections: List[Dict]
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but not in paths"""
-        new_collections_paths = {new_collection["path"] for new_collection in new_collections}
+        new_collections_paths = {
+            new_collection["path"] for new_collection in new_collections
+        }
         return {
             existing_collection["id"]
             for existing_collection in existing_collections
@@ -376,7 +378,9 @@ class RfhubImporter(object):
         existing_collections: List[Dict], new_collections: List[Dict]
     ) -> List[Dict]:
         """Returns list of collections to insert that were found in paths but not in application"""
-        existing_collections_paths = {existing_collection["path"] for existing_collection in existing_collections}
+        existing_collections_paths = {
+            existing_collection["path"] for existing_collection in existing_collections
+        }
         return [
             new_collection
             for new_collection in new_collections
@@ -443,12 +447,17 @@ class RfhubImporter(object):
                     keyword not in existing_collection["keywords"]
                     for keyword in new_collection["keywords"]
                 )
-                or RfhubImporter._library_or_resource_doc_changed(new_collection, existing_collection)
+                or RfhubImporter._library_or_resource_doc_changed(
+                    new_collection, existing_collection
+                )
             )
 
     @staticmethod
-    def _library_or_resource_doc_changed(new_collection: Dict, existing_collection: Dict) -> bool:
+    def _library_or_resource_doc_changed(
+        new_collection: Dict, existing_collection: Dict
+    ) -> bool:
         """Returns true if collection overall documentation has changed.
         Does not check for keywords changes"""
-        return {k: v for k, v in new_collection.items() if k != "keywords"} \
-               != {k: v for k, v in existing_collection.items() if k != "keywords"}
+        return {k: v for k, v in new_collection.items() if k != "keywords"} != {
+            k: v for k, v in existing_collection.items() if k != "keywords"
+        }

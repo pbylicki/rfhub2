@@ -22,32 +22,43 @@ Documentation For User Should Be Displayed Properly
     [Documentation]    Documentation For User Should Be Displayed Properly
     Output Should Contain
     ...    -u, --user TEXT
-    ...    Specifies rfhub2 user to authenticate on endpoints
-    ...    that requires that. Default value is rfhub.
+    ...    Specifies rfhub2 user to authenticate on
+    ...    endpoints that requires that. Default value
+    ...    is rfhub.
 
 Documentation For Password Should Be Displayed Properly
     [Documentation]    Documentation For Password Should Be Displayed Properly
     Output Should Contain
     ...    -p, --password TEXT
     ...    Specifies rfhub2 password to authenticate on
-    ...    endpoints that requires that. Default value is
-    ...    rfhub.
+    ...    endpoints that requires that. Default value
+    ...    is rfhub.
 
 Documentation For No Installed Keywords Should Be Displayed Properly
     [Documentation]    Documentation For No Installed Keywords Should Be Displayed Properly
     Output Should Contain
     ...    --no-installed-keywords
-    ...    Flag specifying if package should skip loading
-    ...    commonly installed libraries, such as such as
-    ...    BuiltIn, Collections, DateTime etc.
+    ...    Flag specifying if package should skip
+    ...    loading commonly installed libraries, such
+    ...    as such as BuiltIn, Collections, DateTime
+    ...    etc.
 
-Documentation For No DB Flush Should Be Displayed Properly
-    [Documentation]    Documentation For No DB Flush Should Be Displayed Properly
+Documentation For Mode Should Be Displayed Properly
+    [Documentation]    Documentation For Mode Should Be Displayed Properly
+    [Tags]    rfhub2-64
     Output Should Contain
-    ...    --no-db-flush
-    ...    Flag specifying if package should delete from
-    ...    rfhub2 all existing libraries.
-    ...    BuiltIn, Collections, DateTime etc.
+    ...    -m, --mode [insert|append|update]
+    ...    Choice parameter specifying in what mode
+    ...    package should run:
+    ...    - `insert` - default
+    ...    value, removes all existing collections from
+    ...    app and add ones found in paths
+    ...    - `append`
+    ...    - adds collections found in paths without
+    ...    removal of existing ones
+    ...    - `update` -
+    ...    removes collections not found in paths, adds
+    ...    new ones and updates existing ones.
 
 Documentation For Help Should Be Displayed Properly
     [Documentation]    Documentation For Help Should Be Displayed Properly

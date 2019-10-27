@@ -48,7 +48,7 @@ class RfhubImporter(object):
         """Gets all collections from application"""
         collections = []
         for i in range(0, 999999, 100):
-            collection_slice = self.client.get_collections(i, 100)
+            collection_slice = self.client.get_collections(i)
             if len(collection_slice) == 0:
                 break
             collections += collection_slice
@@ -78,10 +78,10 @@ class RfhubImporter(object):
             loaded_collections = self.add_collections(collections)
         else:
             existing_collections = self.get_all_collections()
-            self.delete_outdated_collections(existing_collections, collections)
             loaded_collections = self.update_collections(
                 existing_collections, collections
             )
+            self.delete_outdated_collections(existing_collections, collections)
         return len(loaded_collections), sum(d["keywords"] for d in loaded_collections)
 
     def get_libraries_paths(self) -> Set[Path]:
@@ -170,9 +170,9 @@ class RfhubImporter(object):
         self, existing_collections: List[Dict], new_collections: List[Dict]
     ) -> None:
         """Deletes outdated collections"""
-        collections_to_delete = self._get_outdated_collections(
+        collections_to_delete = self._get_outdated_collections_ids(
             existing_collections, new_collections
-        ) | self._get_obsolete_collections(existing_collections, new_collections)
+        ) | self._get_obsolete_collections_ids(existing_collections, new_collections)
         for collection in collections_to_delete:
             self.client.delete_collection(collection)
         return collections_to_delete
@@ -319,21 +319,19 @@ class RfhubImporter(object):
         )
 
     @staticmethod
-    def _get_obsolete_collections(
+    def _get_obsolete_collections_ids(
         existing_collections: List[Dict], new_collections: List[Dict]
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but not in paths"""
+        new_collections_paths = {new_collection["path"] for new_collection in new_collections}
         return {
             existing_collection["id"]
             for existing_collection in existing_collections
-            if all(
-                existing_collection["path"] != new_collection["path"]
-                for new_collection in new_collections
-            )
+            if existing_collection["path"] not in new_collections_paths
         }
 
     @staticmethod
-    def _get_outdated_collections(
+    def _get_outdated_collections_ids(
         existing_collections: List[Dict], new_collections: List[Dict]
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but are outdated"""
@@ -378,13 +376,11 @@ class RfhubImporter(object):
         existing_collections: List[Dict], new_collections: List[Dict]
     ) -> List[Dict]:
         """Returns list of collections to insert that were found in paths but not in application"""
+        existing_collections_paths = {existing_collection["path"] for existing_collection in existing_collections}
         return [
             new_collection
             for new_collection in new_collections
-            if all(
-                new_collection["path"] != existing_collection["path"]
-                for existing_collection in existing_collections
-            )
+            if new_collection["path"] not in existing_collections_paths
         ]
 
     @staticmethod
@@ -404,14 +400,15 @@ class RfhubImporter(object):
         new_collection: Dict, existing_collection: Dict
     ) -> Dict:
         """Returns existing_collection dictionary with key/value pairs reduced to the ones from new_collection"""
-        return {k: existing_collection[k] for k in new_collection.keys()}
+        return {k: existing_collection.get(k) for k in new_collection.keys()}
 
     @staticmethod
     def _get_reduced_keywords(
         new_collection_keywords: List[Dict], existing_collection_keywords: List[Dict]
     ) -> List[Dict]:
+        reduced_keywords_list = []
         if min(len(new_collection_keywords), len(existing_collection_keywords)) > 0:
-            return [
+            reduced_keywords_list = [
                 {
                     k: v
                     for k, v in keyword.items()
@@ -419,6 +416,7 @@ class RfhubImporter(object):
                 }
                 for keyword in existing_collection_keywords
             ]
+        return reduced_keywords_list
 
     @staticmethod
     def _collection_path_and_name_match(
@@ -445,6 +443,12 @@ class RfhubImporter(object):
                     keyword not in existing_collection["keywords"]
                     for keyword in new_collection["keywords"]
                 )
-                or {k: v for k, v in new_collection.items() if k != "keywords"}
-                != {k: v for k, v in existing_collection.items() if k != "keywords"}
+                or RfhubImporter._library_or_resource_doc_changed(new_collection, existing_collection)
             )
+
+    @staticmethod
+    def _library_or_resource_doc_changed(new_collection: Dict, existing_collection: Dict) -> bool:
+        """Returns true if collection overall documentation has changed.
+        Does not check for keywords changes"""
+        return {k: v for k, v in new_collection.items() if k != "keywords"} \
+               != {k: v for k, v in existing_collection.items() if k != "keywords"}

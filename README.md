@@ -70,11 +70,11 @@ rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 #### Rfhub2-cli can be run in three modes:
 
 - `insert`, default mode, that will clean up existing collections app and load all collections found in provided paths  
-``` rfhub2-cli mode=insert ../your_repo ../your_other_repo```
+``` rfhub2-cli --mode=insert ../your_repo ../your_other_repo```
 - `append`, which will only add collections form provided paths  
-``` rfhub2-cli mode=append ../your_repo ../your_other_repo```
+``` rfhub2-cli --mode=append ../your_repo ../your_other_repo```
 - `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones  
-``` rfhub2-cli mode=update ../your_repo ../your_other_repo```
+``` rfhub2-cli --mode=update ../your_repo ../your_other_repo```
 
 ## License
 RfHub2 is an open source software provided under the [Apache License 2.0](http://apache.org/licenses/LICENSE-2.0)

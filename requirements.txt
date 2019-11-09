@@ -2,7 +2,7 @@ aiofiles==0.4.0
 Click==7.0
 dataclasses==0.6
 fastapi==0.42.0
-h11==0.8.1
+h11==0.9.0
 httptools==0.0.13
 jinja2==2.10.1
 MarkupSafe==1.1.1

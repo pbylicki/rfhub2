@@ -1,4 +1,4 @@
-black==19.3b0
+black==19.10b0
 coverage==4.5.4
 codecov==2.0.15
 responses==0.10.6

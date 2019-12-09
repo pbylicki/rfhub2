@@ -3,6 +3,9 @@ from setuptools import setup
 filename = 'rfhub2/version.py'
 exec(open(filename).read())
 
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+
 setup(
     name='rfhub2',
     version=version,
@@ -16,15 +19,7 @@ setup(
     long_description_content_type='text/markdown',
     zip_safe=True,
     include_package_data=True,
-    install_requires=[
-        'aiofiles>=0.4.0',
-        'Click>=7.0',
-        'fastapi>=0.30.0',
-        'robotframework>=3.0.0',
-        'SQLAlchemy>=1.1.0',
-        'requests>=2.10.0',
-        'uvicorn>=0.7.1'
-    ],
+    install_requires=requirements,
     extras_require={
         "postgresql": ["psycopg2-binary>=2.7.4"]
     },

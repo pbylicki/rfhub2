@@ -1,3 +1,4 @@
+from datetime import time
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -58,3 +59,17 @@ class Collection(NestedCollection, CollectionUpdate):
 
 class Keyword(NestedKeyword):
     collection: NestedCollection
+
+
+class Statistics(BaseModel):
+    collection: str
+    keyword: str
+    times_used: int
+    total_elapsed_time: time
+
+    class Config:
+        orm_mode = True
+
+
+class StatisticsUpdate(BaseModel):
+    id: int

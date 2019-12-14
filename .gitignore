@@ -34,6 +34,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+xunit.xml
 
 # Translations
 *.mo
@@ -59,3 +60,5 @@ selenium-screenshot-*.png
 
 # IDE
 .idea
+red.xml
+libspecs/

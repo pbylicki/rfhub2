@@ -16,13 +16,10 @@ router = APIRouter()
 def get_statistics(
     repository: StatisticsRepository = Depends(get_statistics_repository),
     skip: int = 0,
-    limit: int = 100,
-    pattern: str = None,
-    libtype: str = None,
+    limit: int = 100
 ):
     statistics: List[DBStatistics] = repository.get_all(
-        skip=skip, limit=limit, pattern=pattern, libtype=libtype
-    )
+        skip=skip, limit=limit)
     return statistics
 
 

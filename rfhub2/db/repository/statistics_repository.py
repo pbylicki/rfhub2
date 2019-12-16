@@ -1,5 +1,6 @@
 from typing import List
 
+from sqlalchemy import func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
@@ -23,7 +24,9 @@ class StatisticsRepository(BaseRepository):
         limit: int = 100,
     ) -> List[Statistics]:
         return (
-            self._items.order_by(Statistics.collection, Statistics.keyword)
+            self.session.query(func.sum(Statistics.times_used), func.avg(Statistics.total_elapsed_time), Statistics.collection, Statistics.keyword)
+            .group_by(Statistics.collection, Statistics.keyword)
+            .order_by(Statistics.collection, Statistics.keyword)
             .offset(skip)
             .limit(limit)
             .all()

@@ -37,7 +37,7 @@ def recreate_data(session: Session) -> None:
             execution_time=datetime(2019, 12, 21, 2, 30, 0, tzinfo=timezone.utc),
             times_used=5,
             total_elapsed=3000,
-            min_elapsed=200,
+            min_elapsed=300,
             max_elapsed=1500,
         ),
         Statistics(
@@ -45,7 +45,7 @@ def recreate_data(session: Session) -> None:
             keyword="Some keyword",
             execution_time=datetime(2019, 12, 20, 1, 30, 0, tzinfo=timezone.utc),
             times_used=5,
-            total_elapsed=2500,
+            total_elapsed=2000,
             min_elapsed=200,
             max_elapsed=1000,
         ),

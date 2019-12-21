@@ -134,7 +134,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "execution_time": "2019-12-21T02:30:00",
         "times_used": 5,
         "total_elapsed": 3000,
-        "min_elapsed": 200,
+        "min_elapsed": 300,
         "max_elapsed": 1500,
     }
     STATISTICS_2 = {
@@ -142,7 +142,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "keyword": "Some keyword",
         "execution_time": "2019-12-20T01:30:00",
         "times_used": 5,
-        "total_elapsed": 2500,
+        "total_elapsed": 2000,
         "min_elapsed": 200,
         "max_elapsed": 1000,
     }
@@ -163,6 +163,27 @@ class BaseApiEndpointTest(unittest.TestCase):
         "total_elapsed": 1000,
         "min_elapsed": 10,
         "max_elapsed": 100,
+    }
+    AGGREGATED_STATS_COLLECTION_1 = {
+        "times_used": 20,
+        "total_elapsed": 6000,
+        "avg_elapsed": 2000.0,
+        "min_elapsed": 10,
+        "max_elapsed": 1500,
+    }
+    AGGREGATED_STATS_KEYWORD_2 = {
+        "times_used": 10,
+        "total_elapsed": 5000,
+        "avg_elapsed": 2500.0,
+        "min_elapsed": 200,
+        "max_elapsed": 1500,
+    }
+    AGGREGATED_STATS_EMPTY = {
+        "times_used": 0,
+        "total_elapsed": 0,
+        "avg_elapsed": 0.0,
+        "min_elapsed": 0,
+        "max_elapsed": 0,
     }
     STATISTICS_TO_CREATE = {
         "collection": "First collection",

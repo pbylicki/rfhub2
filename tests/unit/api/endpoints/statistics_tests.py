@@ -30,6 +30,27 @@ class StatisticsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
 
+    def test_get_aggregated_collection_statistics(self):
+        response = self.client.get(
+            "api/v1/statistics/aggregated/?collection=First collection"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.AGGREGATED_STATS_COLLECTION_1)
+
+    def test_get_aggregated_keyword_statistics(self):
+        response = self.client.get(
+            "api/v1/statistics/aggregated/?collection=First collection&keyword=Some keyword"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.AGGREGATED_STATS_KEYWORD_2)
+
+    def test_get_empty_aggregated_statistics_for_nonexistent_keyword(self):
+        response = self.client.get(
+            "api/v1/statistics/aggregated/?collection=First collection&keyword=Keyword"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.AGGREGATED_STATS_EMPTY)
+
     def test_create_new_statistic(self):
         response = self.auth_client.post(
             "api/v1/statistics/", json=self.STATISTICS_TO_CREATE

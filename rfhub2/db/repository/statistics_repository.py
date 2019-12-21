@@ -1,9 +1,26 @@
+from pydantic import BaseConfig
+from pydantic.dataclasses import dataclass
 from datetime import datetime
+from sqlalchemy import func
 from sqlalchemy.orm.query import Query
 from typing import List, Optional
 
 from rfhub2.db.base import Statistics
 from rfhub2.db.repository.base_repository import BaseRepository
+
+
+class Config(BaseConfig):
+    orm_mode = True
+
+
+@dataclass(config=Config)
+class AggregatedStatistics:
+
+    times_used: int
+    total_elapsed: int
+    avg_elapsed: float
+    min_elapsed: int
+    max_elapsed: int
 
 
 class StatisticsRepository(BaseRepository):
@@ -25,6 +42,30 @@ class StatisticsRepository(BaseRepository):
         if execution_time:
             filter_criteria.append(Statistics.execution_time == execution_time)
         return filter_criteria
+
+    def get_aggregated(
+        self,
+        *,
+        collection: str,
+        keyword: Optional[str] = None,
+        execution_time: Optional[datetime] = None,
+    ) -> AggregatedStatistics:
+        result = (
+            self.session.query(
+                func.coalesce(func.sum(Statistics.times_used), 0).label("times_used"),
+                func.coalesce(func.sum(Statistics.total_elapsed), 0).label(
+                    "total_elapsed"
+                ),
+                func.coalesce(func.avg(Statistics.total_elapsed), 0).label(
+                    "avg_elapsed"
+                ),
+                func.coalesce(func.min(Statistics.min_elapsed), 0).label("min_elapsed"),
+                func.coalesce(func.max(Statistics.max_elapsed), 0).label("max_elapsed"),
+            )
+            .filter(*self.filter_criteria(collection, keyword, execution_time))
+            .first()
+        )
+        return AggregatedStatistics(*result)
 
     def get_many(
         self,

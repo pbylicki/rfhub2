@@ -7,7 +7,10 @@ from typing import List
 from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_statistics_repository
 from rfhub2.db.base import Statistics as DBStatistics
-from rfhub2.db.repository.statistics_repository import StatisticsRepository
+from rfhub2.db.repository.statistics_repository import (
+    AggregatedStatistics,
+    StatisticsRepository,
+)
 from rfhub2.model import Statistics, StatisticsDeleted
 
 router = APIRouter()
@@ -19,6 +22,16 @@ class DuplicatedStatisticException(HTTPException):
             status_code=400,
             detail="Record already exists for provided collection, keyword and execution_time",
         )
+
+
+@router.get("/aggregated/", response_model=AggregatedStatistics)
+def get_aggregated(
+    *,
+    repository: StatisticsRepository = Depends(get_statistics_repository),
+    collection: str,
+    keyword: str = None,
+):
+    return repository.get_aggregated(collection=collection, keyword=keyword)
 
 
 @router.get("/", response_model=List[Statistics])
@@ -75,16 +88,11 @@ def delete_statistics(
         raise HTTPException(status_code=404)
 
 
-@router.delete("/all/")
+@router.delete("/all/", status_code=204)
 def delete_all_statistics(
     *,
-    response: Response,
     _: bool = Depends(is_authenticated),
     repository: StatisticsRepository = Depends(get_statistics_repository),
 ):
     deleted: int = repository.delete_many()
-    if deleted:
-        response.status_code = 204
-        return StatisticsDeleted(deleted=deleted)
-    else:
-        raise HTTPException(status_code=404)
+    return StatisticsDeleted(deleted=deleted)

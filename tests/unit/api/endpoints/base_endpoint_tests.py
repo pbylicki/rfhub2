@@ -9,7 +9,6 @@ from rfhub2.db.session import db_session
 
 
 class BaseApiEndpointTest(unittest.TestCase):
-
     NESTED_COLLECTION_1 = {"id": 1, "name": "First collection"}
     NESTED_KEYWORD_1 = {
         "id": 1,
@@ -129,6 +128,51 @@ class BaseApiEndpointTest(unittest.TestCase):
         "path": "/some/file",
     }
     COLLECTION_UPDATED = {**COLLECTION_3, **COLLECTION_TO_UPDATE}
+    STATISTICS_1 = {
+        "collection": "First collection",
+        "keyword": "Some keyword",
+        "execution_time": "2019-12-21T02:30:00",
+        "times_used": 5,
+        "total_elapsed": 3000,
+        "min_elapsed": 200,
+        "max_elapsed": 1500,
+    }
+    STATISTICS_2 = {
+        "collection": "First collection",
+        "keyword": "Some keyword",
+        "execution_time": "2019-12-20T01:30:00",
+        "times_used": 5,
+        "total_elapsed": 2500,
+        "min_elapsed": 200,
+        "max_elapsed": 1000,
+    }
+    STATISTICS_3 = {
+        "collection": "First collection",
+        "keyword": "Test setup",
+        "execution_time": "2019-12-21T02:30:00",
+        "times_used": 10,
+        "total_elapsed": 1000,
+        "min_elapsed": 10,
+        "max_elapsed": 100,
+    }
+    STATISTICS_4 = {
+        "collection": "Second collection",
+        "keyword": "Old keyword",
+        "execution_time": "2019-12-21T02:30:00",
+        "times_used": 10,
+        "total_elapsed": 1000,
+        "min_elapsed": 10,
+        "max_elapsed": 100,
+    }
+    STATISTICS_TO_CREATE = {
+        "collection": "First collection",
+        "keyword": "Some keyword",
+        "execution_time": "2019-12-22T03:30:00",
+        "times_used": 5,
+        "total_elapsed": 2500,
+        "min_elapsed": 200,
+        "max_elapsed": 1000,
+    }
 
     def setUp(self) -> None:
         self.app = create_app()

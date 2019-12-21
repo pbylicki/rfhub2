@@ -1,6 +1,7 @@
 from tests.unit.api.endpoints.collections_tests import CollectionsApiTest
 from tests.unit.api.endpoints.healthcheck_tests import HealthcheckApiTest
 from tests.unit.api.endpoints.keywords_tests import KeywordsApiTest
+from tests.unit.api.endpoints.statistics_tests import StatisticsApiTest
 from tests.unit.api.endpoints.version_tests import VersionApiTest
 from tests.unit.cli.api_client import ApiClientTests
 from tests.unit.cli.rfhub_importer import RfhubImporterTests

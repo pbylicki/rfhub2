@@ -6,11 +6,11 @@ from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
 
 from rfhub2.db.base import Collection, Keyword
-from rfhub2.db.repository.base_repository import BaseRepository
+from rfhub2.db.repository.base_repository import IdEntityRepository
 from rfhub2.db.repository.query_utils import glob_to_sql
 
 
-class KeywordRepository(BaseRepository):
+class KeywordRepository(IdEntityRepository):
     @property
     def _items(self) -> Query:
         return self.session.query(Keyword).options(selectinload(Keyword.collection))

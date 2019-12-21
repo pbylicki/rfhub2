@@ -1,4 +1,4 @@
-from datetime import time
+from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -64,12 +64,15 @@ class Keyword(NestedKeyword):
 class Statistics(BaseModel):
     collection: str
     keyword: str
+    execution_time: datetime
     times_used: int
-    total_elapsed_time: time
+    total_elapsed: int
+    min_elapsed: int
+    max_elapsed: int
 
     class Config:
         orm_mode = True
 
 
-class StatisticsUpdate(BaseModel):
-    id: int
+class StatisticsDeleted(BaseModel):
+    deleted: int

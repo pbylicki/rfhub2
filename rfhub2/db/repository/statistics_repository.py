@@ -24,7 +24,7 @@ class StatisticsRepository(BaseRepository):
         limit: int = 100,
     ) -> List[Statistics]:
         return (
-            self.session.query(func.sum(Statistics.times_used), func.avg(Statistics.total_elapsed_time), Statistics.collection, Statistics.keyword)
+            self.session.query((func.sum(Statistics.times_used)).label('times_used'), (func.avg(Statistics.total_elapsed_time)).label('total_elapsed_time'), Statistics.collection, Statistics.keyword)
             .group_by(Statistics.collection, Statistics.keyword)
             .order_by(Statistics.collection, Statistics.keyword)
             .offset(skip)

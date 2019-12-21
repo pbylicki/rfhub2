@@ -8,7 +8,7 @@ class Statistics(Base):
     collection = Column(Text, index=True)
     keyword = Column(Text, index=True)
     times_used = Column(Integer)
-    total_elapsed_time = Column(Time)
+    total_elapsed_time = Column(Integer)
 
     def __str__(self):  # pragma: no cover
         return f"Statistics({self.id},{self.collection},{self.keyword},{self.times_used},{self.total_elapsed_time})"

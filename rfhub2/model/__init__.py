@@ -1,4 +1,3 @@
-from datetime import time
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -49,12 +48,15 @@ class NestedKeyword(KeywordUpdate):
     synopsis: Optional[str]
     html_doc: Optional[str]
     arg_string: Optional[str]
+    times_used: Optional[int]
+    avg_elapsed_time: Optional[int]
 
 
 class Collection(NestedCollection, CollectionUpdate):
     keywords: List[NestedKeyword]
     synopsis: Optional[str]
     html_doc: Optional[str]
+    times_used: Optional[int]
 
 
 class Keyword(NestedKeyword):
@@ -65,11 +67,11 @@ class Statistics(BaseModel):
     collection: str
     keyword: str
     times_used: int
-    total_elapsed_time: time
+    total_elapsed_time: int
 
     class Config:
         orm_mode = True
 
 
-class StatisticsUpdate(BaseModel):
+class StatisticsUpdate(Statistics):
     id: int

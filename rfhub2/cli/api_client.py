@@ -56,6 +56,12 @@ class Client(object):
         """
         return self._post_request(endpoint="keywords", data=data)
 
+    def add_statistics(self, data: Dict) -> Response:
+        """
+        Adds statistics using requests post method.
+        """
+        return self._post_request(endpoint="statistics", data=data)
+
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """
         Sends get request from given endpoint.

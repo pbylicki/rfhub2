@@ -6,7 +6,7 @@ import robot.libraries
 from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
-
+from .statistics_extractor import StatisticsExtractor
 
 RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
 ALL_PATTERNS = RESOURCE_PATTERNS | {".xml", ".py"}
@@ -29,10 +29,12 @@ class RfhubImporter(object):
         paths: Tuple[Path, ...],
         no_installed_keywords: bool,
         mode: str,
+        load_mode: str,
     ) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.mode = mode
+        self.load_mode = load_mode
         self.client = client
 
     def delete_all_collections(self) -> Set[int]:
@@ -64,16 +66,92 @@ class RfhubImporter(object):
             self.client.delete_collection(id)
         return collections_id
 
+    def import_data(self) -> Tuple[int, int]:
+        """
+        Wrapper for import_libraries and import_statistics to not create logic in main.
+        In feature this might be extended with import_testcases.
+        :return: Number of libraries and keyword loaded
+        """
+        if self.mode == "keywords":
+            return self.import_libraries()
+        else:
+            return self.import_statistics()
+
+    def import_statistics(self) -> Tuple[int, int]:
+        """
+        Import keywords executions statistics such as min/max/total elapsed time,
+        number of times used and execution timestamp.
+        :return: Number of libraries and keyword loaded
+        """
+        execution_files = self.get_exection_files_paths()
+        statistics = [
+            stat
+            for execution_file in execution_files
+            for stat in StatisticsExtractor(execution_file).compute_statistics()
+        ]
+        return self.add_statistics(statistics)
+
+    def get_exection_files_paths(self) -> Set[Path]:
+        """
+        Traverses all given paths and returns set with paths
+        pointing to RFWK output.xml files to import to app.
+        :return: Set of Paths object pointing to output.xml files to import
+        """
+        return {
+            p
+            for path in self.paths
+            for p in Path(path).rglob("*.xml")
+            if self._is_valid_execution_file(p)
+        }
+
+    @staticmethod
+    def _is_valid_execution_file(path: Path) -> bool:
+        """
+        Checks if file is xml file containing apropriate string.
+        This is simplified approach to quick check file.
+        :param path:
+        :return:
+        """
+        with open(path, "r", encoding="utf-8", errors="ignore") as f:
+            # read the first few lines; if we don't see
+            # what looks like robot tag data, return false
+            data = f.read(200)
+            index = data.lower().find("<robot generator=")
+            return index > 0
+
+    def add_statistics(self, statistics: List[Dict]) -> Tuple[int, int]:
+        """
+        Adds statistics from provided list to app.
+        :param statistics: List of statistics object
+        :return: list of dictionaries with collection name and number of keywords.
+        """
+        collections, keywords = set(), set()
+        for stat in statistics:
+            stat_req = self.client.add_statistics(stat)
+            if stat_req[0] == 201:
+                collections.add(stat["collection"])
+                keywords.add(".".join((stat["collection"], stat["keyword"])))
+            elif stat_req[0] != 400:
+                print(stat_req[1]["detail"])
+                raise StopIteration
+            else:
+                print(
+                    f"""Record already exists for provided collection: {stat["collection"]}, keyword: {stat[
+                        "keyword"]} and execution_time: {stat["execution_time"]}"""
+                )
+
+        return len(collections), len(keywords)
+
     def import_libraries(self) -> Tuple[int, int]:
         """
         Import libraries to application from paths specified when invoking client.
-        :return: Number of libraries loaded
+        :return: Number of libraries and keyword loaded
         """
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)
-        if self.mode == "append":
+        if self.load_mode == "append":
             loaded_collections = self.add_collections(collections)
-        elif self.mode == "insert":
+        elif self.load_mode == "insert":
             self.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:

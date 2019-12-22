@@ -9,6 +9,7 @@ from rfhub2.cli.rfhub_importer import RfhubImporter
 from rfhub2.cli.api_client import Client
 
 FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "initial"
+STATISTICS_PATH = FIXTURE_PATH / ".." / "statistics"
 EXPECTED_LIBDOC = {
     "doc": "Documentation for library ``Test Libdoc File``.",
     "doc_format": "ROBOT",
@@ -49,6 +50,10 @@ EXPECTED_GET_LIBRARIES = (
         FIXTURE_PATH / "data_error.py",
     }
 )
+EXPECTED_GET_EXECUTION_PATHS = {
+    STATISTICS_PATH / "output.xml",
+    STATISTICS_PATH / "subdir" / "output.xml",
+}
 EXPECTED_COLLECTION = {
     "doc": "Overview that should be imported for SingleClassLib.",
     "doc_format": "ROBOT",
@@ -159,7 +164,7 @@ class RfhubImporterTests(unittest.TestCase):
         self.fixture_path = FIXTURE_PATH
         self.client = Client("http://localhost:8000", "rfhub", "rfhub")
         self.rfhub_importer = RfhubImporter(
-            self.client, (self.fixture_path,), True, mode="insert"
+            self.client, (self.fixture_path,), True, mode="insert", load_mode="insert"
         )
 
     def test_import_libraries_insert_mode(self):
@@ -360,6 +365,28 @@ class RfhubImporterTests(unittest.TestCase):
             self.fixture_path / "LibsWithEmptyInit"
         )
         self.assertEqual(result, EXPECTED_TRAVERSE_PATHS_NO_INIT)
+
+    def test_get_exection_files_paths_without_subdir_provided_should_return_set_of_paths(
+        self
+    ):
+        rfhub_importer = RfhubImporter(
+            self.client, (STATISTICS_PATH,), True, mode="statistics", load_mode="insert"
+        )
+        result = rfhub_importer.get_exection_files_paths()
+        self.assertSetEqual(result, EXPECTED_GET_EXECUTION_PATHS)
+
+    def test_get_exection_files_paths_with_subdir_provided_should_return_set_of_paths(
+        self
+    ):
+        rfhub_importer = RfhubImporter(
+            self.client,
+            (STATISTICS_PATH, STATISTICS_PATH / "subdir"),
+            True,
+            mode="statistics",
+            load_mode="insert",
+        )
+        result = rfhub_importer.get_exection_files_paths()
+        self.assertSetEqual(result, EXPECTED_GET_EXECUTION_PATHS)
 
     def test_get_libraries_paths_should_return_set_of_paths(self):
         result = self.rfhub_importer.get_libraries_paths()

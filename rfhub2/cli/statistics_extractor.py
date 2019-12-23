@@ -32,7 +32,9 @@ class StatisticsExtractor:
                 "min_elapsed": 2147483647,
                 "max_elapsed": 0,
             }
-            for k, v in Counter((keyword['library'], keyword['name']) for keyword in keywords).items()
+            for k, v in Counter(
+                (keyword["library"], keyword["name"]) for keyword in keywords
+            ).items()
         ]
         return self.get_elapsed_times(keywords, statistics)
 
@@ -43,7 +45,10 @@ class StatisticsExtractor:
         """
         for stat in statistics:
             for keyword in keywords:
-                if keyword["library"] == stat["collection"] and keyword["name"] == stat["keyword"]:
+                if (
+                    keyword["library"] == stat["collection"]
+                    and keyword["name"] == stat["keyword"]
+                ):
                     stat["total_elapsed"] += keyword["elapsed"]
                     stat["min_elapsed"] = min(stat["min_elapsed"], keyword["elapsed"])
                     stat["max_elapsed"] = max(stat["max_elapsed"], keyword["elapsed"])

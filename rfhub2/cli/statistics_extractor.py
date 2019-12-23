@@ -1,13 +1,12 @@
 from collections import Counter
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, List
 from xml.etree import ElementTree as et
 
 
 class StatisticsExtractor:
     def __init__(self, path: str):
-        self.path: Path = path
+        self.path: str = path
         self.source_time_format: str = "%Y%m%d %H:%M:%S.%f"
         self.destination_time_format: str = "%Y-%m-%d %H:%M:%S.%f"
 
@@ -25,15 +24,15 @@ class StatisticsExtractor:
         execution_time = self.get_execution_time()
         statistics = [
             {
-                "collection": k.split(".")[0],
-                "keyword": k.split(".")[1],
+                "collection": k[0],
+                "keyword": k[1],
                 "execution_time": execution_time,
                 "times_used": v,
                 "total_elapsed": 0,
-                "min_elapsed": None,
-                "max_elapsed": None,
+                "min_elapsed": 2147483647,
+                "max_elapsed": 0,
             }
-            for k, v in Counter(keyword["name"] for keyword in keywords).items()
+            for k, v in Counter((keyword['library'], keyword['name']) for keyword in keywords).items()
         ]
         return self.get_elapsed_times(keywords, statistics)
 
@@ -44,18 +43,10 @@ class StatisticsExtractor:
         """
         for stat in statistics:
             for keyword in keywords:
-                if keyword["name"] == ".".join((stat["collection"], stat["keyword"])):
+                if keyword["library"] == stat["collection"] and keyword["name"] == stat["keyword"]:
                     stat["total_elapsed"] += keyword["elapsed"]
-                    if (
-                        not stat["min_elapsed"]
-                        or keyword["elapsed"] < stat["min_elapsed"]
-                    ):
-                        stat["min_elapsed"] = keyword["elapsed"]
-                    if (
-                        not stat["max_elapsed"]
-                        or keyword["elapsed"] > stat["max_elapsed"]
-                    ):
-                        stat["max_elapsed"] = keyword["elapsed"]
+                    stat["min_elapsed"] = min(stat["min_elapsed"], keyword["elapsed"])
+                    stat["max_elapsed"] = max(stat["max_elapsed"], keyword["elapsed"])
         return statistics
 
     def parse_xml_keywords(self) -> List[Dict]:
@@ -65,9 +56,8 @@ class StatisticsExtractor:
         xml_keywords = et.parse(self.path).findall(".//kw")
         return [
             {
-                "name": ".".join(
-                    (xml_keyword.attrib.get("library"), xml_keyword.attrib.get("name"))
-                ),
+                "library": xml_keyword.attrib.get("library"),
+                "name": xml_keyword.attrib.get("name"),
                 "elapsed": int(
                     1000
                     * (

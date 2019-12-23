@@ -83,7 +83,7 @@ class RfhubImporter(object):
         number of times used and execution timestamp.
         :return: Number of libraries and keyword loaded
         """
-        execution_files = self.get_exection_files_paths()
+        execution_files = self.get_execution_files_paths()
         statistics = [
             stat
             for execution_file in execution_files
@@ -91,7 +91,7 @@ class RfhubImporter(object):
         ]
         return self.add_statistics(statistics)
 
-    def get_exection_files_paths(self) -> Set[Path]:
+    def get_execution_files_paths(self) -> Set[Path]:
         """
         Traverses all given paths and returns set with paths
         pointing to RFWK output.xml files to import to app.
@@ -116,8 +116,7 @@ class RfhubImporter(object):
             # read the first few lines; if we don't see
             # what looks like robot tag data, return false
             data = f.read(200)
-            index = data.lower().find("<robot generator=")
-            return index > 0
+            return "<robot generator=" in data.lower()
 
     def add_statistics(self, statistics: List[Dict]) -> Tuple[int, int]:
         """
@@ -145,7 +144,7 @@ class RfhubImporter(object):
     def import_libraries(self) -> Tuple[int, int]:
         """
         Import libraries to application from paths specified when invoking client.
-        :return: Number of libraries and keyword loaded
+        :return: Number of libraries and keywords loaded
         """
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)

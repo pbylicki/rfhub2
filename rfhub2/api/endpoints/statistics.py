@@ -1,4 +1,3 @@
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import IntegrityError
 from starlette.responses import Response
@@ -9,6 +8,7 @@ from rfhub2.api.utils.db import get_statistics_repository
 from rfhub2.db.base import Statistics as DBStatistics
 from rfhub2.db.repository.statistics_repository import (
     AggregatedStatistics,
+    StatisticsFilterParams,
     StatisticsRepository,
 )
 from rfhub2.model import Statistics, StatisticsDeleted
@@ -28,28 +28,21 @@ class DuplicatedStatisticException(HTTPException):
 def get_aggregated(
     *,
     repository: StatisticsRepository = Depends(get_statistics_repository),
-    collection: str,
-    keyword: str = None,
+    filter_params: StatisticsFilterParams = Depends(),
 ):
-    return repository.get_aggregated(collection=collection, keyword=keyword)
+    return repository.get_aggregated(filter_params)
 
 
 @router.get("/", response_model=List[Statistics])
 def get_statistics(
     *,
     repository: StatisticsRepository = Depends(get_statistics_repository),
-    collection: str,
-    keyword: str = None,
-    execution_time: datetime = None,
+    filter_params: StatisticsFilterParams = Depends(),
     skip: int = 0,
     limit: int = 100,
 ):
     statistics: List[DBStatistics] = repository.get_many(
-        collection=collection,
-        keyword=keyword,
-        execution_time=execution_time,
-        skip=skip,
-        limit=limit,
+        filter_params=filter_params, skip=skip, limit=limit
     )
     return statistics
 
@@ -74,13 +67,9 @@ def delete_statistics(
     response: Response,
     _: bool = Depends(is_authenticated),
     repository: StatisticsRepository = Depends(get_statistics_repository),
-    collection: str,
-    keyword: str = None,
-    execution_time: datetime = None,
+    filter_params: StatisticsFilterParams = Depends(),
 ):
-    deleted: int = repository.delete_many(
-        collection=collection, keyword=keyword, execution_time=execution_time
-    )
+    deleted: int = repository.delete_many(filter_params)
     if deleted:
         response.status_code = 204
         return StatisticsDeleted(deleted=deleted)

@@ -158,12 +158,23 @@ class BaseApiEndpointTest(unittest.TestCase):
     STATISTICS_4 = {
         "collection": "Second collection",
         "keyword": "Old keyword",
-        "execution_time": "2019-12-21T02:30:00",
-        "times_used": 10,
-        "total_elapsed": 1000,
-        "min_elapsed": 10,
-        "max_elapsed": 100,
+        "execution_time": "2019-12-21T01:30:00",
+        "times_used": 5,
+        "total_elapsed": 2500,
+        "min_elapsed": 200,
+        "max_elapsed": 1000,
     }
+    STATISTICS_5 = {
+        **STATISTICS_4,
+        "execution_time": "2019-12-21T02:30:00",
+        "min_elapsed": 100,
+    }
+    STATISTICS_6 = {
+        **STATISTICS_4,
+        "execution_time": "2019-12-21T03:30:00",
+        "max_elapsed": 1100,
+    }
+
     AGGREGATED_STATS_COLLECTION_1 = {
         "times_used": 20,
         "total_elapsed": 6000,
@@ -177,6 +188,13 @@ class BaseApiEndpointTest(unittest.TestCase):
         "avg_elapsed": 2500.0,
         "min_elapsed": 200,
         "max_elapsed": 1500,
+    }
+    AGGREGATED_STATS_OLD_KEYWORD = {
+        "times_used": 10,
+        "total_elapsed": 5000,
+        "avg_elapsed": 2500.0,
+        "min_elapsed": 100,
+        "max_elapsed": 1100,
     }
     AGGREGATED_STATS_EMPTY = {
         "times_used": 0,

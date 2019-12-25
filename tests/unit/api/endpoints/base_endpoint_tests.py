@@ -178,21 +178,21 @@ class BaseApiEndpointTest(unittest.TestCase):
     AGGREGATED_STATS_COLLECTION_1 = {
         "times_used": 20,
         "total_elapsed": 6000,
-        "avg_elapsed": 2000.0,
+        "avg_elapsed": 300.0,
         "min_elapsed": 10,
         "max_elapsed": 1500,
     }
     AGGREGATED_STATS_KEYWORD_2 = {
         "times_used": 10,
         "total_elapsed": 5000,
-        "avg_elapsed": 2500.0,
+        "avg_elapsed": 500.0,
         "min_elapsed": 200,
         "max_elapsed": 1500,
     }
     AGGREGATED_STATS_OLD_KEYWORD = {
         "times_used": 10,
         "total_elapsed": 5000,
-        "avg_elapsed": 2500.0,
+        "avg_elapsed": 500.0,
         "min_elapsed": 100,
         "max_elapsed": 1100,
     }

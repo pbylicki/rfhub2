@@ -66,9 +66,11 @@ class StatisticsRepository(BaseRepository):
                 func.coalesce(func.sum(Statistics.total_elapsed), 0).label(
                     "total_elapsed"
                 ),
-                func.coalesce(func.avg(Statistics.total_elapsed), 0).label(
-                    "avg_elapsed"
-                ),
+                func.coalesce(
+                    func.sum(Statistics.total_elapsed)
+                    / func.sum(Statistics.times_used),
+                    0,
+                ).label("avg_elapsed"),
                 func.coalesce(func.min(Statistics.min_elapsed), 0).label("min_elapsed"),
                 func.coalesce(func.max(Statistics.max_elapsed), 0).label("max_elapsed"),
             )

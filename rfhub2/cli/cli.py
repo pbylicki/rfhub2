@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Tuple
 
 from rfhub2.cli.api_client import Client
-from rfhub2.cli.rfhub_importer import RfhubImporter
+from rfhub2.cli.keywords_importer import KeywordsImporter
+from rfhub2.cli.statistics_importer import StatisticsImporter
 
 
 @click.command()
@@ -68,9 +69,10 @@ def main(
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
-    rfhub_importer = RfhubImporter(
-        client, paths, no_installed_keywords, mode, load_mode
-    )
+    if mode == "keywords":
+        rfhub_importer = KeywordsImporter(client, paths, no_installed_keywords, load_mode)
+    elif mode == "statistics":
+        rfhub_importer = StatisticsImporter(client, paths)
     loaded_collections, loaded_keywords = rfhub_importer.import_data()
     print(
         f"\nSuccessfully loaded {loaded_collections} collections with {loaded_keywords} keywords."

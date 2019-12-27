@@ -29,9 +29,9 @@ Cli Should Populate App With Installed Keywords
     ...    DateTime library with 8 keywords loaded.
     ...    OperatingSystem library with 56 keywords loaded.
     ...    Screenshot library with 3 keywords loaded.
-    ...    BuiltIn library with 105 keywords loaded.
+    ...    BuiltIn library with 104 keywords loaded.
     ...    Telnet library with 20 keywords loaded.
-    ...    Successfully loaded 10 collections with 319 keywords.
+    ...    Successfully loaded 10 collections with 318 keywords.
     Api Should Have With 10 Collections And 100 Keywords
 
 Cli Should Preserve All Keywords When Paths And No Db Flush Set

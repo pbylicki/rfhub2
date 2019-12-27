@@ -10,24 +10,6 @@ EXPECTED_GET_EXECUTION_PATHS = {
     FIXTURE_PATH / "output.xml",
     FIXTURE_PATH / "subdir" / "output.xml",
 }
-# STATISTICS_1 = {
-#   "collection": "Test Collection 1",
-#   "keyword": "Test Keyword 1",
-#   "execution_time": "2019-12-25T09:29:48.636Z",
-#   "times_used": 10,
-#   "total_elapsed": 5000,
-#   "min_elapsed": 3000,
-#   "max_elapsed": 7000
-# }
-# STATISTICS_2 = {
-#   "collection": "Test Collection 1",
-#   "keyword": "Test Keyword 2",
-#   "execution_time": "2019-12-25T09:29:48.636Z",
-#   "times_used": 25,
-#   "total_elapsed": 500,
-#   "min_elapsed": 300,
-#   "max_elapsed": 700
-# }
 
 STATISTICS_1 = {
     "collection": "BuiltIn",
@@ -74,11 +56,15 @@ STATISTICS_5 = {
     "min_elapsed": 1,
     "max_elapsed": 1
 }
+STATISTICS_6 = {
+  "detail": "dummy request destined to fail"
+}
 STATISTICS = [STATISTICS_1, STATISTICS_2, STATISTICS_3]
-EXPECTED_STATISTICS_COUNT = 1, 2
+EXPECTED_STATISTICS_COUNT = 2, 2
+EXPECTED_STATISTICS_DUPL_COUNT = 1, 1
 VALID_OUTPUT_XML = FIXTURE_PATH / "output.xml"
 INVALID_OUTPUT_XML = FIXTURE_PATH / "invalid_output.xml"
-SMALL_OUTPUT = FIXTURE_PATH / "subdir" / "output.xml"
+SUBDIR = FIXTURE_PATH / "subdir"
 
 
 class StatisticsImporterTests(unittest.TestCase):
@@ -86,6 +72,23 @@ class StatisticsImporterTests(unittest.TestCase):
         self.fixture_path = FIXTURE_PATH
         self.client = Client("http://localhost:8000", "rfhub", "rfhub")
         self.rfhub_importer = StatisticsImporter(self.client, (self.fixture_path,))
+
+    def test_import_data_should_import_data(self):
+        with responses.RequestsMock() as rsps:
+            for stat in STATISTICS:
+                rsps.add(
+                    responses.POST,
+                    f"{self.client.api_url}/statistics/",
+                    json=stat,
+                    status=201,
+                    adding_headers={
+                        "Content-Type": "application/json",
+                        "accept": "application/json",
+                    },
+                )
+            rfhub_importer = StatisticsImporter(self.client, (SUBDIR,))
+            result = rfhub_importer.import_data()
+            self.assertTupleEqual(result, (1, 3), msg=f"{result}")
 
     def test_import_statistics_should_import_statistics(self):
         with responses.RequestsMock() as rsps:
@@ -100,7 +103,7 @@ class StatisticsImporterTests(unittest.TestCase):
                         "accept": "application/json",
                     },
                 )
-            rfhub_importer = StatisticsImporter(self.client, (SMALL_OUTPUT,))
+            rfhub_importer = StatisticsImporter(self.client, (SUBDIR,))
             result = rfhub_importer.import_statistics()
             self.assertTupleEqual(result, (1, 3), msg=f"{result}")
 
@@ -119,19 +122,35 @@ class StatisticsImporterTests(unittest.TestCase):
 
     def test_add_statistics_should_return_number_of_loaded_collections_and_keywords(self):
         with responses.RequestsMock() as rsps:
-            for stat in [STATISTICS_4, STATISTICS_5]:
+            for stat, rc in zip([STATISTICS_4, STATISTICS_5, STATISTICS_5], (201, 201, 400)):
                 rsps.add(
                     responses.POST,
                     f"{self.client.api_url}/statistics/",
                     json=stat,
-                    status=201,
+                    status=rc,
                     adding_headers={
                         "Content-Type": "application/json",
                         "accept": "application/json",
                     },
                 )
-            result = self.rfhub_importer.add_statistics([STATISTICS_1, STATISTICS_2])
+            result = self.rfhub_importer.add_statistics([STATISTICS_4, STATISTICS_5, STATISTICS_5])
             self.assertTupleEqual(result, EXPECTED_STATISTICS_COUNT)
+
+    def test_add_statistics_should_return_number_of_loaded_collections_and_keywords_with_duplicated_data(self):
+        with self.assertRaises(StopIteration) as cm:
+            with responses.RequestsMock() as rsps:
+                for stat, rc in zip([STATISTICS_4, STATISTICS_6], (201, 422)):
+                    rsps.add(
+                        responses.POST,
+                        f"{self.client.api_url}/statistics/",
+                        json=stat,
+                        status=rc,
+                        adding_headers={
+                            "Content-Type": "application/json",
+                            "accept": "application/json",
+                        },
+                    )
+                self.rfhub_importer.add_statistics([STATISTICS_4, STATISTICS_6])
 
     def test__is_valid_execution_file_should_return_true_on_valid_file(self):
         result = StatisticsImporter._is_valid_execution_file(VALID_OUTPUT_XML)

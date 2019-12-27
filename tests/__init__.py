@@ -5,6 +5,7 @@ from tests.unit.api.endpoints.statistics_tests import StatisticsApiTest
 from tests.unit.api.endpoints.version_tests import VersionApiTest
 from tests.unit.cli.api_client import ApiClientTests
 from tests.unit.cli.keywords_importer import KeywordsImporterTests
+from tests.unit.cli.statistics_extractor import StatisticsExtractorTests
 from tests.unit.cli.statistics_importer import StatisticsImporterTests
 from tests.unit.db.collection_repo_tests import CollectionRepositoryTest
 from tests.unit.db.collection_tests import CollectionTest

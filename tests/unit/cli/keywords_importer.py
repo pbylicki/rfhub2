@@ -167,6 +167,41 @@ class KeywordsImporterTests(unittest.TestCase):
             self.client, (self.fixture_path,), True, load_mode="insert"
         )
 
+    def test_import_data(self):
+        with responses.RequestsMock() as rsps:
+            rfhub_importer = KeywordsImporter(
+                self.client, (self.fixture_path / "LibWithInit",), True, load_mode="insert"
+            )
+            rsps.add(
+                responses.GET,
+                f"{self.client.api_url}/collections/",
+                json=[],
+                status=200,
+                adding_headers={"Content-Type": "application/json"},
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/collections/",
+                json={"name": "LibWithInit", "id": 2},
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/keywords/",
+                json=KEYWORDS_2,
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            result = rfhub_importer.import_data()
+            self.assertCountEqual(result, (1, 4), msg=f"{result}")
+
     def test_import_libraries_insert_mode(self):
         with responses.RequestsMock() as rsps:
             rfhub_importer = KeywordsImporter(

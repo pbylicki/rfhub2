@@ -18,7 +18,7 @@ STATISTICS_1 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS_2 = {
     "collection": "BuiltIn",
@@ -27,7 +27,7 @@ STATISTICS_2 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS_3 = {
     "collection": "BuiltIn",
@@ -36,7 +36,7 @@ STATISTICS_3 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS_4 = {
     "collection": "a",
@@ -45,7 +45,7 @@ STATISTICS_4 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS_5 = {
     "collection": "b",
@@ -54,11 +54,9 @@ STATISTICS_5 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
-STATISTICS_6 = {
-  "detail": "dummy request destined to fail"
-}
+STATISTICS_6 = {"detail": "dummy request destined to fail"}
 STATISTICS = [STATISTICS_1, STATISTICS_2, STATISTICS_3]
 EXPECTED_STATISTICS_COUNT = 2, 2
 EXPECTED_STATISTICS_DUPL_COUNT = 1, 1
@@ -116,13 +114,19 @@ class StatisticsImporterTests(unittest.TestCase):
     def test_get_execution_files_paths_with_subdir_provided_should_return_set_of_paths(
         self
     ):
-        rfhub_importer = StatisticsImporter(self.client, (FIXTURE_PATH, FIXTURE_PATH / "subdir"),)
+        rfhub_importer = StatisticsImporter(
+            self.client, (FIXTURE_PATH, FIXTURE_PATH / "subdir")
+        )
         result = rfhub_importer.get_execution_files_paths()
         self.assertSetEqual(result, EXPECTED_GET_EXECUTION_PATHS)
 
-    def test_add_statistics_should_return_number_of_loaded_collections_and_keywords(self):
+    def test_add_statistics_should_return_number_of_loaded_collections_and_keywords(
+        self
+    ):
         with responses.RequestsMock() as rsps:
-            for stat, rc in zip([STATISTICS_4, STATISTICS_5, STATISTICS_5], (201, 201, 400)):
+            for stat, rc in zip(
+                [STATISTICS_4, STATISTICS_5, STATISTICS_5], (201, 201, 400)
+            ):
                 rsps.add(
                     responses.POST,
                     f"{self.client.api_url}/statistics/",
@@ -133,10 +137,14 @@ class StatisticsImporterTests(unittest.TestCase):
                         "accept": "application/json",
                     },
                 )
-            result = self.rfhub_importer.add_statistics([STATISTICS_4, STATISTICS_5, STATISTICS_5])
+            result = self.rfhub_importer.add_statistics(
+                [STATISTICS_4, STATISTICS_5, STATISTICS_5]
+            )
             self.assertTupleEqual(result, EXPECTED_STATISTICS_COUNT)
 
-    def test_add_statistics_should_return_number_of_loaded_collections_and_keywords_with_duplicated_data(self):
+    def test_add_statistics_should_return_number_of_loaded_collections_and_keywords_with_duplicated_data(
+        self
+    ):
         with self.assertRaises(StopIteration) as cm:
             with responses.RequestsMock() as rsps:
                 for stat, rc in zip([STATISTICS_4, STATISTICS_6], (201, 422)):

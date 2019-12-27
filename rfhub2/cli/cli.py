@@ -70,7 +70,9 @@ def main(
        from libraries and resource files."""
     client = Client(app_url, user, password)
     if mode == "keywords":
-        rfhub_importer = KeywordsImporter(client, paths, no_installed_keywords, load_mode)
+        rfhub_importer = KeywordsImporter(
+            client, paths, no_installed_keywords, load_mode
+        )
     elif mode == "statistics":
         rfhub_importer = StatisticsImporter(client, paths)
     loaded_collections, loaded_keywords = rfhub_importer.import_data()

@@ -170,7 +170,10 @@ class KeywordsImporterTests(unittest.TestCase):
     def test_import_data(self):
         with responses.RequestsMock() as rsps:
             rfhub_importer = KeywordsImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, load_mode="insert"
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="insert",
             )
             rsps.add(
                 responses.GET,
@@ -205,7 +208,10 @@ class KeywordsImporterTests(unittest.TestCase):
     def test_import_libraries_insert_mode(self):
         with responses.RequestsMock() as rsps:
             rfhub_importer = KeywordsImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, load_mode="insert"
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="insert",
             )
             rsps.add(
                 responses.GET,
@@ -240,7 +246,10 @@ class KeywordsImporterTests(unittest.TestCase):
     def test_import_libraries_append_mode(self):
         with responses.RequestsMock() as rsps:
             rfhub_importer = KeywordsImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, load_mode="append"
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="append",
             )
             rsps.add(
                 responses.POST,
@@ -268,7 +277,10 @@ class KeywordsImporterTests(unittest.TestCase):
     def test_import_libraries_update_mode(self):
         with responses.RequestsMock() as rsps:
             rfhub_importer = KeywordsImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, load_mode="update"
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="update",
             )
             rsps.add(
                 responses.GET,

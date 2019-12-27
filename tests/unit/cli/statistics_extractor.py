@@ -7,21 +7,9 @@ FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "statistics"
 SUBDIR = FIXTURE_PATH / "subdir"
 SMALL_OUTPUT_XML = SUBDIR / "output.xml"
 
-KEYWORD_1 = {
-    "library": "BuiltIn",
-    "name": "Log",
-    "elapsed": 1
-}
-KEYWORD_2 = {
-    "library": "BuiltIn",
-    "name": "Comment",
-    "elapsed": 1
-}
-KEYWORD_3 = {
-    "library": "BuiltIn",
-    "name": "Should Be True",
-    "elapsed": 1
-}
+KEYWORD_1 = {"library": "BuiltIn", "name": "Log", "elapsed": 1}
+KEYWORD_2 = {"library": "BuiltIn", "name": "Comment", "elapsed": 1}
+KEYWORD_3 = {"library": "BuiltIn", "name": "Should Be True", "elapsed": 1}
 KEYWORD = [KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_1, KEYWORD_2, KEYWORD_3]
 
 STATISTICS_1 = {
@@ -31,7 +19,7 @@ STATISTICS_1 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS_2 = {
     "collection": "BuiltIn",
@@ -40,7 +28,7 @@ STATISTICS_2 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS_3 = {
     "collection": "BuiltIn",
@@ -49,7 +37,7 @@ STATISTICS_3 = {
     "times_used": 2,
     "total_elapsed": 2,
     "min_elapsed": 1,
-    "max_elapsed": 1
+    "max_elapsed": 1,
 }
 STATISTICS = [STATISTICS_1, STATISTICS_2, STATISTICS_3]
 

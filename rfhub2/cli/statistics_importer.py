@@ -6,11 +6,7 @@ from .statistics_extractor import StatisticsExtractor
 
 
 class StatisticsImporter:
-    def __init__(
-        self,
-        client: Client,
-        paths: Tuple[Path, ...]
-    ) -> None:
+    def __init__(self, client: Client, paths: Tuple[Path, ...]) -> None:
         self.client = client
         self.paths = paths
 

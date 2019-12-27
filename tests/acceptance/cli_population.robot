@@ -2,8 +2,6 @@
 Resource    resources/keywords.resource
 Resource    resources/variables.resource
 
-*** Variables ***
-
 *** Test Cases ***
 Cli Should Populate App With Keywords From Provided Paths Only
     [Documentation]    Cli Should Populate App With Keywords From Provided Paths Only
@@ -31,16 +29,16 @@ Cli Should Populate App With Installed Keywords
     ...    DateTime library with 8 keywords loaded.
     ...    OperatingSystem library with 56 keywords loaded.
     ...    Screenshot library with 3 keywords loaded.
-    ...    BuiltIn library with 104 keywords loaded.
+    ...    BuiltIn library with 105 keywords loaded.
     ...    Telnet library with 20 keywords loaded.
-    ...    Successfully loaded 10 collections with 318 keywords.
+    ...    Successfully loaded 10 collections with 319 keywords.
     Api Should Have With 10 Collections And 100 Keywords
 
 Cli Should Preserve All Keywords When Paths And No Db Flush Set
     [Documentation]    Cli Should Preserve All Keywords When Paths And No Db Flush Set
     ...                This test is dependant on one above:
     ...                'Cli Should Populate App With Installed Keywords'
-    Run Cli Package With Options    --mode=append --no-installed-keywords
+    Run Cli Package With Options    --load-mode=append --no-installed-keywords
     Output Should Contain
     ...    Successfully loaded 0 collections with 0 keywords.
     Api Should Have With 10 Collections And 100 Keywords
@@ -75,7 +73,7 @@ Cli Should Update Existing Collections, Delete Obsolete And Add New
     ...    Run Cli Package Without Installed Keywords
     ...    Backup And Switch Initial With Updated Fixtures
     Run Cli Package With Options
-    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
+    ...    --load-mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Output Should Contain
     ...    SingleClassLib library with 4 keywords loaded.
     ...    test_resource library with 2 keywords loaded.
@@ -96,7 +94,7 @@ Running Cli Update Mode Second Time Should Leave Collections Untouched
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
     Run Cli Package With Options
-    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
+    ...    --load-mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Output Should Contain    Successfully loaded 0 collections with 0 keywords.
     [Teardown]    Run Keywords    Restore Initial Fixtures    AND
     ...    Run Cli Package With Options

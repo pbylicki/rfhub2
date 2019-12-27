@@ -59,9 +59,9 @@
 <arguments>
 <arg>2+2==4</arg>
 </arguments>
-<msg timestamp="20191225 11:38:09.500" level="TRACE">Arguments: [ '2+2==4' ]</msg>
-<msg timestamp="20191225 11:38:09.500" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.500" endtime="20191225 11:38:09.500"></status>
+<msg timestamp="20191225 11:38:09.501" level="TRACE">Arguments: [ '2+2==4' ]</msg>
+<msg timestamp="20191225 11:38:09.501" level="TRACE">Return: None</msg>
+<status status="PASS" starttime="20191225 11:38:09.500" endtime="20191225 11:38:09.501"></status>
 </kw>
 <status status="PASS" starttime="20191225 11:38:09.496" endtime="20191225 11:38:09.501" critical="yes"></status>
 </test>

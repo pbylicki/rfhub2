@@ -52,11 +52,29 @@ def recreate_data(session: Session) -> None:
         Statistics(
             collection="Second collection",
             keyword="Old keyword",
-            execution_time=datetime(2019, 12, 21, 2, 30, 0, tzinfo=timezone.utc),
+            execution_time=datetime(2019, 12, 21, 1, 30, 0, tzinfo=timezone.utc),
             times_used=5,
             total_elapsed=2500,
             min_elapsed=200,
             max_elapsed=1000,
+        ),
+        Statistics(
+            collection="Second collection",
+            keyword="Old keyword",
+            execution_time=datetime(2019, 12, 21, 2, 30, 0, tzinfo=timezone.utc),
+            times_used=5,
+            total_elapsed=2500,
+            min_elapsed=100,
+            max_elapsed=1000,
+        ),
+        Statistics(
+            collection="Second collection",
+            keyword="Old keyword",
+            execution_time=datetime(2019, 12, 21, 3, 30, 0, tzinfo=timezone.utc),
+            times_used=5,
+            total_elapsed=2500,
+            min_elapsed=200,
+            max_elapsed=1100,
         ),
     ]
     session.add_all(collections)

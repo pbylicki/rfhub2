@@ -54,7 +54,7 @@ To run application using docker image with Postgres database:
 ```
 docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub2:postgres
 ```
-#### Populate application with data
+#### Populate application with keywords documentation
 To populate application running on localhost:
 ```
 rfhub2-cli ../your_repo ../your_other_repo
@@ -67,14 +67,22 @@ To populate app but to skip loading RFWK installed libraries:
 ```
 rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ```
-#### Rfhub2-cli can be run in three modes:
+##### Rfhub2-cli for keywords documentation can be run in three load-modes:
 
 - `insert`, default mode, that will clean up existing collections app and load all collections found in provided paths  
-``` rfhub2-cli --mode=insert ../your_repo ../your_other_repo```
+``` rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo```
 - `append`, which will only add collections form provided paths  
-``` rfhub2-cli --mode=append ../your_repo ../your_other_repo```
+``` rfhub2-cli --load-mode=append ../your_repo ../your_other_repo```
 - `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones  
-``` rfhub2-cli --mode=update ../your_repo ../your_other_repo```
+``` rfhub2-cli --load-mode=update ../your_repo ../your_other_repo```
 
+#### Populate application with keywords execution statistics
+##### To gather keywords execution statistics:
+``` 
+rfhub2-cli --mode=statistics ../your_execution_dir ../your_other_execution_dir
+```
+Since execution statistics from specific run does not change over time, there is no load-mode: update or insert need.
+Application will scan all of the executions and try to send aggregated data from each run to application.
+rfhub2-cli will complain that there are existing statistics for particular timestamp, and will proceed with next ones.  
 ## License
 RfHub2 is an open source software provided under the [Apache License 2.0](http://apache.org/licenses/LICENSE-2.0)

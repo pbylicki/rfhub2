@@ -21,6 +21,9 @@ ${search_result_table}             ${main_page_prefix}/div/div/div/table/tbody/t
 ${hamburger}                       //*[@id="root"]/div/header/div/button/span[1]/svg/path
 
 #VARIABLES
-${INITIAL_FIXTURES}                ${CURDIR}/../../fixtures/initial/
-${BACKUP_FIXTURES}                 ${CURDIR}/../../fixtures/initial_bkp/
-${UPDATED_FIXTURES}                ${CURDIR}/../../fixtures/updated/
+${FIXTURES_PATH}                   ${CURDIR}/../../fixtures
+${INITIAL_FIXTURES}                ${FIXTURES_PATH}/initial/
+${BACKUP_FIXTURES}                 ${FIXTURES_PATH}/initial_bkp/
+${UPDATED_FIXTURES}                ${FIXTURES_PATH}/updated/
+${STATISTICS_PATH}                 ${FIXTURES_PATH}/statistics
+${SUBDIR_PATH}                     ${STATISTICS_PATH}/subdir

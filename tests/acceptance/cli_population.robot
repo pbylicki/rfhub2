@@ -80,16 +80,16 @@ Cli Should Update Existing Collections, Delete Obsolete And Add New
     ...    Test Libdoc File library with 1 keywords loaded.
     ...    Test Libdoc File Copy library with 1 keywords loaded.
 
-Cli Update Mode Should Leave Application With New Set Of Collections
-    [Documentation]     Cli Update Mode Should Leave Application 
+Cli Update Load Mode Should Leave Application With New Set Of Collections
+    [Documentation]     Cli Update Load Mode Should Leave Application 
     ...    With New Set Of Collections. This test bases on 
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
     [Tags]    rfhub2-64
     Api Should Have With 7 Collections And 16 Keywords
     
-Running Cli Update Mode Second Time Should Leave Collections Untouched
-    [Documentation]    Running Cli Update Mode Second Time 
+Running Cli Update Load Mode Second Time Should Leave Collections Untouched
+    [Documentation]    Running Cli Update Load Mode Second Time 
     ...    Should Leave Collections Untouched. This test bases on 
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
@@ -99,6 +99,22 @@ Running Cli Update Mode Second Time Should Leave Collections Untouched
     [Teardown]    Run Keywords    Restore Initial Fixtures    AND
     ...    Run Cli Package With Options
     ...    --mode=insert --no-installed-keywords
+
+Running Cli In Statistics Mode Should Populate App With Execution Data
+    [Documentation]    Running Cli In Statistics Mode 
+    ...    Should Populate App With Execution Data
+    Run Cli Package With Options    --mode=statistics ${SUBDIR_PATH}
+    Output Should Contain    Successfully loaded 1 collections with 3 keywords.
+    
+Running Cli In Statistics Mode Should Populate App With New Execution Data
+    [Documentation]    Running Cli In Statistics Mode 
+    ...    Should Populate App With New Execution Data
+    Run Cli Package With Options    --mode=statistics ${STATISTICS_PATH}
+    Output Should Contain    Successfully loaded 5 collections with 42 keywords.
+    Output Should Contain    Record already exists for provided collection: BuiltIn, keyword: Log and execution_time: 2019-12-25 11:38:08.868000
+    Output Should Contain    Record already exists for provided collection: BuiltIn, keyword: Comment and execution_time: 2019-12-25 11:38:08.868000
+    Output Should Contain    Record already exists for provided collection: BuiltIn, keyword: Should Be True and execution_time: 2019-12-25 11:38:08.868000
+    [Teardown]    Delete All Statistics
 
 *** Keywords ***
 Api Should Have With ${n} Collections And ${m} Keywords

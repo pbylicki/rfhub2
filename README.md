@@ -81,7 +81,7 @@ rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ``` 
 rfhub2-cli --mode=statistics ../your_execution_dir ../your_other_execution_dir
 ```
-Since execution statistics from specific run does not change over time, there is no load-mode: update or insert need.
+Since execution statistics from specific run does not change over time, there is no load-mode needed.
 Application will scan all of the executions and try to send aggregated data from each run to application.
 rfhub2-cli will complain that there are existing statistics for particular timestamp, and will proceed with next ones.  
 ## License

@@ -55,6 +55,5 @@ class StatisticsExtractorTests(unittest.TestCase):
         self.assertListEqual(result, KEYWORD)
 
     def test_get_execution_time_should_return_correct_time(self):
-        # se = StatisticsExtractor(SMALL_OUTPUT_XML)
         result = self.statistics_extractor.get_execution_time()
         self.assertEquals(result, "2019-12-25 11:38:08.868000")

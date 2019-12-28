@@ -77,6 +77,6 @@ class StatisticsImporter:
         """
         with open(path, "r", encoding="utf-8", errors="ignore") as f:
             # read the first few lines; if we don't see
-            # what looks like robot tag data, return false
+            # what looks like robot generator tag, return false
             data = f.read(200)
             return "<robot generator=" in data.lower()

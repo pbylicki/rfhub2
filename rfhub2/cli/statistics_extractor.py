@@ -29,7 +29,7 @@ class StatisticsExtractor:
                 "execution_time": execution_time,
                 "times_used": v,
                 "total_elapsed": 0,
-                "min_elapsed": 2147483647,
+                "min_elapsed": float("inf"),
                 "max_elapsed": 0,
             }
             for k, v in Counter(

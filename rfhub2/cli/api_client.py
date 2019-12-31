@@ -38,7 +38,7 @@ class Client(object):
             endpoint="collections", params={"skip": skip, "limit": limit}
         )
 
-    def add_collection(self, data: Dict) -> Dict:
+    def add_collection(self, data: Dict) -> Tuple[int, Dict]:
         """
         Adds collection using request post method.
         """
@@ -50,13 +50,13 @@ class Client(object):
         """
         return self._delete_request(endpoint="collections", id=id)
 
-    def add_keyword(self, data: Dict) -> Dict:
+    def add_keyword(self, data: Dict) -> Tuple[int, Dict]:
         """
         Adds keyword using request post method.
         """
         return self._post_request(endpoint="keywords", data=data)
 
-    def add_statistics(self, data: Dict) -> Response:
+    def add_statistics(self, data: Dict) -> Tuple[int, Dict]:
         """
         Adds statistics using requests post method.
         """

@@ -21,24 +21,8 @@ STATISTICS_1 = {
     "min_elapsed": 1,
     "max_elapsed": 1,
 }
-STATISTICS_2 = {
-    "collection": "BuiltIn",
-    "keyword": "Comment",
-    "execution_time": "2019-12-25 11:38:08.868000",
-    "times_used": 2,
-    "total_elapsed": 2,
-    "min_elapsed": 1,
-    "max_elapsed": 1,
-}
-STATISTICS_3 = {
-    "collection": "BuiltIn",
-    "keyword": "Should Be True",
-    "execution_time": "2019-12-25 11:38:08.868000",
-    "times_used": 2,
-    "total_elapsed": 2,
-    "min_elapsed": 1,
-    "max_elapsed": 1,
-}
+STATISTICS_2 = {**STATISTICS_1, "keyword": "Comment"}
+STATISTICS_3 = {**STATISTICS_1, "keyword": "Should Be True"}
 STATISTICS = [STATISTICS_1, STATISTICS_2, STATISTICS_3]
 
 

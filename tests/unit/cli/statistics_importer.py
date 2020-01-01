@@ -23,16 +23,12 @@ STATISTICS_1 = {
 STATISTICS_2 = {**STATISTICS_1, "keyword": "Comment"}
 STATISTICS_3 = {**STATISTICS_1, "keyword": "Should Be True"}
 STATISTICS_4 = {
+    **STATISTICS_1,
     "collection": "Test Collection 1",
     "keyword": "Test Keyword 2",
-    "execution_time": "2019-12-25 11:38:08.868000",
-    "times_used": 2,
-    "total_elapsed": 2,
-    "min_elapsed": 1,
-    "max_elapsed": 1,
 }
 STATISTICS_5 = {
-    **STATISTICS_4,
+    **STATISTICS_1,
     "collection": "Test Collection 2",
     "keyword": "Test Keyword 1",
 }

@@ -5,10 +5,11 @@ from pathlib import Path
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
 
-from rfhub2.cli.rfhub_importer import RfhubImporter
+from rfhub2.cli.keywords_importer import KeywordsImporter
 from rfhub2.cli.api_client import Client
 
 FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "initial"
+STATISTICS_PATH = FIXTURE_PATH / ".." / "statistics"
 EXPECTED_LIBDOC = {
     "doc": "Documentation for library ``Test Libdoc File``.",
     "doc_format": "ROBOT",
@@ -49,6 +50,10 @@ EXPECTED_GET_LIBRARIES = (
         FIXTURE_PATH / "data_error.py",
     }
 )
+EXPECTED_GET_EXECUTION_PATHS = {
+    STATISTICS_PATH / "output.xml",
+    STATISTICS_PATH / "subdir" / "output.xml",
+}
 EXPECTED_COLLECTION = {
     "doc": "Overview that should be imported for SingleClassLib.",
     "doc_format": "ROBOT",
@@ -154,18 +159,59 @@ EXPECTED_BUILT_IN_LIBS = {
 }
 
 
-class RfhubImporterTests(unittest.TestCase):
+class KeywordsImporterTests(unittest.TestCase):
     def setUp(self) -> None:
         self.fixture_path = FIXTURE_PATH
         self.client = Client("http://localhost:8000", "rfhub", "rfhub")
-        self.rfhub_importer = RfhubImporter(
-            self.client, (self.fixture_path,), True, mode="insert"
+        self.rfhub_importer = KeywordsImporter(
+            self.client, (self.fixture_path,), True, load_mode="insert"
         )
+
+    def test_import_data(self):
+        with responses.RequestsMock() as rsps:
+            rfhub_importer = KeywordsImporter(
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="insert",
+            )
+            rsps.add(
+                responses.GET,
+                f"{self.client.api_url}/collections/",
+                json=[],
+                status=200,
+                adding_headers={"Content-Type": "application/json"},
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/collections/",
+                json={"name": "LibWithInit", "id": 2},
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/keywords/",
+                json=KEYWORDS_2,
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            result = rfhub_importer.import_data()
+            self.assertCountEqual(result, (1, 4), msg=f"{result}")
 
     def test_import_libraries_insert_mode(self):
         with responses.RequestsMock() as rsps:
-            rfhub_importer = RfhubImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, mode="insert"
+            rfhub_importer = KeywordsImporter(
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="insert",
             )
             rsps.add(
                 responses.GET,
@@ -199,8 +245,11 @@ class RfhubImporterTests(unittest.TestCase):
 
     def test_import_libraries_append_mode(self):
         with responses.RequestsMock() as rsps:
-            rfhub_importer = RfhubImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, mode="append"
+            rfhub_importer = KeywordsImporter(
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="append",
             )
             rsps.add(
                 responses.POST,
@@ -227,8 +276,11 @@ class RfhubImporterTests(unittest.TestCase):
 
     def test_import_libraries_update_mode(self):
         with responses.RequestsMock() as rsps:
-            rfhub_importer = RfhubImporter(
-                self.client, (self.fixture_path / "LibWithInit",), True, mode="update"
+            rfhub_importer = KeywordsImporter(
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="update",
             )
             rsps.add(
                 responses.GET,
@@ -366,12 +418,12 @@ class RfhubImporterTests(unittest.TestCase):
         self.assertEqual(result, EXPECTED_GET_LIBRARIES)
 
     def test_get_libraries_paths_should_return_set_of_paths_on_installed_keywords(self):
-        self.rfhub_importer = RfhubImporter(self.client, tuple(), False, False)
+        self.rfhub_importer = KeywordsImporter(self.client, tuple(), False, False)
         result = self.rfhub_importer.get_libraries_paths()
         self.assertEqual(result, EXPECTED_BUILT_IN_LIBS)
 
     def test_get_libraries_paths_should_return_set_of_paths_when_paths_are_tuple(self):
-        self.rfhub_importer = RfhubImporter(
+        self.rfhub_importer = KeywordsImporter(
             self.client,
             (
                 self.fixture_path / "LibWithInit",
@@ -662,100 +714,100 @@ class RfhubImporterTests(unittest.TestCase):
 
     def test_is_library_file_should_return_false_on_lib_with_init(self):
         file = self.fixture_path / "LibWithInit" / "__init__.py"
-        result = RfhubImporter._is_library_file(file)
+        result = KeywordsImporter._is_library_file(file)
         self.assertFalse(result, "method should return true if file is python library")
 
     def test_is_library_file_should_return_false_on_library_with_init(self):
         file = self.fixture_path / "LibWithInit" / "__init__.py"
-        result = RfhubImporter._is_library_file(file)
+        result = KeywordsImporter._is_library_file(file)
         self.assertFalse(
             result, "method should return false if file is python library with init"
         )
 
     def test_is_libdoc_file_should_return_true_on_libdoc(self):
         file = self.fixture_path / "test_libdoc_file.xml"
-        result = RfhubImporter._is_libdoc_file(file)
+        result = KeywordsImporter._is_libdoc_file(file)
         self.assertTrue(result, "method should return true if file is libdoc file")
 
     def test_is_libdoc_file_should_return_false_on_non_libdoc(self):
         file = self.fixture_path / "not_libdoc_file.xml"
-        result = RfhubImporter._is_libdoc_file(file)
+        result = KeywordsImporter._is_libdoc_file(file)
         self.assertFalse(
             result, "method should return false if file is not libdoc file"
         )
 
     def test_is_libdoc_file_should_return_false_on_non_xml(self):
         file = self.fixture_path / "_private_library.py"
-        result = RfhubImporter._is_libdoc_file(file)
+        result = KeywordsImporter._is_libdoc_file(file)
         self.assertFalse(
             result, "method should return false if file is not libdoc file"
         )
 
     def test_should_ignore_should_return_true_on_deprecated(self):
         file = self.fixture_path / "deprecated_library.py"
-        result = RfhubImporter._should_ignore(file)
+        result = KeywordsImporter._should_ignore(file)
         self.assertTrue(
             result, 'method should return true if file starts with "deprecated"'
         )
 
     def test_should_ignore_should_return_true_on_private(self):
         file = self.fixture_path / "_private_library.py"
-        result = RfhubImporter._should_ignore(file)
+        result = KeywordsImporter._should_ignore(file)
         self.assertTrue(result, 'method should return true if file starts with "_"')
 
     def test_should_ignore_should_return_true_on_excluded(self):
         file = self.fixture_path / "remote.py"
-        result = RfhubImporter._should_ignore(file)
+        result = KeywordsImporter._should_ignore(file)
         self.assertTrue(
             result, "method should return true if file in EXCLUDED_LIBRARIES"
         )
 
     def test_should_ignore_should_return_false_on_library_to_import(self):
         file = self.fixture_path / "SingleClassLib" / "SingleClassLib.py"
-        result = RfhubImporter._should_ignore(file)
+        result = KeywordsImporter._should_ignore(file)
         self.assertFalse(
             result, "method should return false if file should be imported"
         )
 
     def test_is_resource_file_should_return_true(self):
         file = self.fixture_path / "test_resource.resource"
-        result = RfhubImporter._is_resource_file(file)
+        result = KeywordsImporter._is_resource_file(file)
         self.assertTrue(result, "method should return true if file is resource file")
 
     def test_is_resource_file_should_return_false(self):
         file = self.fixture_path / "test_file_with_tests.robot"
-        result = RfhubImporter._is_resource_file(file)
+        result = KeywordsImporter._is_resource_file(file)
         self.assertFalse(
             result, "method should return false if file is not resource file"
         )
 
     def test_is_resource_file_should_return_false_on_init(self):
         file = self.fixture_path / "__init__.robot"
-        result = RfhubImporter._is_resource_file(file)
+        result = KeywordsImporter._is_resource_file(file)
         self.assertFalse(
             result, "method should return false if file is not resource file"
         )
 
     def test_has_keyword_table_should_return_true(self):
         data = "*** Keywords ***"
-        result = RfhubImporter._has_keyword_table(data=data)
+        result = KeywordsImporter._has_keyword_table(data=data)
         self.assertTrue(result, "method should return true if Keywords were found")
 
     def test_has_keyword_table_should_return_false(self):
         data = "*** Keys ***"
-        result = RfhubImporter._has_keyword_table(data=data)
+        result = KeywordsImporter._has_keyword_table(data=data)
         self.assertFalse(
             result, "method should return false if Keywords were not found"
         )
 
     def test_has_test_case_table_should_return_true(self):
         data = "*** Test Case ***"
-        result = RfhubImporter._has_test_case_table(data=data)
+        result = KeywordsImporter._has_test_case_table(data=data)
         self.assertTrue(result, "method should return true if Test Case were found")
 
     def test_has_test_case_table_should_return_false(self):
         data = "*** Test ***"
-        result = RfhubImporter._has_test_case_table(data=data)
+        result = KeywordsImporter._has_test_case_table(data=data)
         self.assertFalse(
             result, "method should return false if Test Case were not found"
         )
@@ -777,13 +829,13 @@ class RfhubImporterTests(unittest.TestCase):
         self.assertEqual(serialised_keywords, EXPECTED_KEYWORDS)
 
     def test_collection_path_and_name_match_should_return_true_when_matched(self):
-        result = RfhubImporter._collection_path_and_name_match(
+        result = KeywordsImporter._collection_path_and_name_match(
             EXPECTED_COLLECTION, EXPECTED_COLLECTION
         )
         self.assertTrue(result)
 
     def test_collection_path_and_name_match_should_return_false_when_not_matched(self):
-        result = RfhubImporter._collection_path_and_name_match(
+        result = KeywordsImporter._collection_path_and_name_match(
             EXPECTED_COLLECTION, EXPECTED_COLLECTION2
         )
         self.assertFalse(result)
@@ -793,7 +845,7 @@ class RfhubImporterTests(unittest.TestCase):
         new_collections = copy.deepcopy(existing_collections)
         new_collections[0]["version"] = "1.2.4"
         new_collections[1]["version"] = "3.3.0"
-        result = RfhubImporter._get_collections_to_update(
+        result = KeywordsImporter._get_collections_to_update(
             existing_collections, new_collections
         )
         self.assertListEqual(new_collections, result)
@@ -801,7 +853,7 @@ class RfhubImporterTests(unittest.TestCase):
     def test_get_new_collections_should_return_only_new_collections(self):
         exisitng_collections = [EXPECTED_COLLECTION]
         new_collections = [EXPECTED_COLLECTION, EXPECTED_COLLECTION2]
-        result = RfhubImporter._get_new_collections(
+        result = KeywordsImporter._get_new_collections(
             exisitng_collections, new_collections
         )
         self.assertListEqual([EXPECTED_COLLECTION2], result)
@@ -810,7 +862,7 @@ class RfhubImporterTests(unittest.TestCase):
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
         EXPECTED_COLLECTION["id"] = 1
         EXPECTED_COLLECTION["keywords"] = KEYWORDS_EXTENDED
-        result = RfhubImporter._reduce_collection_items(
+        result = KeywordsImporter._reduce_collection_items(
             collection2, EXPECTED_COLLECTION
         )
         self.assertDictEqual(collection2, result)
@@ -818,19 +870,19 @@ class RfhubImporterTests(unittest.TestCase):
     def test_get_reduced_collection_should_return_reduced_collection(self):
         collection2 = copy.deepcopy(EXPECTED_COLLECTION2)
         collection2["id"] = 1
-        result = RfhubImporter._get_reduced_collection(
+        result = KeywordsImporter._get_reduced_collection(
             EXPECTED_COLLECTION2, collection2
         )
         self.assertDictEqual(EXPECTED_COLLECTION2, result)
 
     def test_get_reduced_keywords_should_return_reduced_keywords(self):
-        result = RfhubImporter._get_reduced_keywords(KEYWORDS_1, KEYWORDS_EXTENDED)
+        result = KeywordsImporter._get_reduced_keywords(KEYWORDS_1, KEYWORDS_EXTENDED)
         self.assertListEqual(KEYWORDS_1, result)
 
     def test_library_or_resource_changed_should_return_false_when_library_unchanged(
         self
     ):
-        result = RfhubImporter._library_or_resource_changed(
+        result = KeywordsImporter._library_or_resource_changed(
             EXPECTED_COLLECTION, EXPECTED_COLLECTION
         )
         self.assertFalse(result)
@@ -838,7 +890,7 @@ class RfhubImporterTests(unittest.TestCase):
     def test_library_or_resource_changed_should_return_true_when_library_changed(self):
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
         collection2["version"] = "1.2.4"
-        result = RfhubImporter._library_or_resource_changed(
+        result = KeywordsImporter._library_or_resource_changed(
             EXPECTED_COLLECTION, collection2
         )
         self.assertTrue(result)
@@ -848,7 +900,7 @@ class RfhubImporterTests(unittest.TestCase):
     ):
         EXPECTED_COLLECTION["type"] = "resource"
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
-        result = RfhubImporter._library_or_resource_changed(
+        result = KeywordsImporter._library_or_resource_changed(
             EXPECTED_COLLECTION, collection2
         )
         self.assertFalse(result)
@@ -857,7 +909,7 @@ class RfhubImporterTests(unittest.TestCase):
         EXPECTED_COLLECTION["type"] = "resource"
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
         collection2["doc"] = "abc"
-        result = RfhubImporter._library_or_resource_changed(
+        result = KeywordsImporter._library_or_resource_changed(
             EXPECTED_COLLECTION, collection2
         )
         self.assertTrue(result)
@@ -868,7 +920,7 @@ class RfhubImporterTests(unittest.TestCase):
         EXPECTED_COLLECTION["type"] = "resource"
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
         collection2["doc"] = "abc"
-        result = RfhubImporter._library_or_resource_changed(
+        result = KeywordsImporter._library_or_resource_changed(
             EXPECTED_COLLECTION, collection2
         )
         self.assertTrue(result)

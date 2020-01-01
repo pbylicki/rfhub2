@@ -7,7 +7,6 @@ from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
 
-
 RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
 ALL_PATTERNS = RESOURCE_PATTERNS | {".xml", ".py"}
 EXCLUDED_LIBRARIES = {
@@ -22,18 +21,18 @@ EXCLUDED_LIBRARIES = {
 INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
 
 
-class RfhubImporter(object):
+class KeywordsImporter(object):
     def __init__(
         self,
         client: Client,
         paths: Tuple[Path, ...],
         no_installed_keywords: bool,
-        mode: str,
+        load_mode: str,
     ) -> None:
+        self.client = client
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
-        self.mode = mode
-        self.client = client
+        self.load_mode = load_mode
 
     def delete_all_collections(self) -> Set[int]:
         """
@@ -64,16 +63,23 @@ class RfhubImporter(object):
             self.client.delete_collection(id)
         return collections_id
 
+    def import_data(self) -> Tuple[int, int]:
+        """
+        Wrapper for import_libraries and import_statistics to unify modules.
+        :return: Number of libraries and keyword loaded
+        """
+        return self.import_libraries()
+
     def import_libraries(self) -> Tuple[int, int]:
         """
         Import libraries to application from paths specified when invoking client.
-        :return: Number of libraries loaded
+        :return: Number of libraries and keywords loaded
         """
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)
-        if self.mode == "append":
+        if self.load_mode == "append":
             loaded_collections = self.add_collections(collections)
-        elif self.mode == "insert":
+        elif self.load_mode == "insert":
             self.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:
@@ -267,8 +273,7 @@ class RfhubImporter(object):
                 # read the first few lines; if we don't see
                 # what looks like libdoc data, return false
                 data = f.read(200)
-                index = data.lower().find("<keywordspec ")
-                return index > 0
+                return "<keywordspec " in data.lower()
         return False
 
     @staticmethod
@@ -295,9 +300,9 @@ class RfhubImporter(object):
         if file.name not in INIT_FILES and file.suffix in RESOURCE_PATTERNS:
             with open(file, "r", encoding="utf-8", errors="ignore") as f:
                 data = f.read()
-                return not RfhubImporter._has_test_case_table(
+                return not KeywordsImporter._has_test_case_table(
                     data
-                ) and RfhubImporter._has_keyword_table(data)
+                ) and KeywordsImporter._has_keyword_table(data)
         return False
 
     @staticmethod
@@ -341,12 +346,12 @@ class RfhubImporter(object):
         if len(existing_collections) > 0:
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
-                    reduced_collection = RfhubImporter._reduce_collection_items(
+                    reduced_collection = KeywordsImporter._reduce_collection_items(
                         new_collection, existing_collection
                     )
-                    if RfhubImporter._collection_path_and_name_match(
+                    if KeywordsImporter._collection_path_and_name_match(
                         new_collection, reduced_collection
-                    ) and RfhubImporter._library_or_resource_changed(
+                    ) and KeywordsImporter._library_or_resource_changed(
                         new_collection, reduced_collection
                     ):
                         outdated_collections.add(existing_collection["id"])
@@ -361,13 +366,13 @@ class RfhubImporter(object):
         if len(existing_collections) >= 0:
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
-                    reduced_collection = RfhubImporter._reduce_collection_items(
+                    reduced_collection = KeywordsImporter._reduce_collection_items(
                         new_collection, existing_collection
                     )
-                    if RfhubImporter._collection_path_and_name_match(
+                    if KeywordsImporter._collection_path_and_name_match(
                         new_collection, reduced_collection
                     ):
-                        if RfhubImporter._library_or_resource_changed(
+                        if KeywordsImporter._library_or_resource_changed(
                             new_collection, reduced_collection
                         ):
                             collections_to_update.append(new_collection)
@@ -391,10 +396,10 @@ class RfhubImporter(object):
     def _reduce_collection_items(
         new_collection: Dict, existing_collection: Dict
     ) -> Dict:
-        reduced_collection = RfhubImporter._get_reduced_collection(
+        reduced_collection = KeywordsImporter._get_reduced_collection(
             new_collection, existing_collection
         )
-        reduced_collection["keywords"] = RfhubImporter._get_reduced_keywords(
+        reduced_collection["keywords"] = KeywordsImporter._get_reduced_keywords(
             new_collection["keywords"], reduced_collection["keywords"]
         )
         return reduced_collection
@@ -447,7 +452,7 @@ class RfhubImporter(object):
                     keyword not in existing_collection["keywords"]
                     for keyword in new_collection["keywords"]
                 )
-                or RfhubImporter._library_or_resource_doc_changed(
+                or KeywordsImporter._library_or_resource_doc_changed(
                     new_collection, existing_collection
                 )
             )

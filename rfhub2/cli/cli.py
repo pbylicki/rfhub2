@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import Tuple
 
 from rfhub2.cli.api_client import Client
-from rfhub2.cli.rfhub_importer import RfhubImporter
+from rfhub2.cli.keywords_importer import KeywordsImporter
+from rfhub2.cli.statistics_importer import StatisticsImporter
 
 
 @click.command()
@@ -39,9 +40,18 @@ from rfhub2.cli.rfhub_importer import RfhubImporter
 @click.option(
     "--mode",
     "-m",
+    type=click.Choice(["keywords", "statistics"], case_sensitive=False),
+    default="keywords",
+    help="""Choice parameter specifying what kind of data package should add:\n
+             - `keywords` - default value, application is working with keywords documentation\n
+             - `statistics` - application is working with data about keywords execution.""",
+)
+@click.option(
+    "--load-mode",
+    "-l",
     type=click.Choice(["insert", "append", "update"], case_sensitive=False),
     default="insert",
-    help="""Choice parameter specifying in what mode package should run:\n
+    help="""Choice parameter specifying in what load mode package should run:\n
              - `insert` - default value, removes all existing collections from app and add ones found in paths\n
              - `append` - adds collections found in paths without removal of existing ones\n
              - `update` - removes collections not found in paths, adds new ones and updates existing ones.""",
@@ -52,14 +62,20 @@ def main(
     user: str,
     password: str,
     paths: Tuple[Path, ...],
+    load_mode: str,
     mode: str,
     no_installed_keywords: bool,
 ) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
-    rfhub_importer = RfhubImporter(client, paths, no_installed_keywords, mode)
-    loaded_collections, loaded_keywords = rfhub_importer.import_libraries()
+    if mode == "keywords":
+        rfhub_importer = KeywordsImporter(
+            client, paths, no_installed_keywords, load_mode
+        )
+    elif mode == "statistics":
+        rfhub_importer = StatisticsImporter(client, paths)
+    loaded_collections, loaded_keywords = rfhub_importer.import_data()
     print(
         f"\nSuccessfully loaded {loaded_collections} collections with {loaded_keywords} keywords."
     )

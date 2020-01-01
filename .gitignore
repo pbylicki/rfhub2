@@ -49,7 +49,6 @@ docs/_build/
 # robot logs.
 log.html
 report.html
-output.xml
 selenium-screenshot-*.png
 
 # sqlite DBs

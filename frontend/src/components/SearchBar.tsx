@@ -3,7 +3,10 @@ import { observer } from 'mobx-react';
 import queryString from 'query-string';
 import { History } from 'history';
 import { makeStyles, fade } from '@material-ui/core/styles';
+import ClearIcon from '@material-ui/icons/Clear';
 import SearchIcon from '@material-ui/icons/Search';
+import { IconButton } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import InputBase from '@material-ui/core/InputBase';
 import { CollectionStore } from '../stores/CollectionStore';
 
@@ -55,8 +58,7 @@ interface SearchBarProps {
 export const SearchBar: React.FC<SearchBarProps> = observer(({ store, history }) => {
   const classes = useStyles();
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const pattern: string = event.target.value
+  const triggerSearch = (pattern: string) => {
     if (pattern.trim() === '') {
       store.searchKeywords(pattern);
       history.push('/')
@@ -65,6 +67,26 @@ export const SearchBar: React.FC<SearchBarProps> = observer(({ store, history })
       history.push(`/search/?${encoded}`)
     }
   }
+
+  const handleClear = (event: React.MouseEvent<HTMLButtonElement>) =>
+    triggerSearch('')
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    triggerSearch(event.target.value)
+
+  const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      triggerSearch(store.searchTerm)
+    }
+  }
+
+  const clearIconAdornment: JSX.Element | null = store.searchTerm ?
+    (<InputAdornment position="end">
+      <IconButton onClick={handleClear}>
+        <ClearIcon />
+      </IconButton>
+    </InputAdornment>) :
+    null
 
   return (
     <div className={classes.search}>
@@ -80,6 +102,8 @@ export const SearchBar: React.FC<SearchBarProps> = observer(({ store, history })
         value={store.searchTerm}
         inputProps={{ 'aria-label': 'search' }}
         onChange={handleSearchChange}
+        onKeyPress={handleSubmit}
+        endAdornment={clearIconAdornment}
       />
     </div>
   )

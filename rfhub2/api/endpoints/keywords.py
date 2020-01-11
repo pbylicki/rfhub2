@@ -80,7 +80,7 @@ def update_keyword(
 ):
     db_keyword: DBKeyword = or_404(repository.get(id))
     updated: DBKeyword = repository.update(
-        db_keyword, keyword_update.dict(skip_defaults=True)
+        db_keyword, keyword_update.dict(exclude_unset=True)
     )
     return updated
 

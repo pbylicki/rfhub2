@@ -40,4 +40,4 @@ class StatisticsExtractorTests(unittest.TestCase):
 
     def test_get_execution_time_should_return_correct_time(self):
         result = self.statistics_extractor.get_execution_time()
-        self.assertEquals(result, "2019-12-25 11:38:08.868000")
+        self.assertEqual(result, "2019-12-25 11:38:08.868000")

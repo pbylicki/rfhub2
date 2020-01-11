@@ -55,7 +55,7 @@ def update_collection(
 ):
     db_collection: DBCollection = or_404(repository.get(id))
     updated: DBCollection = repository.update(
-        db_collection, collection_update.dict(skip_defaults=True)
+        db_collection, collection_update.dict(exclude_unset=True)
     )
     return updated
 

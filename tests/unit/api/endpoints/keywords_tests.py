@@ -7,6 +7,11 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), self.KEYWORD_1)
 
+    def test_get_single_keyword_with_statistics(self):
+        response = self.client.get("api/v1/keywords/stats/1/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.KEYWORD_1_WITH_STATS)
+
     def test_get_404_for_nonexistent_keyword_id(self):
         response = self.client.get("api/v1/keywords/999/")
         self.assertEqual(response.status_code, 404)
@@ -52,6 +57,20 @@ class KeywordsApiTest(BaseApiEndpointTest):
         body = response.json()
         self.assertEqual(len(body), 1)
         self.assertEqual(body, [self.KEYWORD_3])
+
+    def test_get_all_keywords_with_statistics(self):
+        response = self.client.get("api/v1/keywords/stats/")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(len(body), 3)
+        self.assertEqual(
+            body,
+            [
+                self.KEYWORD_2_WITH_STATS,
+                self.KEYWORD_3_WITH_STATS,
+                self.KEYWORD_1_WITH_STATS,
+            ],
+        )
 
     def test_search_keywords(self):
         response = self.client.get(

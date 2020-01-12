@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, Sequence, Text
 from sqlalchemy.orm import relationship
 
 from rfhub2.db.model.base_class import Base
-from rfhub2.db.model.doc_mixin import DocMixin
+from rfhub2.db.model.mixins import DocMixin
 
 
 class Collection(Base, DocMixin):

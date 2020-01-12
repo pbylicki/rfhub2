@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
+from rfhub2.db.model.mixins import DocMixin, KeywordMixin
+
+
 class VersionInfo(BaseModel):
     title: str
     version: str
@@ -57,8 +60,17 @@ class Collection(NestedCollection, CollectionUpdate):
     html_doc: Optional[str]
 
 
+class CollectionWithStats(Collection, DocMixin):
+    times_used: Optional[int]
+
+
 class Keyword(NestedKeyword):
     collection: NestedCollection
+
+
+class KeywordWithStats(Keyword, KeywordMixin):
+    times_used: Optional[int]
+    avg_elapsed: Optional[float]
 
 
 class Statistics(BaseModel):

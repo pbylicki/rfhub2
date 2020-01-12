@@ -52,7 +52,10 @@ class KeywordRepository(IdEntityRepository):
 
     @staticmethod
     def filter_criteria(
-        pattern: Optional[str], collection_name: Optional[str], use_doc: bool
+        pattern: Optional[str],
+        collection_name: Optional[str],
+        collection_id: Optional[int],
+        use_doc: bool,
     ):
         filter_criteria = []
         if pattern:
@@ -63,6 +66,8 @@ class KeywordRepository(IdEntityRepository):
                 ]
         if collection_name:
             filter_criteria.append(Collection.name.ilike(glob_to_sql(collection_name)))
+        if collection_id:
+            filter_criteria.append(Keyword.collection_id == collection_id)
         return filter_criteria
 
     @staticmethod
@@ -76,6 +81,7 @@ class KeywordRepository(IdEntityRepository):
         *,
         pattern: Optional[str] = None,
         collection_name: Optional[str] = None,
+        collection_id: Optional[int] = None,
         use_doc: bool = True,
         skip: int = 0,
         limit: int = 100,
@@ -83,7 +89,9 @@ class KeywordRepository(IdEntityRepository):
         return (
             self.session.query(Keyword)
             .join(Keyword.collection)
-            .filter(*self.filter_criteria(pattern, collection_name, use_doc))
+            .filter(
+                *self.filter_criteria(pattern, collection_name, collection_id, use_doc)
+            )
             .order_by(Keyword.name)
             .offset(skip)
             .limit(limit)
@@ -95,6 +103,7 @@ class KeywordRepository(IdEntityRepository):
         *,
         pattern: Optional[str] = None,
         collection_name: Optional[str] = None,
+        collection_id: Optional[int] = None,
         use_doc: bool = True,
         skip: int = 0,
         limit: int = 100,
@@ -103,7 +112,9 @@ class KeywordRepository(IdEntityRepository):
             self.from_stats_row(row)
             for row in (
                 self._items_with_stats.filter(
-                    *self.filter_criteria(pattern, collection_name, use_doc)
+                    *self.filter_criteria(
+                        pattern, collection_name, collection_id, use_doc
+                    )
                 )
                 .order_by(Keyword.name)
                 .offset(skip)

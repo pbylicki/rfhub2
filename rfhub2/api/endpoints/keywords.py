@@ -21,8 +21,15 @@ def get_keywords(
     limit: int = 100,
     pattern: str = None,
     use_doc: bool = True,
+    collection_id: Optional[int] = None,
 ):
-    return repository.get_all(skip=skip, limit=limit, pattern=pattern, use_doc=use_doc)
+    return repository.get_all(
+        skip=skip,
+        limit=limit,
+        pattern=pattern,
+        collection_id=collection_id,
+        use_doc=use_doc,
+    )
 
 
 @router.get("/stats/", response_model=List[KeywordWithStats])
@@ -32,9 +39,14 @@ def get_keywords_with_stats(
     limit: int = 100,
     pattern: str = None,
     use_doc: bool = True,
+    collection_id: Optional[int] = None,
 ):
     return repository.get_all_with_stats(
-        skip=skip, limit=limit, pattern=pattern, use_doc=use_doc
+        skip=skip,
+        limit=limit,
+        pattern=pattern,
+        collection_id=collection_id,
+        use_doc=use_doc,
     )
 
 

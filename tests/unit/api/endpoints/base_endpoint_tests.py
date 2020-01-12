@@ -13,6 +13,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     maxDiff = None
 
     NESTED_COLLECTION_1 = {"id": 1, "name": "First collection"}
+    NESTED_COLLECTION_2 = {"id": 2, "name": "Second collection"}
     NESTED_KEYWORD_1 = {
         "id": 1,
         "name": "Test setup",
@@ -37,6 +38,15 @@ class BaseApiEndpointTest(unittest.TestCase):
         "doc": "Clean up environment",
         "synopsis": "Clean up environment",
         "html_doc": "<p>Clean up environment</p>",
+        "args": None,
+        "arg_string": "",
+    }
+    NESTED_KEYWORD_4 = {
+        "id": 4,
+        "name": "zzz",
+        "doc": "zzzzzz",
+        "synopsis": "zzzzzz",
+        "html_doc": "<p>zzzzzz</p>",
         "args": None,
         "arg_string": "",
     }
@@ -66,7 +76,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "doc_format": None,
         "synopsis": "",
         "html_doc": "",
-        "keywords": [],
+        "keywords": [NESTED_KEYWORD_4],
     }
     COLLECTION_3 = {
         "id": 3,
@@ -85,6 +95,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     KEYWORD_1 = {"collection": NESTED_COLLECTION_1, **NESTED_KEYWORD_1}
     KEYWORD_2 = {"collection": NESTED_COLLECTION_1, **NESTED_KEYWORD_2}
     KEYWORD_3 = {"collection": NESTED_COLLECTION_1, **NESTED_KEYWORD_3}
+    KEYWORD_4 = {"collection": NESTED_COLLECTION_2, **NESTED_KEYWORD_4}
     KEYWORD_TO_CREATE = {
         "name": "New Keyword",
         "doc": "New doc",
@@ -92,7 +103,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "collection_id": COLLECTION_2["id"],
     }
     KEYWORD_CREATED = {
-        "id": 4,
+        "id": 5,
         "name": "New Keyword",
         "doc": "New doc",
         "synopsis": "New doc",
@@ -137,6 +148,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     KEYWORD_1_WITH_STATS = {**KEYWORD_1, "times_used": 10, "avg_elapsed": 100.0}
     KEYWORD_2_WITH_STATS = {**KEYWORD_2, "times_used": 10, "avg_elapsed": 500.0}
     KEYWORD_3_WITH_STATS = {**KEYWORD_3, "times_used": None, "avg_elapsed": None}
+    KEYWORD_4_WITH_STATS = {**KEYWORD_4, "times_used": None, "avg_elapsed": None}
     STATISTICS_1 = {
         "collection": "First collection",
         "keyword": "Some keyword",

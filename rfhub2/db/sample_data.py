@@ -16,9 +16,10 @@ def recreate_data(session: Session) -> None:
         Keyword(name="Some keyword", doc="Perform some check"),
         Keyword(name="Teardown", doc="Clean up environment"),
     ]
+    keywords_2 = [Keyword(name="zzz", doc="zzzzzz")]
     collections = [
         Collection(name="First collection", type="robot", keywords=keywords),
-        Collection(name="Second collection", type="Robot"),
+        Collection(name="Second collection", type="Robot", keywords=keywords_2),
         Collection(name="Third", type="Library"),
     ]
     statistics = [

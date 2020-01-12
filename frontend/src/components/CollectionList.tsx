@@ -23,6 +23,7 @@ const CollectionTableRow: React.FC<CollectionTableRowProps> = ({ collection }) =
     <TableCell>{collection.type}</TableCell>
     <TableCell>{collection.version}</TableCell>
     <TableCell align="right">{collection.keywords.length}</TableCell>
+    <TableCell align="right">{collection.times_used}</TableCell>
   </TableRow>
 )
 
@@ -39,6 +40,7 @@ export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
           <TableCell>Type</TableCell>
           <TableCell>Version</TableCell>
           <TableCell align="right">Keywords</TableCell>
+          <TableCell align="right">Times used</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

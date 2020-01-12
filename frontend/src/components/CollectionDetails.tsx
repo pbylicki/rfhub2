@@ -22,6 +22,10 @@ export default class CollectionDetails extends React.Component<StoreProps> {
     }
   }
 
+  timeField(value: number | null) {
+    return value ? `${value} ms` : null
+  }
+
   render() {
     const store = this.props.store;
     let view
@@ -40,6 +44,8 @@ export default class CollectionDetails extends React.Component<StoreProps> {
                 <TableCell>Keyword</TableCell>
                 <TableCell>Arguments</TableCell>
                 <TableCell>Documentation</TableCell>
+                <TableCell>Times Used</TableCell>
+                <TableCell>Avg Time Elapsed</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -48,6 +54,8 @@ export default class CollectionDetails extends React.Component<StoreProps> {
                   <TableCell>{keyword.name}</TableCell>
                   <TableCell>{keyword.arg_string}</TableCell>
                   <TableCell dangerouslySetInnerHTML={{ __html: keyword.html_doc }}></TableCell>
+                  <TableCell>{keyword.times_used}</TableCell>
+                  <TableCell>{this.timeField(keyword.avg_elapsed)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

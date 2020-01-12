@@ -44,10 +44,16 @@ export class CollectionStore {
   getCollection(id: number): Promise<void> {
     this.selectedKeywordId = null;
     this.detailCollection = null;
-    return axios.get(`/api/v1/collections/${id}/`)
-      .then(resp => {
-        this.detailCollection = resp.data;
-      })
+    return axios.all([
+      axios.get(`/api/v1/collections/stats/${id}/`),
+      axios.get(`/api/v1/keywords/stats/?collection_id=${id}`)
+    ])
+    .then(axios.spread((collectionResp, keywordsResp) => {
+      const collection = collectionResp.data;
+      collection.keywords = keywordsResp.data;
+      this.detailCollection = collection;
+    }
+    ))
   }
 
   @action.bound

@@ -59,7 +59,7 @@ export class CollectionStore {
   @action.bound
   getCollections(skip: number = 0, limit: number = 100): Promise<void> {
     this.collectionHasMore = false
-    return axios.get<any, AxiosResponse<Collection[]>>(`/api/v1/collections/?skip=${skip}&limit=${limit}`)
+    return axios.get<any, AxiosResponse<Collection[]>>(`/api/v1/collections/stats/?skip=${skip}&limit=${limit}`)
       .then(resp => {
         const entries = new Map(resp.data.map((collection: Collection, index: number) => [skip + index, collection]));
         this.collectionsMap = new Map([...Array.from(this.collectionsMap), ...Array.from(entries)]);

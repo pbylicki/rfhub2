@@ -30,6 +30,7 @@ export interface Collection {
     synopsis: string
     html_doc: string
     keywords: NestedKeyword[]
+    times_used: number | null
 }
 
 export interface NestedCollection {

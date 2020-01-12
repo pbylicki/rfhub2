@@ -7,6 +7,11 @@ class CollectionsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), self.COLLECTION_1)
 
+    def test_get_single_collection_with_statistics(self):
+        response = self.client.get("api/v1/collections/stats/1/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.COLLECTION_1_WITH_STATS)
+
     def test_get_404_for_nonexistent_collection_id(self):
         response = self.client.get("api/v1/collections/999/")
         self.assertEqual(response.status_code, 404)
@@ -16,7 +21,9 @@ class CollectionsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(len(body), 3)
-        self.assertEqual(body[0], self.COLLECTION_1)
+        self.assertEqual(
+            body, [self.COLLECTION_1, self.COLLECTION_2, self.COLLECTION_3]
+        )
 
     def test_get_all_collections_with_limit(self):
         response = self.client.get("api/v1/collections?limit=2")
@@ -57,6 +64,20 @@ class CollectionsApiTest(BaseApiEndpointTest):
         response = self.client.get("api/v1/collections?pattern=nonexistent")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
+
+    def test_get_all_collections_with_statistics(self):
+        response = self.client.get("api/v1/collections/stats/")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(len(body), 3)
+        self.assertEqual(
+            body,
+            [
+                self.COLLECTION_1_WITH_STATS,
+                self.COLLECTION_2_WITH_STATS,
+                self.COLLECTION_3_WITH_STATS,
+            ],
+        )
 
     def test_create_new_collection(self):
         response = self.auth_client.post(

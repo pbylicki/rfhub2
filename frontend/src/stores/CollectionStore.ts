@@ -68,6 +68,15 @@ export class CollectionStore {
   }
 
   @action.bound
+  wrapTextWithoutSpaces(text: string): string {
+    if (text.length >= 30) {
+      return `${text.substring(0, 30).replace(/\s$/, "")}...`
+    } else {
+      return text
+    }
+}
+
+  @action.bound
   clearSearchResults(): void {
     this.searchResults = new Map();
     this.searchHasMore = false;

@@ -108,20 +108,12 @@ class KeywordRepository(IdEntityRepository):
         skip: int = 0,
         limit: int = 100,
     ) -> List[KeywordWithStats]:
-        return [
-            self.from_stats_row(row)
-            for row in (
-                self._items_with_stats.filter(
-                    *self.filter_criteria(
-                        pattern, collection_name, collection_id, use_doc
-                    )
-                )
-                .order_by(Keyword.name)
-                .offset(skip)
-                .limit(limit)
-                .all()
-            )
-        ]
+        query = self._items_with_stats.filter(
+            *self.filter_criteria(pattern, collection_name, collection_id, use_doc)
+        ).order_by(Keyword.name)
+        if not collection_id:
+            query = query.offset(skip).limit(limit)
+        return [self.from_stats_row(row) for row in query.all()]
 
     def get_with_stats(self, item_id: int) -> Optional[KeywordWithStats]:
         result = self._items_with_stats.filter(self._id_filter(item_id)).first()

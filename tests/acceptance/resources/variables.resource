@@ -1,5 +1,6 @@
 *** Variables ***
 #LOCATORS
+${rfhub2_header}                   //*[@id="root"]/div/header/div/h1/a
 ${main_page_prefix}                //*[@id="root"]/div/main/div[2]
 ${main_page_collection_number}     ${main_page_prefix}/div/div/div/h2
 ${main_page_table}                 ${main_page_prefix}/div/div/div/table/tbody/tr[1]/td[1]

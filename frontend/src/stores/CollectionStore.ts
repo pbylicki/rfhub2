@@ -46,7 +46,7 @@ export class CollectionStore {
     this.detailCollection = null;
     return axios.all([
       axios.get(`/api/v1/collections/stats/${id}/`),
-      axios.get(`/api/v1/keywords/stats/?collection_id=${id}`)
+      axios.get(`/api/v1/keywords/stats/?collection_id=${id}&limit=10000`)
     ])
     .then(axios.spread((collectionResp, keywordsResp) => {
       const collection = collectionResp.data;

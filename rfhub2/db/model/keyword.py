@@ -1,7 +1,9 @@
 from sqlalchemy import Column, ForeignKey, Integer, Sequence, Text
+from typing import List
 
 from rfhub2.db.model.base_class import Base
 from rfhub2.db.model.mixins import KeywordMixin
+from rfhub2.db.repository.ordering import OrderingItem
 
 
 class Keyword(Base, KeywordMixin):
@@ -18,3 +20,7 @@ class Keyword(Base, KeywordMixin):
 
     def __repr__(self):  # pragma: no cover
         return str(self)
+
+    @classmethod
+    def default_ordering(cls) -> List[OrderingItem]:
+        return [OrderingItem("name")]

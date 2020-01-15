@@ -1,5 +1,8 @@
 from sqlalchemy import Column, DateTime, Integer, PrimaryKeyConstraint, Text
+from typing import List
+
 from rfhub2.db.model.base_class import Base
+from rfhub2.db.repository.ordering import OrderingItem
 
 
 class Statistics(Base):
@@ -21,3 +24,11 @@ class Statistics(Base):
 
     def __repr__(self):  # pragma: no cover
         return str(self)
+
+    @classmethod
+    def default_ordering(cls) -> List[OrderingItem]:
+        return [
+            OrderingItem("collection"),
+            OrderingItem("keyword"),
+            OrderingItem("execution_time", False),
+        ]

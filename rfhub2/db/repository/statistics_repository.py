@@ -7,6 +7,7 @@ from typing import List, Optional
 
 from rfhub2.db.base import Statistics
 from rfhub2.db.repository.base_repository import BaseRepository
+from rfhub2.db.repository.ordering import OrderingItem
 
 
 class Config(BaseConfig):
@@ -80,15 +81,16 @@ class StatisticsRepository(BaseRepository):
         return AggregatedStatistics(*result)
 
     def get_many(
-        self, *, filter_params: StatisticsFilterParams, skip: int = 0, limit: int = 100
+        self,
+        *,
+        filter_params: StatisticsFilterParams,
+        skip: int = 0,
+        limit: int = 100,
+        ordering: List[OrderingItem] = None,
     ) -> List[Statistics]:
         return (
             self._items.filter(*self.filter_criteria(filter_params))
-            .order_by(
-                Statistics.collection,
-                Statistics.keyword,
-                Statistics.execution_time.desc(),
-            )
+            .order_by(*Statistics.ordering_criteria(ordering))
             .offset(skip)
             .limit(limit)
             .all()

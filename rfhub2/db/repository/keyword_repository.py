@@ -8,6 +8,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from rfhub2.db.base import Collection, Keyword, Statistics
 from rfhub2.model import KeywordWithStats
 from rfhub2.db.repository.base_repository import IdEntityRepository
+from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.query_utils import glob_to_sql
 
 
@@ -85,6 +86,7 @@ class KeywordRepository(IdEntityRepository):
         use_doc: bool = True,
         skip: int = 0,
         limit: int = 100,
+        ordering: List[OrderingItem] = None,
     ) -> List[Keyword]:
         return (
             self.session.query(Keyword)
@@ -92,7 +94,7 @@ class KeywordRepository(IdEntityRepository):
             .filter(
                 *self.filter_criteria(pattern, collection_name, collection_id, use_doc)
             )
-            .order_by(Keyword.name)
+            .order_by(*Keyword.ordering_criteria(ordering))
             .offset(skip)
             .limit(limit)
             .all()
@@ -107,6 +109,7 @@ class KeywordRepository(IdEntityRepository):
         use_doc: bool = True,
         skip: int = 0,
         limit: int = 100,
+        ordering: List[OrderingItem] = None,
     ) -> List[KeywordWithStats]:
         return [
             self.from_stats_row(row)
@@ -116,7 +119,7 @@ class KeywordRepository(IdEntityRepository):
                         pattern, collection_name, collection_id, use_doc
                     )
                 )
-                .order_by(Keyword.name)
+                .order_by(*Keyword.ordering_criteria(ordering))
                 .offset(skip)
                 .limit(limit)
                 .all()

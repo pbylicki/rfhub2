@@ -5,7 +5,9 @@ from typing import List
 
 from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_statistics_repository
+from rfhub2.api.utils.order import get_ordering
 from rfhub2.db.base import Statistics as DBStatistics
+from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.statistics_repository import (
     AggregatedStatistics,
     StatisticsFilterParams,
@@ -40,9 +42,10 @@ def get_statistics(
     filter_params: StatisticsFilterParams = Depends(),
     skip: int = 0,
     limit: int = 100,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
     statistics: List[DBStatistics] = repository.get_many(
-        filter_params=filter_params, skip=skip, limit=limit
+        filter_params=filter_params, skip=skip, limit=limit, ordering=ordering
     )
     return statistics
 

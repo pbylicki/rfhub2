@@ -8,6 +8,7 @@ from sqlalchemy.sql.elements import BinaryExpression
 from rfhub2.db.base import Collection, Statistics
 from rfhub2.model import CollectionWithStats
 from rfhub2.db.repository.base_repository import IdEntityRepository
+from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.query_utils import glob_to_sql
 
 
@@ -58,10 +59,11 @@ class CollectionRepository(IdEntityRepository):
         libtype: Optional[str] = None,
         skip: int = 0,
         limit: int = 100,
+        ordering: List[OrderingItem] = None,
     ) -> List[Collection]:
         return (
             self._items.filter(*self.filter_criteria(pattern, libtype))
-            .order_by(Collection.name)
+            .order_by(*Collection.ordering_criteria(ordering))
             .offset(skip)
             .limit(limit)
             .all()
@@ -74,12 +76,13 @@ class CollectionRepository(IdEntityRepository):
         libtype: Optional[str] = None,
         skip: int = 0,
         limit: int = 100,
+        ordering: List[OrderingItem] = None,
     ) -> List[CollectionWithStats]:
         return [
             self.from_stats_row(row)
             for row in (
                 self._items_with_stats.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(Collection.name)
+                .order_by(*Collection.ordering_criteria(ordering))
                 .offset(skip)
                 .limit(limit)
                 .all()

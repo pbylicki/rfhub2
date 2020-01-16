@@ -65,6 +65,20 @@ class CollectionsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), [])
 
+    def test_get_all_collections_with_custom_ordering(self):
+        response = self.client.get("api/v1/collections?order=type&order=name")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(), [self.COLLECTION_3, self.COLLECTION_2, self.COLLECTION_1]
+        )
+
+    def test_get_all_collections_with_reverse_ordering(self):
+        response = self.client.get("api/v1/collections?order=-name")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(), [self.COLLECTION_3, self.COLLECTION_2, self.COLLECTION_1]
+        )
+
     def test_get_all_collections_with_statistics(self):
         response = self.client.get("api/v1/collections/stats/")
         self.assertEqual(response.status_code, 200)

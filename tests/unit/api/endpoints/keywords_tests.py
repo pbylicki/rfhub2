@@ -69,6 +69,14 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(len(body), 1)
         self.assertEqual(body, [self.KEYWORD_3])
 
+    def test_get_all_keywords_with_custom_ordering(self):
+        response = self.client.get("api/v1/keywords?order=doc")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(
+            body, [self.KEYWORD_3, self.KEYWORD_2, self.KEYWORD_1, self.KEYWORD_4]
+        )
+
     def test_get_all_keywords_with_statistics(self):
         response = self.client.get("api/v1/keywords/stats/")
         self.assertEqual(response.status_code, 200)

@@ -5,9 +5,11 @@ from typing import List, Optional
 from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_collection_repository, get_keyword_repository
 from rfhub2.api.utils.http import or_404
+from rfhub2.api.utils.order import get_ordering
 from rfhub2.db.base import Collection as DBCollection, Keyword as DBKeyword
 from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.keyword_repository import KeywordRepository
+from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.model import Keyword, KeywordCreate, KeywordUpdate, KeywordWithStats
 from rfhub2.ui.search_params import SearchParams
 
@@ -22,6 +24,7 @@ def get_keywords(
     pattern: str = None,
     use_doc: bool = True,
     collection_id: Optional[int] = None,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
     return repository.get_all(
         skip=skip,
@@ -29,6 +32,7 @@ def get_keywords(
         pattern=pattern,
         collection_id=collection_id,
         use_doc=use_doc,
+        ordering=ordering,
     )
 
 
@@ -40,6 +44,7 @@ def get_keywords_with_stats(
     pattern: str = None,
     use_doc: bool = True,
     collection_id: Optional[int] = None,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
     return repository.get_all_with_stats(
         skip=skip,
@@ -47,6 +52,7 @@ def get_keywords_with_stats(
         pattern=pattern,
         collection_id=collection_id,
         use_doc=use_doc,
+        ordering=ordering,
     )
 
 
@@ -57,6 +63,7 @@ def search_keywords(
     params: SearchParams = Depends(),
     skip: int = 0,
     limit: int = 100,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
     return repository.get_all(
         pattern=params.pattern,
@@ -64,6 +71,7 @@ def search_keywords(
         use_doc=params.use_doc,
         skip=skip,
         limit=limit,
+        ordering=ordering,
     )
 
 

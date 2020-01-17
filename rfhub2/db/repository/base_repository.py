@@ -1,12 +1,13 @@
 from abc import ABC
-from typing import Generic, Optional, TypeVar
-
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm.query import Query
 from sqlalchemy.orm.session import Session
 from sqlalchemy.sql.elements import BinaryExpression
+from typing import Generic, Optional, TypeVar
 
-T = TypeVar("T")
+from rfhub2.db.base import Base
+
+T = TypeVar("T", bound=Base)
 
 
 class BaseRepository(Generic[T], ABC):

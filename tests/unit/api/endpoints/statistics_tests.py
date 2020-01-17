@@ -9,6 +9,15 @@ class StatisticsApiTest(BaseApiEndpointTest):
             response.json(), [self.STATISTICS_1, self.STATISTICS_2, self.STATISTICS_3]
         )
 
+    def test_get_all_collection_statistics_with_custom_ordering(self):
+        response = self.client.get(
+            "api/v1/statistics/?collection=First collection&order=total_elapsed"
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(), [self.STATISTICS_3, self.STATISTICS_2, self.STATISTICS_1]
+        )
+
     def test_get_all_keyword_statistics(self):
         response = self.client.get(
             "api/v1/statistics/?collection=First collection&keyword=Some keyword"

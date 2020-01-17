@@ -5,8 +5,10 @@ from typing import List, Optional
 from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_collection_repository
 from rfhub2.api.utils.http import or_404
+from rfhub2.api.utils.order import get_ordering
 from rfhub2.db.base import Collection as DBCollection
 from rfhub2.db.repository.collection_repository import CollectionRepository
+from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.model import Collection, CollectionUpdate, CollectionWithStats
 
 router = APIRouter()
@@ -19,8 +21,11 @@ def get_collections(
     limit: int = 100,
     pattern: str = None,
     libtype: str = None,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
-    return repository.get_all(skip=skip, limit=limit, pattern=pattern, libtype=libtype)
+    return repository.get_all(
+        skip=skip, limit=limit, pattern=pattern, libtype=libtype, ordering=ordering
+    )
 
 
 @router.get("/stats/", response_model=List[CollectionWithStats])
@@ -30,9 +35,10 @@ def get_collections_with_stats(
     limit: int = 100,
     pattern: str = None,
     libtype: str = None,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
     return repository.get_all_with_stats(
-        skip=skip, limit=limit, pattern=pattern, libtype=libtype
+        skip=skip, limit=limit, pattern=pattern, libtype=libtype, ordering=ordering
     )
 
 

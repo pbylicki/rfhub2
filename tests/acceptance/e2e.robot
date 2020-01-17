@@ -7,8 +7,8 @@ Resource          resources/keywords.resource
 Resource          resources/variables.resource
 
 *** Variables ***
-@{expected_libraries}    LibWithEmptyInit1    LibWithEmptyInit2    LibWithInit    SingleClassLib
-...                      Test Libdoc File     test_resource        test_robot
+@{expected_libraries}    LibWithEmptyInit1    LibWithEmptyInit2    LibWithInit      SingleClassLib
+...                      Test Libdoc File     test_res_lib_dir     test_resource    test_robot
 @{expected_keywords}     Overview    Single Class Lib Method 1    Single Class Lib Method 2    Single Class Lib Method 3
 
 *** Test Cases ***
@@ -17,20 +17,21 @@ App Should Start With No Collections
 
 Populated App Should Show Number Of Collections
     Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures/initial
-    Collections Count On Main Page Should Be 7
+    Collections Count On Main Page Should Be 8
 
 First Page Table Should Contain Proper Libraries Data
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
     [Template]    Table Should Contain Library Data
-    LibWithEmptyInit1    library     2.1.0       2
-    LibWithEmptyInit2    library     1.0.0       2
-    LibWithInit          library     6.6.6       4
-    SingleClassLib       library     1.2.3       3
-    Test Libdoc File     library     3.2.0       1
-    test_resource        resource    ${EMPTY}    2
-    test_robot           resource    ${EMPTY}    4
+    LibWithEmptyInit1       library     2.1.0       2
+    LibWithEmptyInit2       library     1.0.0       2
+    LibWithInit             library     6.6.6       4
+    SingleClassLib          library     1.2.3       3
+    Test Libdoc File        library     3.2.0       1
+    test_res_lib_dir        resource    ${EMPTY}    2
+    test_resource           resource    ${EMPTY}    2    
+    test_robot              resource    ${EMPTY}    4
 
 Left Panel Should Contain Expected Libraries Library
     [Documentation]    This test bases on 
@@ -50,6 +51,7 @@ Left Panel Keywords Should Navigate To Library Details And Show Correct Data
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
+    [Tags]    rfhub2-155
     Sleep    1s    #Let the page load on travis
     Open ${lib_with_init} In Left Panel
     Click ${lib_with_init_2_method_1} In Left Panel
@@ -57,6 +59,7 @@ Left Panel Keywords Should Navigate To Library Details And Show Correct Data
     Library version Should Be version: 6.6.6
     Library scope Should Be scope: global
     Library overview Should Be This is a docstring that should be imported as overview
+    Library ext_docs Should Be Here goes some docs that should appear on rfhub2 if init is parametrised
     Library keywords Should Be Keywords (4)
 
 Main Page Libraries Should Navigate To Library Details
@@ -90,13 +93,14 @@ First Page Table After Update Should Contain Proper Libraries Data
     [Tags]    rfhub2-64
     [Setup]    Test Setup For Collections Update
     [Template]    Table Should Contain Library Data
-    LibWithEmptyInit1        library    2.1.0       2
-    LibWithEmptyInit2        library    1.0.0       2
-    LibWithInit              library    6.6.6       4
-    SingleClassLib           library    1.2.8       4
-    Test Libdoc File         library    3.2.1       1
-    Test Libdoc File Copy    library    3.2.1       1
-    test_resource           resource    ${EMPTY}    2
+    LibWithEmptyInit1        library     2.1.0       2
+    LibWithEmptyInit2        library     1.0.0       2
+    LibWithInit              library     6.6.6       4
+    SingleClassLib           library     1.2.8       4
+    test_res_lib_dir         resource    ${EMPTY}    2
+    Test Libdoc File         library     3.2.1       1
+    Test Libdoc File Copy    library     3.2.1       1
+    test_resource            resource    ${EMPTY}    2
     [Teardown]    Restore Initial Fixtures
 
 Single Class Library Details Should Be Updated On Frontend
@@ -185,4 +189,4 @@ Test Setup For Collections Update
     Run Cli Package With Options    
     ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Navigate To Main Page
-    Collections Count On Main Page Should Be 7
+    Collections Count On Main Page Should Be 8

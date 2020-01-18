@@ -111,6 +111,8 @@ class RfhubImporter(object):
                 if item.is_dir():
                     if self._is_library_with_init(item):
                         valid_lib_paths.add(item)
+                        if self._robot_files_candidates(item):
+                            valid_lib_paths.update(self._get_valid_robot_files(path))
                     else:
                         valid_lib_paths.update(self._traverse_paths(item))
                 elif (
@@ -137,7 +139,7 @@ class RfhubImporter(object):
                     f"Failed to create collection from path {path}\n"
                     f"{type(ex).__name__}, {ex.args}"
                 )
-        return collections
+        return sorted(collections, key=lambda i: i["name"])
 
     def create_collection(self, path: Path) -> Dict:
         """
@@ -211,6 +213,7 @@ class RfhubImporter(object):
 
         lib_dict = libdoc.__dict__
         lib_dict["doc_format"] = lib_dict.pop("_setter__doc_format")
+        lib_dict["doc"] += self._extract_doc_from_libdoc_inits(lib_dict["inits"])
         for key in ("_setter__keywords", "inits", "named_args"):
             lib_dict.pop(key)
         lib_dict["path"] = path
@@ -237,6 +240,24 @@ class RfhubImporter(object):
             else:
                 keyword["args"] = ""
         return keywords
+
+    def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
+        return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""
+
+    def _robot_files_candidates(self, path: Path) -> bool:
+        return (
+            len(
+                [file for file in path.glob("**/*") if file.suffix in RESOURCE_PATTERNS]
+            )
+            > 0
+        )
+
+    def _get_valid_robot_files(self, path: Path) -> Set[Path]:
+        return {
+            file
+            for file in path.glob("**/*")
+            if (self._is_libdoc_file(file) or self._is_resource_file(file))
+        }
 
     @staticmethod
     def _is_library_with_init(path: Path) -> bool:

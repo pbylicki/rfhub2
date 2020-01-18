@@ -18,6 +18,11 @@ EXPECTED_LIBDOC = {
     "version": "3.2.0",
     "keywords": [{"name": "Someone Shall Pass", "args": '["who"]', "doc": ""}],
 }
+EXPECTED_INIT_DOC = """\n\nHere goes some docs that should appear on rfhub2 if init is parametrised
+\nThe library import:
+\nExamples:
+| Library    LibWithInit   dummy=../one               # add one dummy
+| Library    LibWithInit   path=../one,/global        # add two dummies"""
 EXPECTED_KEYWORDS = [
     {
         "args": "",
@@ -47,6 +52,7 @@ EXPECTED_GET_LIBRARIES = (
         FIXTURE_PATH / "test_robot.robot",
         FIXTURE_PATH / "arg_parse.py",
         FIXTURE_PATH / "data_error.py",
+        FIXTURE_PATH / "LibWithInit" / "test_res_lib_dir.resource",
     }
 )
 EXPECTED_COLLECTION = {
@@ -775,6 +781,30 @@ class RfhubImporterTests(unittest.TestCase):
         libdoc = LibraryDocumentation(file)
         serialised_keywords = self.rfhub_importer._serialise_keywords(libdoc)
         self.assertEqual(serialised_keywords, EXPECTED_KEYWORDS)
+
+    def test_extract_doc_from_libdoc_inits_should_return_doc_from_init(self):
+        file = str(self.fixture_path / "LibWithInit")
+        libdoc = LibraryDocumentation(file)
+        init_doc = self.rfhub_importer._extract_doc_from_libdoc_inits(libdoc.inits)
+        self.assertEqual(init_doc, EXPECTED_INIT_DOC)
+
+    def test_extract_doc_from_libdoc_inits_should_return_empty_string(self):
+        file = str(self.fixture_path / "SingleClassLib" / "SingleClassLib.py")
+        libdoc = LibraryDocumentation(file)
+        init_doc = self.rfhub_importer._extract_doc_from_libdoc_inits(libdoc.inits)
+        self.assertEqual(init_doc, "")
+
+    def test_robot_files_candidates_should_return_true_if_robot_files_present(self):
+        self.assertTrue(
+            self.rfhub_importer._robot_files_candidates(
+                self.fixture_path / "LibWithInit"
+            )
+        )
+        self.assertFalse(
+            self.rfhub_importer._robot_files_candidates(
+                self.fixture_path / "LibWithEmptyInit"
+            )
+        )
 
     def test_collection_path_and_name_match_should_return_true_when_matched(self):
         result = RfhubImporter._collection_path_and_name_match(

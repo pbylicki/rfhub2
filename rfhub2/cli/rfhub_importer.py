@@ -111,7 +111,7 @@ class RfhubImporter(object):
                 if item.is_dir():
                     if self._is_library_with_init(item):
                         valid_lib_paths.add(item)
-                        if self._contains_robot_files(item):
+                        if self._robot_files_candidates(item):
                             valid_lib_paths.update(self._get_valid_robot_files(path))
                     else:
                         valid_lib_paths.update(self._traverse_paths(item))
@@ -244,7 +244,7 @@ class RfhubImporter(object):
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
         return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""
 
-    def _contains_robot_files(self, path: Path) -> bool:
+    def _robot_files_candidates(self, path: Path) -> bool:
         return (
             len(
                 [file for file in path.glob("**/*") if file.suffix in RESOURCE_PATTERNS]

@@ -88,7 +88,7 @@ Cli Update Mode Should Leave Application With New Set Of Collections
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
     [Tags]    rfhub2-64
-    Api Should Have With 8 Collections And 18 Keywords
+    Api Should Have With 7 Collections And 16 Keywords
     
 Running Cli Update Mode Second Time Should Leave Collections Untouched
     [Documentation]    Running Cli Update Mode Second Time 

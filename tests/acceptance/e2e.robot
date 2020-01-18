@@ -97,7 +97,6 @@ First Page Table After Update Should Contain Proper Libraries Data
     LibWithEmptyInit2        library     1.0.0       2
     LibWithInit              library     6.6.6       4
     SingleClassLib           library     1.2.8       4
-    test_res_lib_dir         resource    ${EMPTY}    2
     Test Libdoc File         library     3.2.1       1
     Test Libdoc File Copy    library     3.2.1       1
     test_resource            resource    ${EMPTY}    2
@@ -189,4 +188,4 @@ Test Setup For Collections Update
     Run Cli Package With Options    
     ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Navigate To Main Page
-    Collections Count On Main Page Should Be 8
+    Collections Count On Main Page Should Be 7

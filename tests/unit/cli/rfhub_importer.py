@@ -794,12 +794,14 @@ class RfhubImporterTests(unittest.TestCase):
         init_doc = self.rfhub_importer._extract_doc_from_libdoc_inits(libdoc.inits)
         self.assertEqual(init_doc, "")
 
-    def test_contains_robot_files_should_return_true_if_robot_files_present(self):
+    def test_robot_files_candidates_should_return_true_if_robot_files_present(self):
         self.assertTrue(
-            self.rfhub_importer._contains_robot_files(self.fixture_path / "LibWithInit")
+            self.rfhub_importer._robot_files_candidates(
+                self.fixture_path / "LibWithInit"
+            )
         )
         self.assertFalse(
-            self.rfhub_importer._contains_robot_files(
+            self.rfhub_importer._robot_files_candidates(
                 self.fixture_path / "LibWithEmptyInit"
             )
         )

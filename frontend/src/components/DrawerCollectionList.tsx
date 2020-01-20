@@ -13,6 +13,7 @@ import { List } from '@material-ui/core';
 import { Collection } from '../types/ModelTypes';
 import { CollectionStore } from '../stores/CollectionStore';
 import Tooltip from 'react-tooltip-lite'
+import EllipsisText from "react-ellipsis-text";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -52,19 +53,36 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
         {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={isSelected(collection.id)} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding >
+        <List component="div" disablePadding>
           <ListItem button className={classes.nested}>
             <Link to={`/keywords/${collection.id}`}><ListItemText primary="Overview" disableTypography /></Link>
           </ListItem>
-          {collection.keywords.map(keyword => (
-            <Tooltip content={keyword.name} direction="right" distance={26} >
-              <ListItem button key={keyword.id} className={classes.nested} >
-                <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
-                  <ListItemText primary={store.wrapTextWithoutSpaces(keyword.name)} disableTypography />
-                </Link>
-              </ListItem>
-            </Tooltip>
-          ))}
+          {collection.keywords.map(keyword => {
+            if (keyword.name.length > 35) {
+              return (
+                <Tooltip content={keyword.name} direction="right" distance={26}>
+                  <ListItem button key={keyword.id} className={classes.nested}>
+                    <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                      <ListItemText disableTypography>
+                        <EllipsisText
+                          text={keyword.name}
+                          length='35'
+                        />
+                      </ListItemText>
+                    </Link>
+                  </ListItem>
+                </Tooltip>
+              )
+            } else {
+              return (
+                <ListItem button key={keyword.id} className={classes.nested}>
+                  <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                    <ListItemText primary={keyword.name} disableTypography />
+                  </Link>
+                </ListItem>
+              )
+            }
+          })}
         </List>
       </Collapse>
     </React.Fragment>

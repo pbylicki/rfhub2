@@ -45,41 +45,66 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
 
   return (
     <React.Fragment>
-      <ListItem
-        selected={isSelected(collection.id)}
-        onClick={event => handleListItemClick(event, collection.id)}
-      >
-        <ListItemText primary={collection.name} />
-        {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
+      {(collection.name.length > 32) ? (
+        <Tooltip content={collection.name} direction="right" distance={26}>
+          <ListItem
+            selected={isSelected(collection.id)}
+            onClick={event => handleListItemClick(event, collection.id)}
+          >
+            <ListItemText disableTypography>
+              <EllipsisText
+                text={collection.name}
+                length='32'
+              />
+            </ListItemText>
+            {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
+          </ListItem>
+        </Tooltip>
+        ) : (
+        <ListItem
+          selected={isSelected(collection.id)}
+          onClick={event => handleListItemClick(event, collection.id)}
+        >
+          <ListItemText disableTypography>
+            <EllipsisText
+              text={collection.name}
+              length='32'
+            />
+          </ListItemText>
+          {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+        )
+      }
       <Collapse in={isSelected(collection.id)} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem button className={classes.nested}>
-            <Link to={`/keywords/${collection.id}`}><ListItemText primary="Overview" disableTypography /></Link>
-          </ListItem>
+          <Link to={`/keywords/${collection.id}`}>
+            <ListItem button className={classes.nested}>
+              <ListItemText primary="Overview" disableTypography />
+            </ListItem>
+          </Link>
           {collection.keywords.map(keyword => {
-            if (keyword.name.length > 35) {
+            if (keyword.name.length > 32) {
               return (
                 <Tooltip content={keyword.name} direction="right" distance={26}>
-                  <ListItem button key={keyword.id} className={classes.nested}>
-                    <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                  <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                    <ListItem button key={keyword.id} className={classes.nested}>
                       <ListItemText disableTypography>
                         <EllipsisText
                           text={keyword.name}
-                          length='35'
+                          length='32'
                         />
                       </ListItemText>
-                    </Link>
-                  </ListItem>
+                    </ListItem>
+                  </Link>
                 </Tooltip>
               )
             } else {
               return (
-                <ListItem button key={keyword.id} className={classes.nested}>
-                  <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
+                  <ListItem button key={keyword.id} className={classes.nested}>
                     <ListItemText primary={keyword.name} disableTypography />
-                  </Link>
-                </ListItem>
+                  </ListItem>
+                </Link>
               )
             }
           })}

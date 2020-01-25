@@ -82,7 +82,7 @@ export class CollectionStore {
   @action.bound
   searchKeywords(pattern: string, skip: number = 0, limit: number = 100): Promise<void> {
     this.searchTerm = pattern;
-    if (pattern.length > 2) {
+    if (pattern.length > 0) {
       this.searchHasMore = false
       return axios.get<any, AxiosResponse<Keyword[]>>(`/api/v1/keywords/search/?pattern=${pattern}&skip=${skip}&limit=${limit}`)
         .then(resp => {

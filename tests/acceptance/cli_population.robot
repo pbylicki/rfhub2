@@ -5,6 +5,7 @@ Resource    resources/variables.resource
 *** Test Cases ***
 Cli Should Populate App With Keywords From Provided Paths Only
     [Documentation]    Cli Should Populate App With Keywords From Provided Paths Only
+    [Tags]    rfhub2-153
     Run Cli Package Without Installed Keywords
     Output Should Contain
     ...    LibWithInit library with 4 keywords loaded.
@@ -14,8 +15,9 @@ Cli Should Populate App With Keywords From Provided Paths Only
     ...    SingleClassLib library with 3 keywords loaded.
     ...    LibWithEmptyInit2 library with 2 keywords loaded.
     ...    test_robot library with 4 keywords loaded.
-    ...    Successfully loaded 7 collections with 18 keywords.
-    Api Should Have With 7 Collections And 18 Keywords
+    ...    test_res_lib_dir library with 2 keywords loaded.
+    ...    Successfully loaded 8 collections with 20 keywords.
+    Api Should Have With 8 Collections And 20 Keywords
 
 Cli Should Populate App With Installed Keywords
     [Documentation]    Cli Should Populate App With Installed Keywords

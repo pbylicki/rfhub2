@@ -176,7 +176,7 @@ class KeywordsImporter(object):
 
     def delete_outdated_collections(
         self, existing_collections: List[Dict], new_collections: List[Dict]
-    ) -> None:
+    ) -> Set[int]:
         """Deletes outdated collections"""
         collections_to_delete = self._get_outdated_collections_ids(
             existing_collections, new_collections

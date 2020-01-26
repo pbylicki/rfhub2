@@ -4,16 +4,16 @@ from starlette.responses import Response
 from typing import List
 
 from rfhub2.api.utils.auth import is_authenticated
-from rfhub2.api.utils.db import get_statistics_repository
+from rfhub2.api.utils.db import get_keyword_statistics_repository
 from rfhub2.api.utils.order import get_ordering
-from rfhub2.db.base import Statistics as DBStatistics
+from rfhub2.db.base import KeywordStatistics as DBStatistics
 from rfhub2.db.repository.ordering import OrderingItem
-from rfhub2.db.repository.statistics_repository import (
-    AggregatedStatistics,
-    StatisticsFilterParams,
-    StatisticsRepository,
+from rfhub2.db.repository.keyword_statistics_repository import (
+    AggregatedKeywordStatistics,
+    KeywordStatisticsFilterParams,
+    KeywordStatisticsRepository,
 )
-from rfhub2.model import Statistics, StatisticsDeleted
+from rfhub2.model import KeywordStatistics, StatisticsDeleted
 
 router = APIRouter()
 
@@ -26,20 +26,24 @@ class DuplicatedStatisticException(HTTPException):
         )
 
 
-@router.get("/aggregated/", response_model=AggregatedStatistics)
+@router.get("/aggregated/", response_model=AggregatedKeywordStatistics)
 def get_aggregated(
     *,
-    repository: StatisticsRepository = Depends(get_statistics_repository),
-    filter_params: StatisticsFilterParams = Depends(),
+    repository: KeywordStatisticsRepository = Depends(
+        get_keyword_statistics_repository
+    ),
+    filter_params: KeywordStatisticsFilterParams = Depends(),
 ):
     return repository.get_aggregated(filter_params)
 
 
-@router.get("/", response_model=List[Statistics])
+@router.get("/", response_model=List[KeywordStatistics])
 def get_statistics(
     *,
-    repository: StatisticsRepository = Depends(get_statistics_repository),
-    filter_params: StatisticsFilterParams = Depends(),
+    repository: KeywordStatisticsRepository = Depends(
+        get_keyword_statistics_repository
+    ),
+    filter_params: KeywordStatisticsFilterParams = Depends(),
     skip: int = 0,
     limit: int = 100,
     ordering: List[OrderingItem] = Depends(get_ordering),
@@ -50,12 +54,14 @@ def get_statistics(
     return statistics
 
 
-@router.post("/", response_model=Statistics, status_code=201)
+@router.post("/", response_model=KeywordStatistics, status_code=201)
 def create_statistics(
     *,
     _: bool = Depends(is_authenticated),
-    repository: StatisticsRepository = Depends(get_statistics_repository),
-    statistics: Statistics,
+    repository: KeywordStatisticsRepository = Depends(
+        get_keyword_statistics_repository
+    ),
+    statistics: KeywordStatistics,
 ):
     db_statistics: DBStatistics = DBStatistics(**statistics.dict())
     try:
@@ -69,8 +75,10 @@ def delete_statistics(
     *,
     response: Response,
     _: bool = Depends(is_authenticated),
-    repository: StatisticsRepository = Depends(get_statistics_repository),
-    filter_params: StatisticsFilterParams = Depends(),
+    repository: KeywordStatisticsRepository = Depends(
+        get_keyword_statistics_repository
+    ),
+    filter_params: KeywordStatisticsFilterParams = Depends(),
 ):
     deleted: int = repository.delete_many(filter_params)
     if deleted:
@@ -84,7 +92,9 @@ def delete_statistics(
 def delete_all_statistics(
     *,
     _: bool = Depends(is_authenticated),
-    repository: StatisticsRepository = Depends(get_statistics_repository),
+    repository: KeywordStatisticsRepository = Depends(
+        get_keyword_statistics_repository
+    ),
 ):
     deleted: int = repository.delete_many()
     return StatisticsDeleted(deleted=deleted)

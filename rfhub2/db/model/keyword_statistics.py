@@ -5,7 +5,7 @@ from rfhub2.db.model.base_class import Base
 from rfhub2.db.repository.ordering import OrderingItem
 
 
-class Statistics(Base):
+class KeywordStatistics(Base):
     collection = Column(Text)
     keyword = Column(Text)
     execution_time = Column(DateTime(timezone=True))
@@ -18,7 +18,7 @@ class Statistics(Base):
 
     def __str__(self):  # pragma: no cover
         return (
-            f"Statistics({self.collection},{self.keyword},{self.execution_time},"
+            f"KeywordStatistics({self.collection},{self.keyword},{self.execution_time},"
             + f"{self.times_used},{self.total_elapsed},{self.min_elapsed},{self.max_elapsed})"
         )
 

@@ -1,5 +1,5 @@
 from requests import session, Response
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple
 
 
 API_V1 = "api/v1"
@@ -30,7 +30,7 @@ class Client(object):
             "accept": "application/json",
         }
 
-    def get_collections(self, skip: int = 0, limit: int = 100) -> Response:
+    def get_collections(self, skip: int = 0, limit: int = 100) -> List[Dict]:
         """
         Gets list of collections object using request get method.
         """
@@ -60,7 +60,7 @@ class Client(object):
         """
         Adds statistics using requests post method.
         """
-        return self._post_request(endpoint="statistics", data=data)
+        return self._post_request(endpoint="statistics/keywords", data=data)
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """

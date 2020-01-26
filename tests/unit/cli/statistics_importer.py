@@ -1,10 +1,10 @@
 from pathlib import Path
 from responses import RequestsMock
-from typing import Dict
 import unittest
 
 from rfhub2.cli.statistics_importer import StatisticsImporter
 from rfhub2.cli.api_client import Client
+from rfhub2.model import KeywordStatistics
 
 FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "statistics"
 EXPECTED_GET_EXECUTION_PATHS = {
@@ -12,28 +12,33 @@ EXPECTED_GET_EXECUTION_PATHS = {
     FIXTURE_PATH / "subdir" / "output.xml",
 }
 
-STATISTICS_1 = {
-    "collection": "BuiltIn",
-    "keyword": "Log",
-    "execution_time": "2019-12-25 11:38:08.868000",
-    "times_used": 2,
-    "total_elapsed": 2,
-    "min_elapsed": 1,
-    "max_elapsed": 1,
-}
-STATISTICS_2 = {**STATISTICS_1, "keyword": "Comment"}
-STATISTICS_3 = {**STATISTICS_1, "keyword": "Should Be True"}
-STATISTICS_4 = {
-    **STATISTICS_1,
-    "collection": "Test Collection 1",
-    "keyword": "Test Keyword 2",
-}
-STATISTICS_5 = {
-    **STATISTICS_1,
-    "collection": "Test Collection 2",
-    "keyword": "Test Keyword 1",
-}
-STATISTICS_6 = {"detail": "dummy request destined to fail"}
+STATISTICS_1 = KeywordStatistics(
+    **{
+        "collection": "BuiltIn",
+        "keyword": "Log",
+        "execution_time": "2019-12-25 11:38:08.868000",
+        "times_used": 2,
+        "total_elapsed": 2,
+        "min_elapsed": 1,
+        "max_elapsed": 1,
+    }
+)
+STATISTICS_2 = KeywordStatistics(**{**STATISTICS_1.dict(), "keyword": "Comment"})
+STATISTICS_3 = KeywordStatistics(**{**STATISTICS_1.dict(), "keyword": "Should Be True"})
+STATISTICS_4 = KeywordStatistics(
+    **{
+        **STATISTICS_1.dict(),
+        "collection": "Test Collection 1",
+        "keyword": "Test Keyword 2",
+    }
+)
+STATISTICS_5 = KeywordStatistics(
+    **{
+        **STATISTICS_1.dict(),
+        "collection": "Test Collection 2",
+        "keyword": "Test Keyword 1",
+    }
+)
 STATISTICS = [STATISTICS_1, STATISTICS_2, STATISTICS_3]
 EXPECTED_STATISTICS_COUNT = 2, 2
 EXPECTED_STATISTICS_DUPL_COUNT = 1, 1
@@ -50,12 +55,12 @@ class StatisticsImporterTests(unittest.TestCase):
         self.stats_url = f"{self.client.api_url}/statistics/keywords/"
 
     def mock_post_request(
-        self, mock: RequestsMock, data: Dict, status: int = 201
+        self, mock: RequestsMock, data: KeywordStatistics, status: int = 201
     ) -> None:
         mock.add(
             mock.POST,
             self.stats_url,
-            json=data,
+            json=data.json(),
             status=status,
             adding_headers={
                 "Content-Type": "application/json",
@@ -106,15 +111,6 @@ class StatisticsImporterTests(unittest.TestCase):
                 [STATISTICS_4, STATISTICS_5, STATISTICS_5]
             )
             self.assertTupleEqual(result, EXPECTED_STATISTICS_COUNT)
-
-    def test_add_statistics_should_return_number_of_loaded_collections_and_keywords_with_duplicated_data(
-        self
-    ):
-        with self.assertRaises(StopIteration):
-            with RequestsMock() as mock:
-                for stat, rc in zip([STATISTICS_4, STATISTICS_6], (201, 422)):
-                    self.mock_post_request(mock, stat, rc)
-                self.rfhub_importer.add_statistics([STATISTICS_4, STATISTICS_6])
 
     def test__is_valid_execution_file_should_return_true_on_valid_file(self):
         result = StatisticsImporter._is_valid_execution_file(VALID_OUTPUT_XML)

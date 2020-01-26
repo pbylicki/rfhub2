@@ -1,6 +1,8 @@
 from requests import session, Response
 from typing import Dict, List, Tuple
 
+from rfhub2.model import KeywordStatistics
+
 
 API_V1 = "api/v1"
 TEST_COLLECTION = {
@@ -56,11 +58,11 @@ class Client(object):
         """
         return self._post_request(endpoint="keywords", data=data)
 
-    def add_statistics(self, data: Dict) -> Tuple[int, Dict]:
+    def add_statistics(self, data: KeywordStatistics) -> Tuple[int, Dict]:
         """
         Adds statistics using requests post method.
         """
-        return self._post_request(endpoint="statistics/keywords", data=data)
+        return self._post_request(endpoint="statistics/keywords", data=data.json())
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """

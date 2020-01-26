@@ -1,7 +1,32 @@
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List
-from xml.etree import ElementTree as et
+from itertools import groupby
+from typing import Callable, Dict, Iterable, List, Tuple
+from xml.etree.ElementTree import Element, parse
+
+from rfhub2.model import KeywordStatistics
+
+
+@dataclass
+class XmlKeyword:
+    library: str
+    name: str
+    elapsed: int
+
+
+@dataclass
+class ElapsedStats:
+    total_elapsed: int
+    min_elapsed: int
+    max_elapsed: int
+
+
+StatsKey = Tuple[str, str]
+
+
+def stats_key(keyword: XmlKeyword) -> StatsKey:
+    return keyword.library, keyword.name
 
 
 class StatisticsExtractor:
@@ -10,84 +35,86 @@ class StatisticsExtractor:
         self.source_time_format: str = "%Y%m%d %H:%M:%S.%f"
         self.destination_time_format: str = "%Y-%m-%d %H:%M:%S.%f"
 
-    def compute_statistics(self) -> List[Dict]:
+    def compute_statistics(self) -> List[KeywordStatistics]:
         """
-        Returns list of dicts with aggregated statistics extracted from single output.xml file
+        Returns list of KeywordStatistics extracted from single output.xml file
         """
         keywords = self.parse_xml_keywords()
         return self.aggregate_statistics(keywords)
 
-    def aggregate_statistics(self, keywords: List[Dict]) -> List[Dict]:
+    def aggregate_statistics(
+        self, keywords: List[XmlKeyword]
+    ) -> List[KeywordStatistics]:
         """
-        Returns list of dicts aggregated data grouped by library/keyword combination.
+        Returns list of KeywordStatistics grouped by library/keyword pair.
         """
         execution_time = self.get_execution_time()
-        statistics = [
-            {
-                "collection": k[0],
-                "keyword": k[1],
-                "execution_time": execution_time,
-                "times_used": v,
-                "total_elapsed": 0,
-                "min_elapsed": float("inf"),
-                "max_elapsed": 0,
-            }
-            for k, v in Counter(
-                (keyword["library"], keyword["name"]) for keyword in keywords
-            ).items()
-        ]
-        return self.get_elapsed_times(keywords, statistics)
-
-    @staticmethod
-    def get_elapsed_times(keywords: List[Dict], statistics: List[Dict]) -> List[Dict]:
-        """
-        Returns list of dicts with data about execution times such as min, max and total elapsed time.
-        """
-        for stat in statistics:
-            for keyword in keywords:
-                if (
-                    keyword["library"] == stat["collection"]
-                    and keyword["name"] == stat["keyword"]
-                ):
-                    stat["total_elapsed"] += keyword["elapsed"]
-                    stat["min_elapsed"] = min(stat["min_elapsed"], keyword["elapsed"])
-                    stat["max_elapsed"] = max(stat["max_elapsed"], keyword["elapsed"])
+        elapsed_stats = self.get_elapsed_stats(keywords)
+        statistics = []
+        for key, count in Counter(stats_key(keyword) for keyword in keywords).items():
+            stats = elapsed_stats[key]
+            statistics.append(
+                KeywordStatistics(
+                    collection=key[0],
+                    keyword=key[1],
+                    execution_time=execution_time,
+                    times_used=count,
+                    total_elapsed=stats.total_elapsed,
+                    min_elapsed=stats.min_elapsed,
+                    max_elapsed=stats.max_elapsed,
+                )
+            )
         return statistics
 
-    def parse_xml_keywords(self) -> List[Dict]:
+    @staticmethod
+    def get_elapsed_stats(keywords: List[XmlKeyword]) -> Dict[StatsKey, ElapsedStats]:
         """
-        Returns list of dicts containing keywords execution data.
+        Returns dict of keyword execution stats such as min, max and total elapsed time
+        grouped by library/keyword pair.
         """
-        xml_keywords = et.parse(self.path).findall(".//kw")
+        result = {}
+        for key, group in groupby(sorted(keywords, key=stats_key), stats_key):
+            elapsed_times = [kw.elapsed for kw in group]
+            result[key] = ElapsedStats(
+                total_elapsed=sum(elapsed_times),
+                min_elapsed=min(elapsed_times),
+                max_elapsed=max(elapsed_times),
+            )
+        return result
+
+    def parse_xml_keywords(self) -> List[XmlKeyword]:
+        """
+        Returns list of XmlKeyword objects containing keywords execution data.
+        """
+        xml_keywords = parse(self.path).findall(".//kw")
         return [
-            {
-                "library": xml_keyword.attrib.get("library"),
-                "name": xml_keyword.attrib.get("name"),
-                "elapsed": int(
-                    1000
-                    * (
-                        datetime.strptime(
-                            max(
-                                tag.attrib.get("endtime")
-                                for tag in xml_keyword.iter()
-                                if tag.tag == "status"
-                            ),
-                            self.source_time_format,
-                        )
-                        - datetime.strptime(
-                            min(
-                                tag.attrib.get("starttime")
-                                for tag in xml_keyword.iter()
-                                if tag.tag == "status"
-                            ),
-                            self.source_time_format,
-                        )
-                    ).total_seconds()
-                ),
-            }
+            XmlKeyword(
+                xml_keyword.attrib.get("library"),
+                xml_keyword.attrib.get("name"),
+                self.calc_elapsed(xml_keyword),
+            )
             for xml_keyword in xml_keywords
             if xml_keyword.attrib.get("library") is not None
         ]
+
+    def datetime_from_attribute_agg(
+        self, element: Element, attr: str, agg_func: Callable[[Iterable[str]], str]
+    ) -> datetime:
+        return datetime.strptime(
+            agg_func(
+                tag.attrib.get(attr) for tag in element.iter() if tag.tag == "status"
+            ),
+            self.source_time_format,
+        )
+
+    def calc_elapsed(self, element: Element) -> int:
+        return int(
+            1000
+            * (
+                self.datetime_from_attribute_agg(element, "endtime", max)
+                - self.datetime_from_attribute_agg(element, "starttime", min)
+            ).total_seconds()
+        )
 
     def get_execution_time(self) -> str:
         """
@@ -95,7 +122,7 @@ class StatisticsExtractor:
         """
         return datetime.strftime(
             datetime.strptime(
-                et.parse(self.path).getroot().attrib.get("generated"),
+                parse(self.path).getroot().attrib.get("generated"),
                 self.source_time_format,
             ),
             self.destination_time_format,

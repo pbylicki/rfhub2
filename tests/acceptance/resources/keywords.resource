@@ -80,11 +80,6 @@ ${endpoint} Endpoint Should Have ${n} Items
     ${response}    Get Request For Endpoint    endpoint=${endpoint}
     Length Should Be    ${response}    ${n}
 
-Statistics Endpoint For ${collection} Should Have ${n} Items
-    ${params}    Create Dictionary    collection=${collection}
-    ${response}    Get Request For Endpoint    endpoint=statistics    params=${params}
-    Length Should Be    ${response}    ${n}
-
 Get Request For Endpoint
     [Arguments]    ${endpoint}    ${params}=None
     Create Session    tmp    http://localhost:8000/api/v1
@@ -95,7 +90,7 @@ Get Request For Endpoint
 Delete All Statistics
     ${auth}    Create List    rfhub    rfhub
     Create Session    tmp    http://localhost:8000/api/v1    auth=${auth}
-    ${response}    Delete Request    tmp    statistics/all/
+    ${response}    Delete Request    tmp    statistics/keywords/all/
     Should Be Equal As Integers    ${response.status_code}    204
 
 Run Cli Package Without Installed Keywords

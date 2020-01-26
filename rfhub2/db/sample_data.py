@@ -1,13 +1,13 @@
 from datetime import datetime, timezone
 from sqlalchemy.orm.session import Session
 
-from rfhub2.db.base import Collection, Keyword, Statistics
+from rfhub2.db.base import Collection, Keyword, KeywordStatistics
 
 
 def recreate_data(session: Session) -> None:
     session.query(Keyword).delete()
     session.query(Collection).delete()
-    session.query(Statistics).delete()
+    session.query(KeywordStatistics).delete()
     keywords = [
         Keyword(
             name="Test setup",
@@ -23,7 +23,7 @@ def recreate_data(session: Session) -> None:
         Collection(name="Third", type="Library"),
     ]
     statistics = [
-        Statistics(
+        KeywordStatistics(
             collection="First collection",
             keyword="Test setup",
             execution_time=datetime(2019, 12, 21, 2, 30, 0, tzinfo=timezone.utc),
@@ -32,7 +32,7 @@ def recreate_data(session: Session) -> None:
             min_elapsed=10,
             max_elapsed=100,
         ),
-        Statistics(
+        KeywordStatistics(
             collection="First collection",
             keyword="Some keyword",
             execution_time=datetime(2019, 12, 21, 2, 30, 0, tzinfo=timezone.utc),
@@ -41,7 +41,7 @@ def recreate_data(session: Session) -> None:
             min_elapsed=300,
             max_elapsed=1500,
         ),
-        Statistics(
+        KeywordStatistics(
             collection="First collection",
             keyword="Some keyword",
             execution_time=datetime(2019, 12, 20, 1, 30, 0, tzinfo=timezone.utc),
@@ -50,7 +50,7 @@ def recreate_data(session: Session) -> None:
             min_elapsed=200,
             max_elapsed=1000,
         ),
-        Statistics(
+        KeywordStatistics(
             collection="Second collection",
             keyword="Old keyword",
             execution_time=datetime(2019, 12, 21, 1, 30, 0, tzinfo=timezone.utc),
@@ -59,7 +59,7 @@ def recreate_data(session: Session) -> None:
             min_elapsed=200,
             max_elapsed=1000,
         ),
-        Statistics(
+        KeywordStatistics(
             collection="Second collection",
             keyword="Old keyword",
             execution_time=datetime(2019, 12, 21, 2, 30, 0, tzinfo=timezone.utc),
@@ -68,7 +68,7 @@ def recreate_data(session: Session) -> None:
             min_elapsed=100,
             max_elapsed=1000,
         ),
-        Statistics(
+        KeywordStatistics(
             collection="Second collection",
             keyword="Old keyword",
             execution_time=datetime(2019, 12, 21, 3, 30, 0, tzinfo=timezone.utc),

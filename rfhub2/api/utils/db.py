@@ -2,7 +2,9 @@ from starlette.requests import Request
 
 from rfhub2.db.repository.keyword_repository import KeywordRepository
 from rfhub2.db.repository.collection_repository import CollectionRepository
-from rfhub2.db.repository.statistics_repository import StatisticsRepository
+from rfhub2.db.repository.keyword_statistics_repository import (
+    KeywordStatisticsRepository,
+)
 
 
 def get_collection_repository(request: Request) -> CollectionRepository:
@@ -13,8 +15,8 @@ def get_keyword_repository(request: Request) -> KeywordRepository:
     return KeywordRepository(request.state.db)
 
 
-def get_statistics_repository(request: Request) -> StatisticsRepository:
-    return StatisticsRepository(request.state.db)
+def get_keyword_statistics_repository(request: Request) -> KeywordStatisticsRepository:
+    return KeywordStatisticsRepository(request.state.db)
 
 
 def db_healthcheck(request: Request) -> bool:

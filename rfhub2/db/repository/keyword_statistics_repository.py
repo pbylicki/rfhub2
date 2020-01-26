@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm.query import Query
 from typing import List, Optional
 
-from rfhub2.db.base import Statistics
+from rfhub2.db.base import KeywordStatistics
 from rfhub2.db.repository.base_repository import BaseRepository
 from rfhub2.db.repository.ordering import OrderingItem
 
@@ -15,7 +15,7 @@ class Config(BaseConfig):
 
 
 @dataclass(config=Config)
-class AggregatedStatistics:
+class AggregatedKeywordStatistics:
 
     times_used: int
     total_elapsed: int
@@ -25,7 +25,7 @@ class AggregatedStatistics:
 
 
 @dataclass
-class StatisticsFilterParams:
+class KeywordStatisticsFilterParams:
     collection: str
     keyword: Optional[str] = None
     execution_time: Optional[datetime] = None
@@ -33,71 +33,79 @@ class StatisticsFilterParams:
     execution_time_to: Optional[datetime] = None
 
 
-class StatisticsRepository(BaseRepository):
+class KeywordStatisticsRepository(BaseRepository):
     @property
     def _items(self) -> Query:
-        return self.session.query(Statistics)
+        return self.session.query(KeywordStatistics)
 
     @staticmethod
-    def filter_criteria(params: StatisticsFilterParams):
+    def filter_criteria(params: KeywordStatisticsFilterParams):
         filter_criteria = []
         if params.collection:
-            filter_criteria.append(Statistics.collection == params.collection)
+            filter_criteria.append(KeywordStatistics.collection == params.collection)
         if params.keyword:
-            filter_criteria.append(Statistics.keyword == params.keyword)
+            filter_criteria.append(KeywordStatistics.keyword == params.keyword)
         if params.execution_time:
-            filter_criteria.append(Statistics.execution_time == params.execution_time)
+            filter_criteria.append(
+                KeywordStatistics.execution_time == params.execution_time
+            )
         else:
             if params.execution_time_from:
                 filter_criteria.append(
-                    Statistics.execution_time >= params.execution_time_from
+                    KeywordStatistics.execution_time >= params.execution_time_from
                 )
             if params.execution_time_to:
                 filter_criteria.append(
-                    Statistics.execution_time <= params.execution_time_to
+                    KeywordStatistics.execution_time <= params.execution_time_to
                 )
         return filter_criteria
 
     def get_aggregated(
-        self, filter_params: StatisticsFilterParams
-    ) -> AggregatedStatistics:
+        self, filter_params: KeywordStatisticsFilterParams
+    ) -> AggregatedKeywordStatistics:
         result = (
             self.session.query(
-                func.coalesce(func.sum(Statistics.times_used), 0).label("times_used"),
-                func.coalesce(func.sum(Statistics.total_elapsed), 0).label(
+                func.coalesce(func.sum(KeywordStatistics.times_used), 0).label(
+                    "times_used"
+                ),
+                func.coalesce(func.sum(KeywordStatistics.total_elapsed), 0).label(
                     "total_elapsed"
                 ),
                 func.coalesce(
-                    func.sum(Statistics.total_elapsed)
-                    / func.sum(Statistics.times_used),
+                    func.sum(KeywordStatistics.total_elapsed)
+                    / func.sum(KeywordStatistics.times_used),
                     0,
                 ).label("avg_elapsed"),
-                func.coalesce(func.min(Statistics.min_elapsed), 0).label("min_elapsed"),
-                func.coalesce(func.max(Statistics.max_elapsed), 0).label("max_elapsed"),
+                func.coalesce(func.min(KeywordStatistics.min_elapsed), 0).label(
+                    "min_elapsed"
+                ),
+                func.coalesce(func.max(KeywordStatistics.max_elapsed), 0).label(
+                    "max_elapsed"
+                ),
             )
             .filter(*self.filter_criteria(filter_params))
             .first()
         )
-        return AggregatedStatistics(*result)
+        return AggregatedKeywordStatistics(*result)
 
     def get_many(
         self,
         *,
-        filter_params: StatisticsFilterParams,
+        filter_params: KeywordStatisticsFilterParams,
         skip: int = 0,
         limit: int = 100,
         ordering: List[OrderingItem] = None,
-    ) -> List[Statistics]:
+    ) -> List[KeywordStatistics]:
         return (
             self._items.filter(*self.filter_criteria(filter_params))
-            .order_by(*Statistics.ordering_criteria(ordering))
+            .order_by(*KeywordStatistics.ordering_criteria(ordering))
             .offset(skip)
             .limit(limit)
             .all()
         )
 
     def delete_many(
-        self, filter_params: Optional[StatisticsFilterParams] = None
+        self, filter_params: Optional[KeywordStatisticsFilterParams] = None
     ) -> int:
         filter_criteria = self.filter_criteria(filter_params) if filter_params else []
         row_count = self._items.filter(*filter_criteria).delete()

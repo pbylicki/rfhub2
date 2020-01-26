@@ -73,7 +73,7 @@ class KeywordWithStats(Keyword, KeywordMixin):
     avg_elapsed: Optional[float]
 
 
-class Statistics(BaseModel):
+class KeywordStatistics(BaseModel):
     collection: str
     keyword: str
     execution_time: datetime

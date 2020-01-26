@@ -5,7 +5,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
 
-from rfhub2.db.base import Collection, Keyword, Statistics
+from rfhub2.db.base import Collection, Keyword, KeywordStatistics
 from rfhub2.model import KeywordWithStats
 from rfhub2.db.repository.base_repository import IdEntityRepository
 from rfhub2.db.repository.ordering import OrderingItem
@@ -21,14 +21,15 @@ class KeywordRepository(IdEntityRepository):
     def _items_with_stats(self) -> Query:
         keyword_statistics = (
             self.session.query(
-                func.sum(Statistics.times_used).label("times_used"),
+                func.sum(KeywordStatistics.times_used).label("times_used"),
                 (
-                    func.sum(Statistics.total_elapsed) / func.sum(Statistics.times_used)
+                    func.sum(KeywordStatistics.total_elapsed)
+                    / func.sum(KeywordStatistics.times_used)
                 ).label("avg_elapsed"),
-                Statistics.collection,
-                Statistics.keyword,
+                KeywordStatistics.collection,
+                KeywordStatistics.keyword,
             )
-            .group_by(Statistics.collection, Statistics.keyword)
+            .group_by(KeywordStatistics.collection, KeywordStatistics.keyword)
             .subquery()
         )
         return (

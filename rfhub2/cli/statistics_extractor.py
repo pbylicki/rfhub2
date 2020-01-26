@@ -12,7 +12,7 @@ class StatisticsExtractor:
 
     def compute_statistics(self) -> List[Dict]:
         """
-        Returns list of dicst with aggregated statistics extracted from single output.xml file
+        Returns list of dicts with aggregated statistics extracted from single output.xml file
         """
         keywords = self.parse_xml_keywords()
         return self.aggregate_statistics(keywords)

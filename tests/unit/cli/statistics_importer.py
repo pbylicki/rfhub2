@@ -110,6 +110,21 @@ class StatisticsImporterTests(unittest.TestCase):
             )
             self.assertTupleEqual(result, EXPECTED_STATISTICS_COUNT)
 
+    def test_add_statistics_should_fail_on_error_response(self):
+        with self.assertRaises(StopIteration):
+            with RequestsMock() as mock:
+                mock.add(
+                    mock.POST,
+                    self.stats_url,
+                    json={"detail": "Critical error"},
+                    status=500,
+                    adding_headers={
+                        "Content-Type": "application/json",
+                        "accept": "application/json",
+                    },
+                )
+                self.rfhub_importer.add_statistics([STATISTICS_4])
+
     def test__is_valid_execution_file_should_return_true_on_valid_file(self):
         result = StatisticsImporter._is_valid_execution_file(VALID_OUTPUT_XML)
         self.assertTrue(

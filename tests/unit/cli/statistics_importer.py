@@ -13,15 +13,13 @@ EXPECTED_GET_EXECUTION_PATHS = {
 }
 
 STATISTICS_1 = KeywordStatistics(
-    **{
-        "collection": "BuiltIn",
-        "keyword": "Log",
-        "execution_time": "2019-12-25 11:38:08.868000",
-        "times_used": 2,
-        "total_elapsed": 2,
-        "min_elapsed": 1,
-        "max_elapsed": 1,
-    }
+    collection="BuiltIn",
+    keyword="Log",
+    execution_time="2019-12-25 11:38:08.868000",
+    times_used=2,
+    total_elapsed=2,
+    min_elapsed=1,
+    max_elapsed=1,
 )
 STATISTICS_2 = KeywordStatistics(**{**STATISTICS_1.dict(), "keyword": "Comment"})
 STATISTICS_3 = KeywordStatistics(**{**STATISTICS_1.dict(), "keyword": "Should Be True"})

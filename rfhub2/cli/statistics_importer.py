@@ -62,8 +62,8 @@ class StatisticsImporter:
                 raise StopIteration
             else:
                 print(
-                    f"""Record already exists for provided collection:
-                    {stat.collection}, keyword: {stat.keyword} and execution_time: {stat.execution_time}"""
+                    f"""Record already exists for provided collection: {
+                    stat.collection}, keyword: {stat.keyword} and execution_time: {stat.execution_time}"""
                 )
 
         return len(collections), len(keywords)

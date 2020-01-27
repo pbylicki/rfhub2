@@ -1,5 +1,8 @@
+import json
 from requests import session, Response
 from typing import Dict, List, Tuple
+
+from rfhub2.model import KeywordStatistics
 
 
 API_V1 = "api/v1"
@@ -42,7 +45,7 @@ class Client(object):
         """
         Adds collection using request post method.
         """
-        return self._post_request(endpoint="collections", data=data)
+        return self._post_request(endpoint="collections", data=json.dumps(data))
 
     def delete_collection(self, id: int) -> Response:
         """
@@ -54,13 +57,13 @@ class Client(object):
         """
         Adds keyword using request post method.
         """
-        return self._post_request(endpoint="keywords", data=data)
+        return self._post_request(endpoint="keywords", data=json.dumps(data))
 
-    def add_statistics(self, data: Dict) -> Tuple[int, Dict]:
+    def add_statistics(self, data: KeywordStatistics) -> Tuple[int, Dict]:
         """
         Adds statistics using requests post method.
         """
-        return self._post_request(endpoint="statistics/keywords", data=data)
+        return self._post_request(endpoint="statistics/keywords", data=data.json())
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """
@@ -69,11 +72,11 @@ class Client(object):
         request = self.session.get(url=f"{self.api_url}/{endpoint}/", params=params)
         return request.json()
 
-    def _post_request(self, endpoint: str, data: Dict) -> Tuple[int, Dict]:
+    def _post_request(self, endpoint: str, data: str) -> Tuple[int, Dict]:
         """
         Sends post request to collections or keywords endpoint.
         """
-        request = self.session.post(url=f"{self.api_url}/{endpoint}/", json=data)
+        request = self.session.post(url=f"{self.api_url}/{endpoint}/", data=data)
         return request.status_code, request.json()
 
     def _delete_request(self, endpoint: str, id: int) -> Response:

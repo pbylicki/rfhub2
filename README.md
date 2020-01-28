@@ -48,11 +48,11 @@ RFHUB_DB_URI=postgresql://postgres:postgres@localhost:5432/postgres rfhub2
 ```
 To run application using docker image with default (SQLite) database:
 ```
-docker run -it -p 8000:8000 rfhub2
+docker run -it -p 8000:8000 pbylicki/rfhub2
 ```
 To run application using docker image with Postgres database:
 ```
-docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" rfhub2:postgres
+docker run -it -p 8000:8000 --network=host -e RFHUB_DB_URI="postgresql://postgres:postgres@localhost:5432/postgres" pbylicki/rfhub2:postgres
 ```
 #### Populate application with data
 To populate application running on localhost:

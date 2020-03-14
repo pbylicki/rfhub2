@@ -59,3 +59,4 @@ selenium-screenshot-*.png
 
 # IDE
 .idea
+.vscode

@@ -1,8 +1,8 @@
 black==19.3b0
 coverage==5.0.3
-codecov==2.0.15
-responses==0.10.9
+codecov==2.0.16
+responses==0.10.12
 twine==1.14.0
-wheel==0.33.6
-robotframework-requests==0.6.2
-robotframework-seleniumlibrary==4.1.0
+wheel==0.34.2
+robotframework-requests==0.6.5
+robotframework-seleniumlibrary==4.3.0

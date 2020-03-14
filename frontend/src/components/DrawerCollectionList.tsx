@@ -10,7 +10,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import VisibilitySensor from 'react-visibility-sensor';
 import { StoreProps } from '../types/PropsTypes'
 import { List } from '@material-ui/core';
-import { Collection } from '../types/ModelTypes';
+import { Collection, NestedKeyword } from '../types/ModelTypes';
 import { CollectionStore } from '../stores/CollectionStore';
 import Tooltip from 'react-tooltip-lite'
 import EllipsisText from "react-ellipsis-text";
@@ -43,9 +43,8 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
     return store.drawerSelectedCollection === collectionId
   }
 
-  function listItem(item, collection: boolean) {
-    if (collection) {
-      return (
+  function collectionListItem(item: Collection): JSX.Element {
+    return (
         <ListItem
           selected={isSelected(item.id)}
           onClick={event => handleListItemClick(event, item.id)}
@@ -59,8 +58,10 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
           {isSelected(item.id) ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
       )
-    } else {
-      return (
+  }
+
+  function keywordListItem(item: NestedKeyword): JSX.Element {
+    return (
         <ListItem button key={item.id} className={classes.nested}>
           <ListItemText disableTypography>
             <EllipsisText
@@ -70,17 +71,16 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
           </ListItemText>
         </ListItem>
       )
-    }
   }
 
   return (
     <React.Fragment>
       {(collection.name.length > 32) ? (
         <Tooltip content={collection.name} direction="right" distance={26}>
-          listItem(collection, true)
+          collectionListItem(collection)
         </Tooltip>
       ) : (
-        listItem(collection, true)
+        collectionListItem(collection)
       )
       }
       <Collapse in={isSelected(collection.id)} timeout="auto" unmountOnExit>
@@ -95,14 +95,14 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
                 return (
                   <Tooltip content={keyword.name} direction="right" distance={26}>
                     <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
-                      {listItem(keyword, false)}
+                      {keywordListItem(keyword)}
                     </Link>
                   </Tooltip>
                 )
               } else {
                 return (
                   <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
-                    {listItem(keyword, false)}
+                    {keywordListItem(keyword)}
                   </Link>
                 )
               }

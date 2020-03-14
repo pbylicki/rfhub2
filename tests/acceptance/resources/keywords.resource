@@ -60,10 +60,10 @@ Output Should Contain
     ...    Fail if the output from the previous command doesn't contain the given string
     ...    This keyword assumes the output of the command is in
     ...    a test suite variable named \${output}
-    ...    Note: the help will be automatically wrapped, so
-    ...    you can only search for relatively short strings.
+    ${ns}    Create Dictionary    output=${output}
+    ${clean_output}    Evaluate    "".join(l.strip() for l in output.splitlines())    namespace=${ns}
     FOR    ${pattern}    IN    @{patterns}
-        Run keyword if    '''${pattern}''' not in '''${output}'''
+        Run keyword if    '''${pattern}''' not in '''${clean_output}'''
         ...    Fail    Output did not contain '${pattern}'
     END
 

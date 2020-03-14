@@ -61,7 +61,7 @@ Output Should Contain
     ...    This keyword assumes the output of the command is in
     ...    a test suite variable named \${output}
     ${ns}    Create Dictionary    output=${output}
-    ${clean_output}    Evaluate    "".join(l.strip() for l in output.splitlines())    namespace=${ns}
+    ${clean_output}    Evaluate    " ".join(l.strip() for l in output.splitlines())    namespace=${ns}
     FOR    ${pattern}    IN    @{patterns}
         Run keyword if    '''${pattern}''' not in '''${clean_output}'''
         ...    Fail    Output did not contain '${pattern}'

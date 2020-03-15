@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 import re
 from robot.errors import DataError
@@ -28,6 +29,12 @@ EXCLUDED_LIBRARIES = {
     "setup.py",
 }
 INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
+
+
+@dataclass
+class CollectionUpdateWithKeywords:
+    collection: CollectionUpdate
+    keywords: List[KeywordUpdate]
 
 
 class KeywordsImporter(object):
@@ -155,7 +162,7 @@ class KeywordsImporter(object):
 
     def create_collection(
         self, path: Path
-    ) -> Tuple[CollectionUpdate, List[KeywordUpdate]]:
+    ) -> CollectionUpdateWithKeywords:
         """
         Creates Collection object from provided path.
         :param path: Path
@@ -168,7 +175,7 @@ class KeywordsImporter(object):
     def update_collections(
         self,
         existing_collections: List[Collection],
-        new_collections: List[Tuple[CollectionUpdate, List[KeywordUpdate]]],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> List[Dict[str, int]]:
         """
         Updates collections already existing in app.
@@ -370,7 +377,7 @@ class KeywordsImporter(object):
     @staticmethod
     def _get_obsolete_collections_ids(
         existing_collections: List[Collection],
-        new_collections: List[Tuple[CollectionUpdate, List[KeywordUpdate]]],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but not in paths"""
         new_collections_paths = {
@@ -385,7 +392,7 @@ class KeywordsImporter(object):
     @staticmethod
     def _get_outdated_collections_ids(
         existing_collections: List[Collection],
-        new_collections: List[Tuple[CollectionUpdate, List[KeywordUpdate]]],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but are outdated"""
         outdated_collections = set()
@@ -403,8 +410,8 @@ class KeywordsImporter(object):
     @staticmethod
     def _get_collections_to_update(
         existing_collections: List[Collection],
-        new_collections: List[Tuple[CollectionUpdate, List[KeywordUpdate]]],
-    ) -> List[Tuple[CollectionUpdate, List[KeywordUpdate]]]:
+        new_collections: List[CollectionUpdateWithKeywords],
+    ) -> List[CollectionUpdateWithKeywords]:
         """Returns list of collections to update that were found in paths and application"""
         collections_to_update = []
         if len(existing_collections) >= 0:
@@ -421,8 +428,8 @@ class KeywordsImporter(object):
     @staticmethod
     def _get_new_collections(
         existing_collections: List[Collection],
-        new_collections: List[Tuple[CollectionUpdate, List[KeywordUpdate]]],
-    ) -> List[Tuple[CollectionUpdate, List[KeywordUpdate]]]:
+        new_collections: List[CollectionUpdateWithKeywords],
+    ) -> List[CollectionUpdateWithKeywords]:
         """Returns list of collections to insert that were found in paths but not in application"""
         existing_collections_paths = {
             existing_collection.path for existing_collection in existing_collections
@@ -444,7 +451,7 @@ class KeywordsImporter(object):
 
     @staticmethod
     def _library_or_resource_changed(
-        new_collection: Tuple[CollectionUpdate, List[KeywordUpdate]],
+        new_collection: CollectionUpdateWithKeywords,
         existing_collection: Collection,
     ) -> bool:
         if new_collection[0].type == "library":

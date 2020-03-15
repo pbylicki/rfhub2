@@ -98,16 +98,26 @@ class StatisticsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.json(), self.AGGREGATED_STATS_EMPTY)
 
     def test_create_new_statistic(self):
-        response = self.auth_client.post(self.base_url, json=self.STATISTICS_TO_CREATE)
+        stats = [
+            self.STATISTICS_TO_CREATE,
+            {**self.STATISTICS_TO_CREATE, "keyword": "Another keyword"},
+        ]
+        response = self.auth_client.post(self.base_url, json=stats)
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), self.STATISTICS_TO_CREATE)
+        self.assertEqual(response.json(), {"inserted": 2})
 
     def test_should_not_create_duplicated_statistic(self):
-        response = self.auth_client.post(self.base_url, json=self.STATISTICS_2)
+        response = self.auth_client.post(
+            self.base_url, json=[self.STATISTICS_2, self.STATISTICS_3]
+        )
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(
+            response.json()["detail"],
+            "Records already exist for provided collection, keyword and execution_time",
+        )
 
     def test_should_not_create_new_statistic_without_auth(self):
-        response = self.client.post(self.base_url, json=self.STATISTICS_TO_CREATE)
+        response = self.client.post(self.base_url, json=[self.STATISTICS_TO_CREATE])
         self.assertEqual(response.status_code, 401)
 
     def test_delete_all_statistics(self):

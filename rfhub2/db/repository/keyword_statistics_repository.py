@@ -104,6 +104,12 @@ class KeywordStatisticsRepository(BaseRepository):
             .all()
         )
 
+    def add_many(self, items: List[KeywordStatistics]) -> int:
+        count: int = len(items)
+        self.session.bulk_save_objects(items)
+        self.session.commit()
+        return count
+
     def delete_many(
         self, filter_params: Optional[KeywordStatisticsFilterParams] = None
     ) -> int:

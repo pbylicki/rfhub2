@@ -88,3 +88,7 @@ class KeywordStatistics(BaseModel):
 
 class StatisticsDeleted(BaseModel):
     deleted: int
+
+
+class StatisticsInserted(BaseModel):
+    inserted: int

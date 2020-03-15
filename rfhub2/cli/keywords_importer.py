@@ -160,9 +160,7 @@ class KeywordsImporter(object):
                 )
         return sorted(collections, key=lambda i: i[0].name)
 
-    def create_collection(
-        self, path: Path
-    ) -> CollectionUpdateWithKeywords:
+    def create_collection(self, path: Path) -> CollectionUpdateWithKeywords:
         """
         Creates Collection object from provided path.
         :param path: Path
@@ -451,8 +449,7 @@ class KeywordsImporter(object):
 
     @staticmethod
     def _library_or_resource_changed(
-        new_collection: CollectionUpdateWithKeywords,
-        existing_collection: Collection,
+        new_collection: CollectionUpdateWithKeywords, existing_collection: Collection
     ) -> bool:
         if new_collection[0].type == "library":
             return new_collection[0].version != existing_collection.version

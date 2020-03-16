@@ -90,11 +90,11 @@ class KeywordStatisticsList(BaseModel):
     __root__: List[KeywordStatistics]
 
     @staticmethod
-    def of(items: List[KeywordStatistics]) -> 'KeywordStatisticsList':
+    def of(items: List[KeywordStatistics]) -> "KeywordStatisticsList":
         return KeywordStatisticsList(__root__=items)
 
     @staticmethod
-    def one(item: KeywordStatistics) -> 'KeywordStatisticsList':
+    def one(item: KeywordStatistics) -> "KeywordStatisticsList":
         return KeywordStatisticsList(__root__=[item])
 
 

@@ -86,6 +86,18 @@ class KeywordStatistics(BaseModel):
         orm_mode = True
 
 
+class KeywordStatisticsList(BaseModel):
+    __root__: List[KeywordStatistics]
+
+    @staticmethod
+    def of(items: List[KeywordStatistics]) -> 'KeywordStatisticsList':
+        return KeywordStatisticsList(__root__=items)
+
+    @staticmethod
+    def one(item: KeywordStatistics) -> 'KeywordStatisticsList':
+        return KeywordStatisticsList(__root__=[item])
+
+
 class StatisticsDeleted(BaseModel):
     deleted: int
 

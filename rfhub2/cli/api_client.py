@@ -2,7 +2,7 @@ import json
 from requests import session, Response
 from typing import Dict, List, Tuple
 
-from rfhub2.model import KeywordStatistics
+from rfhub2.model import KeywordStatisticsList
 
 
 API_V1 = "api/v1"
@@ -59,7 +59,7 @@ class Client(object):
         """
         return self._post_request(endpoint="keywords", data=json.dumps(data))
 
-    def add_statistics(self, data: KeywordStatistics) -> Tuple[int, Dict]:
+    def add_statistics(self, data: KeywordStatisticsList) -> Tuple[int, Dict]:
         """
         Adds statistics using requests post method.
         """

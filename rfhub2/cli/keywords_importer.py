@@ -142,7 +142,7 @@ class KeywordsImporter(object):
 
     def create_collections(
         self, paths: Set[Path]
-    ) -> List[Tuple[Collection, List[KeywordUpdate]]]:
+    ) -> List[CollectionUpdateWithKeywords]:
         """
         Creates list of Collection objects from set of provided paths.
         :param paths: set of paths
@@ -158,17 +158,18 @@ class KeywordsImporter(object):
                     f"Failed to create collection from path {path}\n"
                     f"{type(ex).__name__}, {ex.args}"
                 )
-        return sorted(collections, key=lambda i: i[0].name)
+        return sorted(collections, key=lambda i: i.collection.name)
 
     def create_collection(self, path: Path) -> CollectionUpdateWithKeywords:
         """
-        Creates Collection object from provided path.
+        Creates CollectionUpdateWithKeywords object from provided path.
         :param path: Path
-        :return: Collection object
+        :return: CollectionUpdateWithKeywords object
         """
         libdoc = LibraryDocumentation(str(path))
-        serialised_keywords = self._serialise_keywords(libdoc)
-        return self._serialise_libdoc(libdoc, str(path)), serialised_keywords
+        return CollectionUpdateWithKeywords(
+            self._serialise_libdoc(libdoc, str(path)), self._serialise_keywords(libdoc)
+        )
 
     def update_collections(
         self,
@@ -192,7 +193,7 @@ class KeywordsImporter(object):
     def delete_outdated_collections(
         self,
         existing_collections: List[Collection],
-        new_collections: Tuple[List[CollectionUpdate], List[KeywordUpdate]],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> Set[int]:
         """Deletes outdated collections"""
         collections_to_delete = self._get_outdated_collections_ids(
@@ -203,7 +204,7 @@ class KeywordsImporter(object):
         return collections_to_delete
 
     def add_collections(
-        self, collections: Tuple[List[CollectionUpdate], List[KeywordUpdate]]
+        self, collections: List[CollectionUpdateWithKeywords]
     ) -> List[Dict[str, int]]:
         """
         Adds collections and keywords from provided list to app.
@@ -212,21 +213,24 @@ class KeywordsImporter(object):
         """
         loaded_collections = []
         for collection in collections:
-            coll_req = self.client.add_collection(collection[0])
+            coll_req = self.client.add_collection(collection.collection)
             if coll_req[0] != 201:
                 print(coll_req[1]["detail"])
                 raise StopIteration
             collection_id = coll_req[1]["id"]
-            for keyword in collection[1]:
+            for keyword in collection.keywords:
                 keyword = KeywordCreate(
                     **{**keyword.dict(), "collection_id": collection_id}
                 )
                 self.client.add_keyword(keyword)
             loaded_collections.append(
-                {"name": collection[0].name, "keywords": len(collection[1])}
+                {
+                    "name": collection.collection.name,
+                    "keywords": len(collection.keywords),
+                }
             )
             print(
-                f"{collection[0].name} library with {len(collection[1])} keywords loaded."
+                f"{collection.collection.name} library with {len(collection.keywords)} keywords loaded."
             )
         return loaded_collections
 
@@ -256,14 +260,13 @@ class KeywordsImporter(object):
         :param :libdoc input object
         :return: KeywordUpdate object
         """
-        raw_keywords = [keyword.__dict__ for keyword in libdoc.keywords]
         return [
             KeywordUpdate(
-                name=raw_keyword["name"],
-                args=self._serialise_args(raw_keyword["args"]),
-                doc=raw_keyword["doc"],
+                name=keyword.__dict__["name"],
+                args=self._serialise_args(keyword.__dict__["args"]),
+                doc=keyword.__dict__["doc"],
             )
-            for raw_keyword in raw_keywords
+            for keyword in libdoc.keywords
         ]
 
     def _serialise_args(self, args: List[str]) -> str:
@@ -379,7 +382,7 @@ class KeywordsImporter(object):
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but not in paths"""
         new_collections_paths = {
-            new_collection[0].path for new_collection in new_collections
+            new_collection.collection.path for new_collection in new_collections
         }
         return {
             existing_collection.id
@@ -398,7 +401,7 @@ class KeywordsImporter(object):
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
                     if KeywordsImporter._collection_path_and_name_match(
-                        new_collection[0], existing_collection
+                        new_collection.collection, existing_collection
                     ) and KeywordsImporter._library_or_resource_changed(
                         new_collection, existing_collection
                     ):
@@ -416,7 +419,7 @@ class KeywordsImporter(object):
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
                     if KeywordsImporter._collection_path_and_name_match(
-                        new_collection[0], existing_collection
+                        new_collection.collection, existing_collection
                     ) and KeywordsImporter._library_or_resource_changed(
                         new_collection, existing_collection
                     ):
@@ -435,7 +438,7 @@ class KeywordsImporter(object):
         return [
             new_collection
             for new_collection in new_collections
-            if new_collection[0].path not in existing_collections_paths
+            if new_collection.collection.path not in existing_collections_paths
         ]
 
     @staticmethod
@@ -451,12 +454,12 @@ class KeywordsImporter(object):
     def _library_or_resource_changed(
         new_collection: CollectionUpdateWithKeywords, existing_collection: Collection
     ) -> bool:
-        if new_collection[0].type == "library":
-            return new_collection[0].version != existing_collection.version
+        if new_collection.collection.type == "library":
+            return new_collection.collection.version != existing_collection.version
         else:
             return (
                 any(
-                    keyword not in new_collection[1]
+                    keyword not in new_collection.keywords
                     for keyword in KeywordsImporter._convert_keywords_to_keywords_update(
                         existing_collection.keywords
                     )
@@ -466,15 +469,17 @@ class KeywordsImporter(object):
                     not in KeywordsImporter._convert_keywords_to_keywords_update(
                         existing_collection.keywords
                     )
-                    for keyword in new_collection[1]
+                    for keyword in new_collection.keywords
                 )
                 or KeywordsImporter._library_or_resource_doc_changed(
-                    new_collection[0], existing_collection
+                    new_collection.collection, existing_collection
                 )
             )
 
     @staticmethod
-    def _convert_keywords_to_keywords_update(keywords: Keyword) -> KeywordUpdate:
+    def _convert_keywords_to_keywords_update(
+        keywords: List[NestedKeyword]
+    ) -> List[KeywordUpdate]:
         """Convert list of Keywords object to List of KeywordUpdate object"""
         return [
             KeywordUpdate(name=keyword.name, doc=keyword.doc, args=keyword.args)
@@ -482,7 +487,7 @@ class KeywordsImporter(object):
         ]
 
     @staticmethod
-    def _convert_json_to_collection(collections: List[Dict]) -> Collection:
+    def _convert_json_to_collection(collections: Dict) -> List[Collection]:
         for collection in collections:
             collection["keywords"] = [
                 NestedKeyword(**keyword) for keyword in collection["keywords"]

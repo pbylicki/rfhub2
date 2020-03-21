@@ -1,7 +1,7 @@
 from requests import session, Response
 from typing import Dict, List, Tuple
 
-from rfhub2.model import Collection, CollectionUpdate, Keyword, KeywordStatistics
+from rfhub2.model import Collection, CollectionUpdate, KeywordCreate, KeywordStatistics
 
 
 API_V1 = "api/v1"
@@ -32,7 +32,7 @@ class Client(object):
             "accept": "application/json",
         }
 
-    def get_collections(self, skip: int = 0, limit: int = 100) -> List[Collection]:
+    def get_collections(self, skip: int = 0, limit: int = 100) -> Dict:
         """
         Gets list of collections object using request get method.
         """
@@ -52,7 +52,7 @@ class Client(object):
         """
         return self._delete_request(endpoint="collections", id=id)
 
-    def add_keyword(self, data: Keyword) -> Tuple[int, Dict]:
+    def add_keyword(self, data: KeywordCreate) -> Tuple[int, Dict]:
         """
         Adds keyword using request post method.
         """

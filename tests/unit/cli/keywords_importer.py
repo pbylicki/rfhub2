@@ -5,7 +5,7 @@ from pathlib import Path
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
 
-from rfhub2.cli.keywords_importer import KeywordsImporter
+from rfhub2.cli.keywords_importer import CollectionUpdateWithKeywords, KeywordsImporter
 from rfhub2.cli.api_client import Client
 from rfhub2.model import Collection, CollectionUpdate, KeywordUpdate, NestedKeyword
 
@@ -193,6 +193,12 @@ EXPECTED_BUILT_IN_LIBS = {
     Path(robot.libraries.__file__).parent / "Telnet.py",
     Path(robot.libraries.__file__).parent / "XML.py",
 }
+EXPECTED_COLLECTION_WITH_KW_1 = CollectionUpdateWithKeywords(
+    EXPECTED_COLLECTION, EXPECTED_COLLECTION_KEYWORDS_1
+)
+EXPECTED_COLLECTION_WITH_KW_2 = CollectionUpdateWithKeywords(
+    EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2
+)
 
 
 class KeywordsImporterTests(unittest.TestCase):
@@ -489,18 +495,14 @@ class KeywordsImporterTests(unittest.TestCase):
             }
         )
         self.assertCountEqual(
-            result,
-            [
-                (EXPECTED_COLLECTION, EXPECTED_COLLECTION_KEYWORDS_1),
-                (EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2),
-            ],
+            result, [EXPECTED_COLLECTION_WITH_KW_1, EXPECTED_COLLECTION_WITH_KW_2]
         )
 
     def test_create_collection_should_return_collection(self):
         result = self.rfhub_importer.create_collection(
             FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py"
         )
-        self.assertEqual((EXPECTED_COLLECTION, EXPECTED_COLLECTION_KEYWORDS_1), result)
+        self.assertEqual(EXPECTED_COLLECTION_WITH_KW_1, result)
 
     def test_create_collections_should_return_empty_list_on_data_error(self):
         result = self.rfhub_importer.create_collections(
@@ -556,23 +558,23 @@ class KeywordsImporterTests(unittest.TestCase):
             ),
         ]
         new_collections = [
-            (
+            CollectionUpdateWithKeywords(
                 CollectionUpdate(name="a", path="1", type="library", version="2"),
                 [EXPECTED_COLLECTION_KEYWORDS_1_3],
             ),
-            (
+            CollectionUpdateWithKeywords(
                 CollectionUpdate(name="b", path="2", type="library", version="3"),
                 [EXPECTED_COLLECTION_KEYWORDS_1_3],
             ),
-            (
+            CollectionUpdateWithKeywords(
                 CollectionUpdate(name="c", path="3", type="library", version="4"),
                 [EXPECTED_COLLECTION_KEYWORDS_1_3],
             ),
-            (
+            CollectionUpdateWithKeywords(
                 CollectionUpdate(name="d", path="4", type="resource", version=""),
                 [EXPECTED_COLLECTION_KEYWORDS_1_3],
             ),
-            (
+            CollectionUpdateWithKeywords(
                 CollectionUpdate(name="e", path="5", type="resource", version=""),
                 [EXPECTED_COLLECTION_KEYWORDS_1_3],
             ),
@@ -611,9 +613,15 @@ class KeywordsImporterTests(unittest.TestCase):
             Collection(id=3, path=3, type="library", version=3, name="c", keywords=[]),
         ]
         new_collections = [
-            (CollectionUpdate(path=1, type="library", version=2, name="a"), []),
-            (CollectionUpdate(path=2, type="library", version=3, name="b"), []),
-            (CollectionUpdate(path=3, type="library", version=4, name="c"), []),
+            CollectionUpdateWithKeywords(
+                CollectionUpdate(path=1, type="library", version=2, name="a"), []
+            ),
+            CollectionUpdateWithKeywords(
+                CollectionUpdate(path=2, type="library", version=3, name="b"), []
+            ),
+            CollectionUpdateWithKeywords(
+                CollectionUpdate(path=3, type="library", version=4, name="c"), []
+            ),
         ]
         with responses.RequestsMock() as rsps:
             for i in range(1, 4):
@@ -651,7 +659,7 @@ class KeywordsImporterTests(unittest.TestCase):
                 },
             )
             result = self.rfhub_importer.add_collections(
-                [(EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2)]
+                [EXPECTED_COLLECTION_WITH_KW_2]
             )
             self.assertCountEqual(result, EXPECTED_ADD_COLLECTIONS)
 
@@ -668,9 +676,7 @@ class KeywordsImporterTests(unittest.TestCase):
                         "accept": "application/json",
                     },
                 )
-                self.rfhub_importer.add_collections(
-                    [(EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2)]
-                )
+                self.rfhub_importer.add_collections([EXPECTED_COLLECTION_WITH_KW_2])
 
     def test_is_library_with_init_should_return_true_on_library_with_init(self):
         file = self.fixture_path / "LibWithInit"
@@ -845,7 +851,7 @@ class KeywordsImporterTests(unittest.TestCase):
 
     def test_collection_path_and_name_match_should_return_false_when_not_matched(self):
         result = KeywordsImporter._collection_path_and_name_match(
-            EXPECTED_COLLECTION, EXPECTED_COLLECTION_2
+            EXPECTED_COLLECTION_WITH_KW_1.collection, EXISTING_COLLECTION_2
         )
         self.assertFalse(result)
 
@@ -854,13 +860,10 @@ class KeywordsImporterTests(unittest.TestCase):
             [EXISTING_COLLECTION, EXISTING_COLLECTION_2]
         )
         new_collections = copy.deepcopy(
-            [
-                (EXPECTED_COLLECTION, EXPECTED_COLLECTION_KEYWORDS_1),
-                (EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2),
-            ]
+            [EXPECTED_COLLECTION_WITH_KW_1, EXPECTED_COLLECTION_WITH_KW_2]
         )
-        new_collections[0][0].version = "1.2.4"
-        new_collections[1][0].version = "3.3.0"
+        new_collections[0].collection.version = "1.2.4"
+        new_collections[1].collection.version = "3.3.0"
         result = KeywordsImporter._get_collections_to_update(
             existing_collections, new_collections
         )
@@ -869,24 +872,18 @@ class KeywordsImporterTests(unittest.TestCase):
     def test_get_new_collections_should_return_only_new_collections(self):
         exisitng_collections = copy.deepcopy([EXISTING_COLLECTION])
         new_collections = copy.deepcopy(
-            [
-                (EXPECTED_COLLECTION, EXPECTED_COLLECTION_KEYWORDS_1),
-                (EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2),
-            ]
+            [EXPECTED_COLLECTION_WITH_KW_1, EXPECTED_COLLECTION_WITH_KW_2]
         )
         result = KeywordsImporter._get_new_collections(
             exisitng_collections, new_collections
         )
-        self.assertListEqual(
-            [(EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2)], result
-        )
+        self.assertListEqual([EXPECTED_COLLECTION_WITH_KW_2], result)
 
     def test_library_or_resource_changed_should_return_false_when_library_unchanged(
         self
     ):
         result = KeywordsImporter._library_or_resource_changed(
-            (EXPECTED_COLLECTION, [EXPECTED_COLLECTION_KEYWORDS_1_3]),
-            EXPECTED_COLLECTION,
+            EXPECTED_COLLECTION_WITH_KW_1, EXISTING_COLLECTION
         )
         self.assertFalse(result)
 
@@ -894,7 +891,7 @@ class KeywordsImporterTests(unittest.TestCase):
         collection2 = copy.deepcopy(EXPECTED_COLLECTION)
         collection2.version = "1.2.4"
         result = KeywordsImporter._library_or_resource_changed(
-            (EXPECTED_COLLECTION, [EXPECTED_COLLECTION_KEYWORDS_1_3]), collection2
+            EXPECTED_COLLECTION_WITH_KW_1, EXISTING_COLLECTION_2
         )
         self.assertTrue(result)
 
@@ -906,8 +903,7 @@ class KeywordsImporterTests(unittest.TestCase):
         expected_collection.type = "resource"
         existing_collection.type = "resource"
         result = KeywordsImporter._library_or_resource_changed(
-            (EXPECTED_COLLECTION, [EXPECTED_COLLECTION_KEYWORDS_1_3]),
-            EXISTING_COLLECTION,
+            EXPECTED_COLLECTION_WITH_KW_1, EXISTING_COLLECTION
         )
         self.assertFalse(result)
 
@@ -916,6 +912,6 @@ class KeywordsImporterTests(unittest.TestCase):
         EXISTING_COLLECTION.type = "resource"
         EXISTING_COLLECTION.doc = "abc"
         result = KeywordsImporter._library_or_resource_changed(
-            (EXPECTED_COLLECTION, EXPECTED_COLLECTION_KEYWORDS_1_3), EXISTING_COLLECTION
+            EXPECTED_COLLECTION_WITH_KW_1, EXISTING_COLLECTION
         )
         self.assertTrue(result)

@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
+from robot.libdocpkg.model import LibraryDoc
 import robot.libraries
 from typing import Dict, List, Set, Tuple
 
@@ -10,7 +11,6 @@ from .api_client import Client
 from rfhub2.model import (
     Collection,
     CollectionUpdate,
-    Keyword,
     KeywordCreate,
     KeywordUpdate,
     NestedKeyword,
@@ -234,37 +234,35 @@ class KeywordsImporter(object):
             )
         return loaded_collections
 
-    def _serialise_libdoc(self, libdoc: Dict, path: str) -> CollectionUpdate:
+    def _serialise_libdoc(self, libdoc: LibraryDoc, path: str) -> CollectionUpdate:
         """
-        Serialises libdoc object to Collection object.
-        :param libdoc: libdoc input object
+        Serialises LibraryDoc object to CollectionUpdate object.
+        :param libdoc: LibraryDoc input object
         :param path: library path
         :return: CollectionUpdate object
         """
-        lib_dict = libdoc.__dict__
         return CollectionUpdate(
-            name=lib_dict["name"],
-            type=lib_dict["type"],
-            version=lib_dict["version"],
-            scope=lib_dict["scope"],
-            # named_args=lib_dict["named_args"], # we have not used this one, yet
+            name=libdoc.name,
+            type=libdoc.type,
+            version=libdoc.version,
+            scope=libdoc.scope,
+            # named_args=libdoc.named_args, # we have not used this one, yet
             path=path,
-            doc=lib_dict["doc"]
-            + self._extract_doc_from_libdoc_inits(lib_dict["inits"]),
-            doc_format=lib_dict["_setter__doc_format"],
+            doc=libdoc.doc + self._extract_doc_from_libdoc_inits(libdoc.inits),
+            doc_format=libdoc._setter__doc_format,
         )
 
-    def _serialise_keywords(self, libdoc: Dict) -> List[KeywordUpdate]:
+    def _serialise_keywords(self, libdoc: LibraryDoc) -> List[KeywordUpdate]:
         """
-        Serialises keywords to Keyword object.
-        :param :libdoc input object
+        Serialises keywords to KeywordUpdate object.
+        :param :LibraryDoc input object
         :return: KeywordUpdate object
         """
         return [
             KeywordUpdate(
-                name=keyword.__dict__["name"],
-                args=self._serialise_args(keyword.__dict__["args"]),
-                doc=keyword.__dict__["doc"],
+                name=keyword.name,
+                args=self._serialise_args(keyword.args),
+                doc=keyword.doc,
             )
             for keyword in libdoc.keywords
         ]

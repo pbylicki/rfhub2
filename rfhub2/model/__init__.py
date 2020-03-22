@@ -27,6 +27,7 @@ class KeywordUpdate(BaseModel):
     name: str
     doc: Optional[str]
     args: Optional[str]
+    tags: Optional[str]
 
     class Config:
         orm_mode = True

@@ -11,12 +11,13 @@ class Keyword(Base, KeywordMixin):
     name = Column(Text, index=True)
     doc = Column(Text)
     args = Column(Text)
+    tags = Column(Text)
     collection_id = Column(
         Integer, ForeignKey("collection.id", ondelete="CASCADE"), nullable=False
     )
 
     def __str__(self):  # pragma: no cover
-        return f"Keyword({self.id},{self.name},{self.doc},{self.args},{self.collection_id})"
+        return f"Keyword({self.id},{self.name},{self.doc},{self.args},{self.tags},{self.collection_id})"
 
     def __repr__(self):  # pragma: no cover
         return str(self)

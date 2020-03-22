@@ -262,6 +262,7 @@ class KeywordsImporter(object):
             KeywordUpdate(
                 name=keyword.name,
                 args=self._serialise_args(keyword.args),
+                tags=self._serialise_args(keyword.tags),
                 doc=keyword.doc,
             )
             for keyword in libdoc.keywords

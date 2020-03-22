@@ -4,7 +4,7 @@ import unittest
 
 from rfhub2.cli.statistics_importer import StatisticsImporter
 from rfhub2.cli.api_client import Client
-from rfhub2.model import KeywordStatistics
+from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 
 FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "statistics"
 EXPECTED_GET_EXECUTION_PATHS = {
@@ -53,7 +53,7 @@ class StatisticsImporterTests(unittest.TestCase):
         self.stats_url = f"{self.client.api_url}/statistics/keywords/"
 
     def mock_post_request(
-        self, mock: RequestsMock, data: KeywordStatistics, status: int = 201
+        self, mock: RequestsMock, data: KeywordStatisticsList, status: int = 201
     ) -> None:
         mock.add(
             mock.POST,
@@ -69,7 +69,7 @@ class StatisticsImporterTests(unittest.TestCase):
     def test_import_data_should_import_data(self):
         with RequestsMock() as mock:
             for stat in STATISTICS:
-                self.mock_post_request(mock, stat)
+                self.mock_post_request(mock, KeywordStatisticsList.one(stat))
             rfhub_importer = StatisticsImporter(self.client, (SUBDIR,))
             result = rfhub_importer.import_data()
             self.assertTupleEqual(result, (1, 3), msg=f"{result}")
@@ -77,7 +77,7 @@ class StatisticsImporterTests(unittest.TestCase):
     def test_import_statistics_should_import_statistics(self):
         with RequestsMock() as mock:
             for stat in STATISTICS:
-                self.mock_post_request(mock, stat)
+                self.mock_post_request(mock, KeywordStatisticsList.one(stat))
             rfhub_importer = StatisticsImporter(self.client, (SUBDIR,))
             result = rfhub_importer.import_statistics()
             self.assertTupleEqual(result, (1, 3), msg=f"{result}")
@@ -104,7 +104,7 @@ class StatisticsImporterTests(unittest.TestCase):
             for stat, rc in zip(
                 [STATISTICS_4, STATISTICS_5, STATISTICS_5], (201, 201, 400)
             ):
-                self.mock_post_request(mock, stat, rc)
+                self.mock_post_request(mock, KeywordStatisticsList.one(stat), rc)
             result = self.rfhub_importer.add_statistics(
                 [STATISTICS_4, STATISTICS_5, STATISTICS_5]
             )

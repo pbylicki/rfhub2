@@ -3,7 +3,7 @@ from typing import List, Set, Tuple
 
 from .api_client import Client
 from .statistics_extractor import StatisticsExtractor
-from rfhub2.model import KeywordStatistics
+from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 
 
 class StatisticsImporter:
@@ -53,7 +53,7 @@ class StatisticsImporter:
         """
         collections, keywords = set(), set()
         for stat in statistics:
-            stat_req = self.client.add_statistics(stat)
+            stat_req = self.client.add_statistics(KeywordStatisticsList.one(stat))
             if stat_req[0] == 201:
                 collections.add(stat.collection)
                 keywords.add(".".join((stat.collection, stat.keyword)))

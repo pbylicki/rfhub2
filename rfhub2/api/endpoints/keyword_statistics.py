@@ -13,16 +13,16 @@ from rfhub2.db.repository.keyword_statistics_repository import (
     KeywordStatisticsFilterParams,
     KeywordStatisticsRepository,
 )
-from rfhub2.model import KeywordStatistics, StatisticsDeleted
+from rfhub2.model import KeywordStatistics, StatisticsDeleted, StatisticsInserted
 
 router = APIRouter()
 
 
-class DuplicatedStatisticException(HTTPException):
+class DuplicatedStatisticsException(HTTPException):
     def __init__(self):
-        super(DuplicatedStatisticException, self).__init__(
+        super(DuplicatedStatisticsException, self).__init__(
             status_code=400,
-            detail="Record already exists for provided collection, keyword and execution_time",
+            detail="Records already exist for provided collection, keyword and execution_time",
         )
 
 
@@ -54,20 +54,23 @@ def get_statistics(
     return statistics
 
 
-@router.post("/", response_model=KeywordStatistics, status_code=201)
+@router.post("/", status_code=201)
 def create_statistics(
     *,
     _: bool = Depends(is_authenticated),
     repository: KeywordStatisticsRepository = Depends(
         get_keyword_statistics_repository
     ),
-    statistics: KeywordStatistics,
+    statistics: List[KeywordStatistics],
 ):
-    db_statistics: DBStatistics = DBStatistics(**statistics.dict())
+    db_statistics: List[DBStatistics] = [
+        DBStatistics(**stat.dict()) for stat in statistics
+    ]
     try:
-        return repository.add(db_statistics)
+        inserted: int = repository.add_many(db_statistics)
+        return StatisticsInserted(inserted=inserted)
     except IntegrityError:
-        raise DuplicatedStatisticException()
+        raise DuplicatedStatisticsException()
 
 
 @router.delete("/")

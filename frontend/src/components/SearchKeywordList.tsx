@@ -16,6 +16,7 @@ interface SearchKeywordTableRowProps {
 const SearchKeywordTableRow: React.FC<SearchKeywordTableRowProps> = ({ keyword }) => (
   <TableRow key={keyword.id}>
     <TableCell><Link to={`/keywords/${keyword.collection.id}/${keyword.id}/`}>{keyword.name}</Link></TableCell>
+    <TableCell>{keyword.tags_string}</TableCell>
     <TableCell>{keyword.collection.name}</TableCell>
     <TableCell>{keyword.synopsis}</TableCell>
   </TableRow>
@@ -33,6 +34,7 @@ export const SearchKeywordList: React.FC<StoreProps> = observer(({ store }) => {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
+            <TableCell>Tags</TableCell>
             <TableCell>Collection</TableCell>
             <TableCell>Description</TableCell>
           </TableRow>

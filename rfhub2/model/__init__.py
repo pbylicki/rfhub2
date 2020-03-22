@@ -53,6 +53,7 @@ class NestedKeyword(KeywordUpdate):
     synopsis: Optional[str]
     html_doc: Optional[str]
     arg_string: Optional[str]
+    tags_string: Optional[str]
 
 
 class Collection(NestedCollection, CollectionUpdate):

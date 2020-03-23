@@ -113,9 +113,7 @@ Running Cli In Statistics Mode Should Populate App With New Execution Data
     ...    Should Populate App With New Execution Data
     Run Cli Package With Options    --mode=statistics ${STATISTICS_PATH}
     Output Should Contain    Successfully loaded 5 collections with 42 keywords.
-    Output Should Contain    Record already exists for provided collection: BuiltIn, keyword: Log and execution_time: 2019-12-25 11:38:08.868000
-    Output Should Contain    Record already exists for provided collection: BuiltIn, keyword: Comment and execution_time: 2019-12-25 11:38:08.868000
-    Output Should Contain    Record already exists for provided collection: BuiltIn, keyword: Should Be True and execution_time: 2019-12-25 11:38:08.868000
+    Output Should Contain    Record already exists for provided execution_time: 2019-12-25 11:38:08.868000
     [Teardown]    Delete All Statistics
 
 *** Keywords ***

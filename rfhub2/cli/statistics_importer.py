@@ -1,9 +1,10 @@
 from pathlib import Path
+from progress.bar import IncrementalBar
 from typing import List, Set, Tuple
 
 from .api_client import Client
 from .statistics_extractor import StatisticsExtractor
-from rfhub2.model import KeywordStatistics, KeywordStatisticsList
+from rfhub2.model import KeywordStatisticsList
 
 
 class StatisticsImporter:
@@ -26,9 +27,8 @@ class StatisticsImporter:
         """
         execution_files = self.get_execution_files_paths()
         statistics = [
-            stat
+            StatisticsExtractor(execution_file).compute_statistics()
             for execution_file in execution_files
-            for stat in StatisticsExtractor(execution_file).compute_statistics()
         ]
         return self.add_statistics(statistics)
 
@@ -45,27 +45,35 @@ class StatisticsImporter:
             if self._is_valid_execution_file(p)
         }
 
-    def add_statistics(self, statistics: List[KeywordStatistics]) -> Tuple[int, int]:
+    def add_statistics(
+        self, statistics: List[KeywordStatisticsList]
+    ) -> Tuple[int, int]:
         """
         Adds statistics from provided list to app.
         :param statistics: List of KeywordStatistics objects
         :return: list of dictionaries with collection name and number of keywords.
         """
         collections, keywords = set(), set()
-        for stat in statistics:
-            stat_req = self.client.add_statistics(KeywordStatisticsList.one(stat))
-            if stat_req[0] == 201:
-                collections.add(stat.collection)
-                keywords.add(".".join((stat.collection, stat.keyword)))
-            elif stat_req[0] != 400:
-                print(stat_req[1]["detail"])
+        progress_bar = IncrementalBar(
+            "Sending statistics",
+            max=len(statistics),
+            suffix="%(percent).1f%% - %(eta)ds, elapsed: %(elapsed)ds",
+        )
+        for stats in statistics:
+            stats_req = self.client.add_statistics(KeywordStatisticsList.of(stats))
+            if stats_req[0] == 201:
+                collections.update({stat.collection for stat in stats})
+                keywords.update(
+                    {".".join((stat.collection, stat.keyword)) for stat in stats}
+                )
+                progress_bar.next()
+            elif stats_req[0] != 400:
+                print(stats_req[1]["detail"])
                 raise StopIteration
             else:
                 print(
-                    f"""Record already exists for provided collection: {
-                    stat.collection}, keyword: {stat.keyword} and execution_time: {stat.execution_time}"""
+                    f"""Record already exists for provided execution_time: {stats[0].execution_time}"""
                 )
-
         return len(collections), len(keywords)
 
     @staticmethod

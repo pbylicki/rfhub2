@@ -68,16 +68,14 @@ class StatisticsImporterTests(unittest.TestCase):
 
     def test_import_data_should_import_data(self):
         with RequestsMock() as mock:
-            for stat in STATISTICS:
-                self.mock_post_request(mock, KeywordStatisticsList.one(stat))
+            self.mock_post_request(mock, KeywordStatisticsList.of(STATISTICS))
             rfhub_importer = StatisticsImporter(self.client, (SUBDIR,))
             result = rfhub_importer.import_data()
             self.assertTupleEqual(result, (1, 3), msg=f"{result}")
 
     def test_import_statistics_should_import_statistics(self):
         with RequestsMock() as mock:
-            for stat in STATISTICS:
-                self.mock_post_request(mock, KeywordStatisticsList.one(stat))
+            self.mock_post_request(mock, KeywordStatisticsList.of(STATISTICS))
             rfhub_importer = StatisticsImporter(self.client, (SUBDIR,))
             result = rfhub_importer.import_statistics()
             self.assertTupleEqual(result, (1, 3), msg=f"{result}")
@@ -106,7 +104,7 @@ class StatisticsImporterTests(unittest.TestCase):
             ):
                 self.mock_post_request(mock, KeywordStatisticsList.one(stat), rc)
             result = self.rfhub_importer.add_statistics(
-                [STATISTICS_4, STATISTICS_5, STATISTICS_5]
+                [[STATISTICS_4], [STATISTICS_5], [STATISTICS_5]]
             )
             self.assertTupleEqual(result, EXPECTED_STATISTICS_COUNT)
 
@@ -123,7 +121,7 @@ class StatisticsImporterTests(unittest.TestCase):
                         "accept": "application/json",
                     },
                 )
-                self.rfhub_importer.add_statistics([STATISTICS_4])
+                self.rfhub_importer.add_statistics([[STATISTICS_4], [STATISTICS_5]])
 
     def test__is_valid_execution_file_should_return_true_on_valid_file(self):
         result = StatisticsImporter._is_valid_execution_file(VALID_OUTPUT_XML)

@@ -4,7 +4,7 @@ from typing import List, Set, Tuple
 
 from .api_client import Client
 from .statistics_extractor import StatisticsExtractor
-from rfhub2.model import KeywordStatisticsList
+from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 
 
 class StatisticsImporter:
@@ -46,7 +46,7 @@ class StatisticsImporter:
         }
 
     def add_statistics(
-        self, statistics: List[KeywordStatisticsList]
+        self, statistics: List[List[KeywordStatistics]]
     ) -> Tuple[int, int]:
         """
         Adds statistics from provided list to app.

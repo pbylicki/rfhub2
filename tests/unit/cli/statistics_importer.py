@@ -7,10 +7,8 @@ from rfhub2.cli.api_client import Client
 from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 
 FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "statistics"
-EXPECTED_GET_EXECUTION_PATHS = {
-    FIXTURE_PATH / "output.xml",
-    FIXTURE_PATH / "subdir" / "output.xml",
-}
+OUTPUT_PATH = FIXTURE_PATH / "output.xml"
+EXPECTED_GET_EXECUTION_PATHS = {OUTPUT_PATH, FIXTURE_PATH / "subdir" / "output.xml"}
 
 STATISTICS_1 = KeywordStatistics(
     collection="BuiltIn",
@@ -38,8 +36,7 @@ STATISTICS_5 = KeywordStatistics(
     }
 )
 STATISTICS = [STATISTICS_1, STATISTICS_2, STATISTICS_3]
-EXPECTED_STATISTICS_COUNT = 2, 2
-EXPECTED_STATISTICS_DUPL_COUNT = 1, 1
+EXPECTED_STATISTICS_COUNT = 2
 VALID_OUTPUT_XML = FIXTURE_PATH / "output.xml"
 INVALID_OUTPUT_XML = FIXTURE_PATH / "invalid_output.xml"
 SUBDIR = FIXTURE_PATH / "subdir"
@@ -99,29 +96,27 @@ class StatisticsImporterTests(unittest.TestCase):
         self
     ):
         with RequestsMock() as mock:
-            for stat, rc in zip(
-                [STATISTICS_4, STATISTICS_5, STATISTICS_5], (201, 201, 400)
-            ):
-                self.mock_post_request(mock, KeywordStatisticsList.one(stat), rc)
-            result = self.rfhub_importer.add_statistics(
-                [[STATISTICS_4], [STATISTICS_5], [STATISTICS_5]]
+            self.mock_post_request(
+                mock, KeywordStatisticsList.of([STATISTICS_4, STATISTICS_5]), 201
             )
-            self.assertTupleEqual(result, EXPECTED_STATISTICS_COUNT)
+            result = self.rfhub_importer.add_statistics(
+                [STATISTICS_4, STATISTICS_5], OUTPUT_PATH
+            )
+            self.assertEqual(result, EXPECTED_STATISTICS_COUNT)
 
     def test_add_statistics_should_fail_on_error_response(self):
-        with self.assertRaises(StopIteration):
-            with RequestsMock() as mock:
-                mock.add(
-                    mock.POST,
-                    self.stats_url,
-                    json={"detail": "Critical error"},
-                    status=500,
-                    adding_headers={
-                        "Content-Type": "application/json",
-                        "accept": "application/json",
-                    },
-                )
-                self.rfhub_importer.add_statistics([[STATISTICS_4], [STATISTICS_5]])
+        with RequestsMock() as mock:
+            mock.add(
+                mock.POST,
+                self.stats_url,
+                json={"detail": "Critical error"},
+                status=500,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            self.rfhub_importer.add_statistics([STATISTICS_4], OUTPUT_PATH)
 
     def test__is_valid_execution_file_should_return_true_on_valid_file(self):
         result = StatisticsImporter._is_valid_execution_file(VALID_OUTPUT_XML)

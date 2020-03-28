@@ -14,7 +14,7 @@ ${detail_view_library_prefix}      ${main_page_prefix}/div/div/div
 ${detail_view_library_title}       ${detail_view_library_prefix}/h2[1]
 ${detail_view_library_version}     ${detail_view_library_prefix}/div[1]
 ${detail_view_library_scope}       ${detail_view_library_prefix}/div[2]
-${detail_view_library_overview}    ${detail_view_library_prefix}/div[4]/p
+${detail_view_library_overview}    ${detail_view_library_prefix}/div[4]/p[1]
 ${detail_view_library_ext_docs}    ${detail_view_library_prefix}/div[4]/p[2]
 ${detail_view_library_keywords}    ${detail_view_library_prefix}/h2[2]
 ${single_class_lib_items}          ${left_panel_list}/div/div/div/div

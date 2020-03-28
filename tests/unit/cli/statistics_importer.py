@@ -120,7 +120,9 @@ class StatisticsImporterTests(unittest.TestCase):
 
     def test_add_statistics_should_fail_on_duplicated_entries(self):
         with RequestsMock() as mock:
-            self.mock_post_request(mock, KeywordStatisticsList.of([STATISTICS_4, STATISTICS_5]), 400)
+            self.mock_post_request(
+                mock, KeywordStatisticsList.of([STATISTICS_4, STATISTICS_5]), 400
+            )
             result = self.rfhub_importer.add_statistics(
                 [STATISTICS_4, STATISTICS_5], OUTPUT_PATH
             )

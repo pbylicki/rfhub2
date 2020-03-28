@@ -10,7 +10,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import VisibilitySensor from 'react-visibility-sensor';
 import { StoreProps } from '../types/PropsTypes'
 import { List } from '@material-ui/core';
-import { Collection } from '../types/ModelTypes';
+import { Collection, NestedKeyword } from '../types/ModelTypes';
 import { CollectionStore } from '../stores/CollectionStore';
 import Tooltip from 'react-tooltip-lite'
 import EllipsisText from "react-ellipsis-text";
@@ -43,46 +43,71 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
     return store.drawerSelectedCollection === collectionId
   }
 
+  function collectionListItem(item: Collection): JSX.Element {
+    return (
+        <ListItem
+          selected={isSelected(item.id)}
+          onClick={event => handleListItemClick(event, item.id)}
+        >
+          <ListItemText disableTypography>
+            <EllipsisText
+              text={item.name}
+              length='32'
+            />
+          </ListItemText>
+          {isSelected(item.id) ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+      )
+  }
+
+  function keywordListItem(item: NestedKeyword): JSX.Element {
+    return (
+        <ListItem button key={item.id} className={classes.nested}>
+          <ListItemText disableTypography>
+            <EllipsisText
+              text={item.name}
+              length='32'
+            />
+          </ListItemText>
+        </ListItem>
+      )
+  }
+
   return (
     <React.Fragment>
-      <ListItem
-        selected={isSelected(collection.id)}
-        onClick={event => handleListItemClick(event, collection.id)}
-      >
-        <ListItemText primary={collection.name} />
-        {isSelected(collection.id) ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
+      {(collection.name.length > 32) ? (
+        <Tooltip content={collection.name} direction="right" distance={26}>
+          collectionListItem(collection)
+        </Tooltip>
+      ) : (
+        collectionListItem(collection)
+      )
+      }
       <Collapse in={isSelected(collection.id)} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
-          <ListItem button className={classes.nested}>
-            <Link to={`/keywords/${collection.id}`}><ListItemText primary="Overview" disableTypography /></Link>
-          </ListItem>
+          <Link to={`/keywords/${collection.id}`}>
+            <ListItem button className={classes.nested}>
+              <ListItemText primary="Overview" disableTypography />
+            </ListItem>
+          </Link>
           {collection.keywords.map(keyword => {
-            if (keyword.name.length > 35) {
-              return (
-                <Tooltip content={keyword.name} direction="right" distance={26}>
-                  <ListItem button key={keyword.id} className={classes.nested}>
+              if (keyword.name.length > 32) {
+                return (
+                  <Tooltip content={keyword.name} direction="right" distance={26}>
                     <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
-                      <ListItemText disableTypography>
-                        <EllipsisText
-                          text={keyword.name}
-                          length='35'
-                        />
-                      </ListItemText>
+                      {keywordListItem(keyword)}
                     </Link>
-                  </ListItem>
-                </Tooltip>
-              )
-            } else {
-              return (
-                <ListItem button key={keyword.id} className={classes.nested}>
+                  </Tooltip>
+                )
+              } else {
+                return (
                   <Link to={`/keywords/${collection.id}/${keyword.id}/`}>
-                    <ListItemText primary={keyword.name} disableTypography />
+                    {keywordListItem(keyword)}
                   </Link>
-                </ListItem>
-              )
+                )
+              }
             }
-          })}
+          )}
         </List>
       </Collapse>
     </React.Fragment>
@@ -95,20 +120,20 @@ export const DrawerCollectionList: React.FC<StoreProps> = observer(({ store }) =
   return (
     <List>
       {store.collections.map((collection, index) => {
-        if (store.collectionHasMore && index === store.collections.length - 3) {
-          return (
-            <VisibilitySensor key={collection.id}>
-              {({ isVisible }) => {
-                if (isVisible) {
-                  loadMore()
-                }
-                return (<DrawerCollectionListItem store={store} collection={collection} />)
-              }}
-            </VisibilitySensor>)
-        } else {
-          return (<DrawerCollectionListItem key={collection.id} store={store} collection={collection} />)
+          if (store.collectionHasMore && index === store.collections.length - 3) {
+            return (
+              <VisibilitySensor key={collection.id}>
+                {({ isVisible }) => {
+                  if (isVisible) {
+                    loadMore()
+                  }
+                  return (<DrawerCollectionListItem store={store} collection={collection} />)
+                }}
+              </VisibilitySensor>)
+          } else {
+            return (<DrawerCollectionListItem key={collection.id} store={store} collection={collection} />)
+          }
         }
-      }
       )}
     </List>
   )

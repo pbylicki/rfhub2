@@ -1,4 +1,5 @@
 from pathlib import Path
+from progress.bar import IncrementalBar
 from typing import List, Set, Tuple
 
 from .api_client import Client
@@ -25,12 +26,20 @@ class StatisticsImporter:
         :return: Number of libraries and keyword loaded
         """
         execution_files = self.get_execution_files_paths()
-        statistics = [
-            stat
-            for execution_file in execution_files
-            for stat in StatisticsExtractor(execution_file).compute_statistics()
-        ]
-        return self.add_statistics(statistics)
+        loaded_statistics = []
+        progress_bar = IncrementalBar(
+            "Sending statistics",
+            max=len(execution_files),
+            suffix="%(percent).1f%% - %(eta)ds, elapsed: %(elapsed)ds",
+        )
+        for execution_file in execution_files:
+            statistics = StatisticsExtractor(execution_file).compute_statistics()
+            loaded_statistics.append(self.add_statistics(statistics, execution_file))
+            progress_bar.next()
+        return (
+            len([stat for stat in loaded_statistics if stat > 0]),
+            sum(loaded_statistics),
+        )
 
     def get_execution_files_paths(self) -> Set[Path]:
         """
@@ -45,28 +54,23 @@ class StatisticsImporter:
             if self._is_valid_execution_file(p)
         }
 
-    def add_statistics(self, statistics: List[KeywordStatistics]) -> Tuple[int, int]:
+    def add_statistics(
+        self, statistics: List[KeywordStatistics], execution_file: Path
+    ) -> int:
         """
         Adds statistics from provided list to app.
         :param statistics: List of KeywordStatistics objects
-        :return: list of dictionaries with collection name and number of keywords.
+        :param execution_file: Path to file from statistics where extracted
+        :return: number of statistics sent to app
         """
-        collections, keywords = set(), set()
-        for stat in statistics:
-            stat_req = self.client.add_statistics(KeywordStatisticsList.one(stat))
-            if stat_req[0] == 201:
-                collections.add(stat.collection)
-                keywords.add(".".join((stat.collection, stat.keyword)))
-            elif stat_req[0] != 400:
-                print(stat_req[1]["detail"])
-                raise StopIteration
-            else:
-                print(
-                    f"""Record already exists for provided collection: {
-                    stat.collection}, keyword: {stat.keyword} and execution_time: {stat.execution_time}"""
-                )
-
-        return len(collections), len(keywords)
+        stats_req = self.client.add_statistics(KeywordStatisticsList.of(statistics))
+        if stats_req[0] == 201:
+            return len(statistics)
+        elif stats_req[0] != 400:
+            print(stats_req[1]["detail"])
+        else:
+            print(f"""Records already exist for file from {execution_file}""")
+        return 0
 
     @staticmethod
     def _is_valid_execution_file(path: Path) -> bool:

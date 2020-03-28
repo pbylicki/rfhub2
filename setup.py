@@ -19,11 +19,13 @@ setup(
     install_requires=[
         'aiofiles>=0.4.0',
         'Click>=7.0',
-        'fastapi>=0.30.0',
+        'fastapi>=0.46.0,<0.53',
+        'pydantic>=1.0',
         'robotframework>=3.0.0',
         'SQLAlchemy>=1.2.0',
         'requests>=2.10.0',
-        'uvicorn>=0.7.1'
+        'uvicorn>=0.7.1',
+        'progress>=1.4'
     ],
     extras_require={
         "postgresql": ["psycopg2-binary>=2.7.4"]

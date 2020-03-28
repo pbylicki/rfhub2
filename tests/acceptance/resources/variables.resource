@@ -10,7 +10,7 @@ ${lib_with_init}                   //*[contains(text(),"LibWithInit")]
 ${lib_with_init_2_method_1}        //*[contains(text(),"Lib With Init 2 Method 1")]
 ${overview}                        //*[contains(text(),"Overview")]
 ${test_libdoc_file}                //a[contains(text(), "Test Libdoc File")]
-${detail_view_library_prefix}      ${main_page_prefix}/div/div/div/
+${detail_view_library_prefix}      ${main_page_prefix}/div/div/div
 ${detail_view_library_title}       ${detail_view_library_prefix}/h2[1]
 ${detail_view_library_version}     ${detail_view_library_prefix}/div[1]
 ${detail_view_library_scope}       ${detail_view_library_prefix}/div[2]
@@ -24,9 +24,9 @@ ${search_result_table}             ${main_page_prefix}/div/div/div/table/tbody/t
 ${hamburger}                       //*[@id="root"]/div/header/div/button/span[1]/svg/path
 
 #VARIABLES
-${FIXTURES_PATH}                   ${CURDIR}/../../fixtures
+${FIXTURES_PATH}                   ${CURDIR}${/}..${/}..${/}fixtures
 ${INITIAL_FIXTURES}                ${FIXTURES_PATH}/initial/
 ${BACKUP_FIXTURES}                 ${FIXTURES_PATH}/initial_bkp/
 ${UPDATED_FIXTURES}                ${FIXTURES_PATH}/updated/
-${STATISTICS_PATH}                 ${FIXTURES_PATH}/statistics
-${SUBDIR_PATH}                     ${STATISTICS_PATH}/subdir
+${STATISTICS_PATH}                 ${FIXTURES_PATH}${/}statistics
+${SUBDIR_PATH}                     ${STATISTICS_PATH}${/}subdir

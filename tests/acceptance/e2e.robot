@@ -76,18 +76,21 @@ Search Should Return Expected Results
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
+    [Tags]    rfhub2-161    tags
     [Template]    Search For Method Should Return Expected Values
-    Method 3    1    Single Class Lib Method 3    SingleClassLib    Docstring for single_class_lib_method_3 with two params
-    Keyword*Doub    1    Keyword With Args With Double Quotation Mark    test_robot    Keyword With Args With Double Quotation Mark
-    name:Some    1    Someone Shall Pass    ${EMPTY}    Test Libdoc File
-    Some in:Te    1   Someone Shall Pass    ${EMPTY}    Test Libdoc File
-    name:Sh in:Te   1    Someone Shall Pass    ${EMPTY}    Test Libdoc File
+    Method 3    1    Single Class Lib Method 3    ${EMPTY}    SingleClassLib    Docstring for single_class_lib_method_3 with two params
+    Keyword*Doub    1    Keyword With Args With Double Quotation Mark    ${EMPTY}    test_robot    Keyword With Args With Double Quotation Mark
+    name:Some    1    Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
+    Some in:Te    1   Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
+    name:Sh in:Te   1    Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
+    tags:tag_1   1    Single Class Lib Method 1    tag_1, tag_2    SingleClassLib    Docstring for single_class_lib_method_1
+    tags:tag in:Single   1    Single Class Lib Method 1    tag_1, tag_2    SingleClassLib    Docstring for single_class_lib_method_1
 
 First Page Table After Update Should Contain Proper Libraries Data
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
-    [Tags]    rfhub2-64
+    [Tags]    rfhub2-64    update
     [Setup]    Test Setup For Collections Update
     [Template]    Table Should Contain Library Data
     LibWithEmptyInit1        library     2.1.0       2
@@ -103,7 +106,7 @@ Single Class Library Details Should Be Updated On Frontend
     [Documentation]    This test bases on 
     ...    'First Page Table After Update Should Contain Proper Libraries Data'
     ...    to shorten execution time.
-    [Tags]    rfhub2-64
+    [Tags]    rfhub2-64    update
     Open ${single_class_lib} In Left Panel
     Click ${overview} In Left Panel
     Click Element    ${single_class_lib}

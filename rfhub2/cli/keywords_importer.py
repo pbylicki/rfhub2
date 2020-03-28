@@ -262,6 +262,7 @@ class KeywordsImporter(object):
             KeywordUpdate(
                 name=keyword.name,
                 args=self._serialise_args(keyword.args),
+                tags=self._serialise_args(keyword.tags),
                 doc=keyword.doc,
             )
             for keyword in libdoc.keywords
@@ -480,7 +481,9 @@ class KeywordsImporter(object):
     ) -> List[KeywordUpdate]:
         """Convert list of Keywords object to List of KeywordUpdate object"""
         return [
-            KeywordUpdate(name=keyword.name, doc=keyword.doc, args=keyword.args)
+            KeywordUpdate(
+                name=keyword.name, doc=keyword.doc, args=keyword.args, tags=keyword.tags
+            )
             for keyword in keywords
         ]
 

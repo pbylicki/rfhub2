@@ -3,7 +3,9 @@ export interface Keyword {
     name: string
     doc: string
     args: string | null
+    tags: string | null
     arg_string: string
+    tags_string: string
     synopsis: string
     html_doc: string
     collection: NestedCollection
@@ -14,7 +16,9 @@ export interface NestedKeyword {
     name: string
     doc: string
     args: string | null
+    tags: string | null
     arg_string: string
+    tags_string: string
     synopsis: string
     html_doc: string
     times_used: number | null
@@ -38,6 +42,10 @@ export interface Collection {
 export interface NestedCollection {
     id: number
     name: string
+    args: string | null
+    tags: string | null
+    arg_string: string
+    tags_string: string
 }
 
 export interface VersionInfo {

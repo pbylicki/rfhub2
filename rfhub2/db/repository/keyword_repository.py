@@ -58,10 +58,14 @@ class KeywordRepository(IdEntityRepository):
         collection_name: Optional[str],
         collection_id: Optional[int],
         use_doc: bool,
+        use_tags: bool,
     ):
         filter_criteria = []
         if pattern:
-            filter_criteria.append(Keyword.name.ilike(glob_to_sql(pattern)))
+            if use_tags:
+                filter_criteria.append(Keyword.tags.ilike(glob_to_sql(pattern)))
+            else:
+                filter_criteria.append(Keyword.name.ilike(glob_to_sql(pattern)))
             if use_doc:
                 filter_criteria = [
                     or_(filter_criteria[0], Keyword.doc.ilike(glob_to_sql(pattern)))
@@ -85,6 +89,7 @@ class KeywordRepository(IdEntityRepository):
         collection_name: Optional[str] = None,
         collection_id: Optional[int] = None,
         use_doc: bool = True,
+        use_tags: bool = False,
         skip: int = 0,
         limit: int = 100,
         ordering: List[OrderingItem] = None,
@@ -93,7 +98,9 @@ class KeywordRepository(IdEntityRepository):
             self.session.query(Keyword)
             .join(Keyword.collection)
             .filter(
-                *self.filter_criteria(pattern, collection_name, collection_id, use_doc)
+                *self.filter_criteria(
+                    pattern, collection_name, collection_id, use_doc, use_tags
+                )
             )
             .order_by(*Keyword.ordering_criteria(ordering))
             .offset(skip)
@@ -108,6 +115,7 @@ class KeywordRepository(IdEntityRepository):
         collection_name: Optional[str] = None,
         collection_id: Optional[int] = None,
         use_doc: bool = True,
+        use_tags: bool = False,
         skip: int = 0,
         limit: int = 100,
         ordering: List[OrderingItem] = None,
@@ -117,7 +125,7 @@ class KeywordRepository(IdEntityRepository):
             for row in (
                 self._items_with_stats.filter(
                     *self.filter_criteria(
-                        pattern, collection_name, collection_id, use_doc
+                        pattern, collection_name, collection_id, use_doc, use_tags
                     )
                 )
                 .order_by(*Keyword.ordering_criteria(ordering))

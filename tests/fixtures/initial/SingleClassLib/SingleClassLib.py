@@ -1,3 +1,6 @@
+from robot.api.deco import keyword
+
+
 class SingleClassLib(object):
     """
     Overview that should be imported for SingleClassLib.
@@ -8,6 +11,7 @@ class SingleClassLib(object):
     def __init__(self):
         self.b = None
 
+    @keyword(tags=["tag_1", "tag_2"])
     def single_class_lib_method_1(self):
         """Docstring for single_class_lib_method_1"""
         pass

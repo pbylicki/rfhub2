@@ -9,28 +9,38 @@ class SearchParamsTest(unittest.TestCase):
             with self.subTest(case=case):
                 result: SearchParams = SearchParams(case)
                 self.assertEqual(
-                    (result.pattern, result.collection_name, result.use_doc),
+                    (
+                        result.pattern,
+                        result.collection_name,
+                        result.use_doc,
+                        result.use_tags,
+                    ),
                     SearchParams.DEFAULT,
                 )
                 self.assertEqual(result.raw_pattern, case)
 
     def test_should_extract_search_params_for_valid_input_value(self):
         test_data = [
-            ("keyword", "keyword", None, True),
-            ("keywordin", "keywordin", None, True),
-            ("keywordin:", "keywordin:", None, True),
-            ("keyword in:", "keyword in:", None, True),
-            ("keyword In:lib", "keyword", "lib", True),
-            ("keyword in: lib", "keyword", "lib", True),
-            ("keyword in: My Lib", "keyword", "my lib", True),
-            ("name:keywordin:", "keywordin:", None, False),
-            ("name: keyword in: lib", "keyword", "lib", False),
+            ("keyword", "keyword", None, True, False),
+            ("keywordin", "keywordin", None, True, False),
+            ("keywordin:", "keywordin:", None, True, False),
+            ("keyword in:", "keyword in:", None, True, False),
+            ("keyword In:lib", "keyword", "lib", True, False),
+            ("keyword in: lib", "keyword", "lib", True, False),
+            ("keyword in: My Lib", "keyword", "my lib", True, False),
+            ("name:keywordin:", "keywordin:", None, False, False),
+            ("name: keyword in: lib", "keyword", "lib", False, False),
         ]
-        for value, pattern, col_name, use_doc in test_data:
+        for value, pattern, col_name, use_doc, use_tags in test_data:
             with self.subTest(pattern=value):
                 result: SearchParams = SearchParams(value)
                 self.assertEqual(
-                    (result.pattern, result.collection_name, result.use_doc),
-                    (pattern, col_name, use_doc),
+                    (
+                        result.pattern,
+                        result.collection_name,
+                        result.use_doc,
+                        result.use_tags,
+                    ),
+                    (pattern, col_name, use_doc, use_tags),
                 )
                 self.assertEqual(result.raw_pattern, value)

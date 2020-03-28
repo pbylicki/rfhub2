@@ -93,10 +93,6 @@ class KeywordStatisticsList(BaseModel):
     def of(items: List[KeywordStatistics]) -> "KeywordStatisticsList":
         return KeywordStatisticsList(__root__=items)
 
-    @staticmethod
-    def one(item: KeywordStatistics) -> "KeywordStatisticsList":
-        return KeywordStatisticsList(__root__=[item])
-
 
 class StatisticsDeleted(BaseModel):
     deleted: int

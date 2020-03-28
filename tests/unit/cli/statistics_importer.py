@@ -118,6 +118,14 @@ class StatisticsImporterTests(unittest.TestCase):
             )
             self.rfhub_importer.add_statistics([STATISTICS_4], OUTPUT_PATH)
 
+    def test_add_statistics_should_fail_on_duplicated_entries(self):
+        with RequestsMock() as mock:
+            self.mock_post_request(mock, KeywordStatisticsList.of([STATISTICS_4, STATISTICS_5]), 400)
+            result = self.rfhub_importer.add_statistics(
+                [STATISTICS_4, STATISTICS_5], OUTPUT_PATH
+            )
+            self.assertEqual(result, 0)
+
     def test__is_valid_execution_file_should_return_true_on_valid_file(self):
         result = StatisticsImporter._is_valid_execution_file(VALID_OUTPUT_XML)
         self.assertTrue(

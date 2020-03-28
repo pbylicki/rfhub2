@@ -17,6 +17,8 @@ export interface NestedKeyword {
     arg_string: string
     synopsis: string
     html_doc: string
+    times_used: number | null
+    avg_elapsed: number | null
 }
 
 export interface Collection {
@@ -30,6 +32,7 @@ export interface Collection {
     synopsis: string
     html_doc: string
     keywords: NestedKeyword[]
+    times_used: number | null
 }
 
 export interface NestedCollection {

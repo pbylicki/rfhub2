@@ -5,10 +5,12 @@ from typing import List, Optional
 from rfhub2.api.utils.auth import is_authenticated
 from rfhub2.api.utils.db import get_collection_repository, get_keyword_repository
 from rfhub2.api.utils.http import or_404
+from rfhub2.api.utils.order import get_ordering
 from rfhub2.db.base import Collection as DBCollection, Keyword as DBKeyword
 from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.keyword_repository import KeywordRepository
-from rfhub2.model import Keyword, KeywordCreate, KeywordUpdate
+from rfhub2.db.repository.ordering import OrderingItem
+from rfhub2.model import Keyword, KeywordCreate, KeywordUpdate, KeywordWithStats
 from rfhub2.ui.search_params import SearchParams
 
 router = APIRouter()
@@ -21,11 +23,37 @@ def get_keywords(
     limit: int = 100,
     pattern: str = None,
     use_doc: bool = True,
+    collection_id: Optional[int] = None,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
-    keywords: List[DBKeyword] = repository.get_all(
-        skip=skip, limit=limit, pattern=pattern, use_doc=use_doc
+    return repository.get_all(
+        skip=skip,
+        limit=limit,
+        pattern=pattern,
+        collection_id=collection_id,
+        use_doc=use_doc,
+        ordering=ordering,
     )
-    return keywords
+
+
+@router.get("/stats/", response_model=List[KeywordWithStats])
+def get_keywords_with_stats(
+    repository: KeywordRepository = Depends(get_keyword_repository),
+    skip: int = 0,
+    limit: int = 100,
+    pattern: str = None,
+    use_doc: bool = True,
+    collection_id: Optional[int] = None,
+    ordering: List[OrderingItem] = Depends(get_ordering),
+):
+    return repository.get_all_with_stats(
+        skip=skip,
+        limit=limit,
+        pattern=pattern,
+        collection_id=collection_id,
+        use_doc=use_doc,
+        ordering=ordering,
+    )
 
 
 @router.get("/search/", response_model=List[Keyword])
@@ -35,6 +63,7 @@ def search_keywords(
     params: SearchParams = Depends(),
     skip: int = 0,
     limit: int = 100,
+    ordering: List[OrderingItem] = Depends(get_ordering),
 ):
     return repository.get_all(
         pattern=params.pattern,
@@ -42,7 +71,16 @@ def search_keywords(
         use_doc=params.use_doc,
         skip=skip,
         limit=limit,
+        ordering=ordering,
     )
+
+
+@router.get("/stats/{id}/", response_model=KeywordWithStats)
+def get_keyword_with_stats(
+    *, repository: KeywordRepository = Depends(get_keyword_repository), id: int
+):
+    keyword: Optional[KeywordWithStats] = repository.get_with_stats(id)
+    return or_404(keyword)
 
 
 @router.get("/{id}/", response_model=Keyword)
@@ -80,7 +118,7 @@ def update_keyword(
 ):
     db_keyword: DBKeyword = or_404(repository.get(id))
     updated: DBKeyword = repository.update(
-        db_keyword, keyword_update.dict(skip_defaults=True)
+        db_keyword, keyword_update.dict(exclude_unset=True)
     )
     return updated
 

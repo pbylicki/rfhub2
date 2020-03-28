@@ -1,11 +1,20 @@
+from dataclasses import dataclass
 from pathlib import Path
 import re
 from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
+from robot.libdocpkg.model import LibraryDoc
 import robot.libraries
 from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
+from rfhub2.model import (
+    Collection,
+    CollectionUpdate,
+    KeywordCreate,
+    KeywordUpdate,
+    NestedKeyword,
+)
 
 
 RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
@@ -22,18 +31,24 @@ EXCLUDED_LIBRARIES = {
 INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
 
 
-class RfhubImporter(object):
+@dataclass
+class CollectionUpdateWithKeywords:
+    collection: CollectionUpdate
+    keywords: List[KeywordUpdate]
+
+
+class KeywordsImporter(object):
     def __init__(
         self,
         client: Client,
         paths: Tuple[Path, ...],
         no_installed_keywords: bool,
-        mode: str,
+        load_mode: str,
     ) -> None:
+        self.client = client
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
-        self.mode = mode
-        self.client = client
+        self.load_mode = load_mode
 
     def delete_all_collections(self) -> Set[int]:
         """
@@ -44,15 +59,10 @@ class RfhubImporter(object):
             collections_id.update(self._delete_collections())
         return collections_id
 
-    def get_all_collections(self) -> List[Dict]:
+    def get_all_collections(self) -> List[Collection]:
         """Gets all collections from application"""
-        collections = []
-        for i in range(0, 999999, 100):
-            collection_slice = self.client.get_collections(i)
-            if len(collection_slice) == 0:
-                break
-            collections += collection_slice
-        return collections
+        collections = self.client.get_collections(0, 999999)
+        return self._convert_json_to_collection(collections)
 
     def _delete_collections(self) -> Set[int]:
         """
@@ -64,16 +74,23 @@ class RfhubImporter(object):
             self.client.delete_collection(id)
         return collections_id
 
+    def import_data(self) -> Tuple[int, int]:
+        """
+        Wrapper for import_libraries and import_statistics to unify modules.
+        :return: Number of libraries and keyword loaded
+        """
+        return self.import_libraries()
+
     def import_libraries(self) -> Tuple[int, int]:
         """
         Import libraries to application from paths specified when invoking client.
-        :return: Number of libraries loaded
+        :return: Number of libraries and keywords loaded
         """
         libraries_paths = self.get_libraries_paths()
         collections = self.create_collections(libraries_paths)
-        if self.mode == "append":
+        if self.load_mode == "append":
             loaded_collections = self.add_collections(collections)
-        elif self.mode == "insert":
+        elif self.load_mode == "insert":
             self.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:
@@ -123,7 +140,9 @@ class RfhubImporter(object):
                     valid_lib_paths.add(item)
         return valid_lib_paths
 
-    def create_collections(self, paths: Set[Path]) -> List[Dict]:
+    def create_collections(
+        self, paths: Set[Path]
+    ) -> List[CollectionUpdateWithKeywords]:
         """
         Creates list of Collection objects from set of provided paths.
         :param paths: set of paths
@@ -132,27 +151,30 @@ class RfhubImporter(object):
         collections = []
         for path in paths:
             try:
-                collection = self.create_collection(path)
-                collections.append(collection)
+                collection_with_keywords = self.create_collection(path)
+                collections.append(collection_with_keywords)
             except (DataError, SystemExit) as ex:
                 print(
                     f"Failed to create collection from path {path}\n"
                     f"{type(ex).__name__}, {ex.args}"
                 )
-        return sorted(collections, key=lambda i: i["name"])
+        return sorted(collections, key=lambda i: i.collection.name)
 
-    def create_collection(self, path: Path) -> Dict:
+    def create_collection(self, path: Path) -> CollectionUpdateWithKeywords:
         """
-        Creates Collection object from provided path.
+        Creates CollectionUpdateWithKeywords object from provided path.
         :param path: Path
-        :return: Collection object
+        :return: CollectionUpdateWithKeywords object
         """
         libdoc = LibraryDocumentation(str(path))
-        serialised_keywords = self._serialise_keywords(libdoc)
-        return self._serialise_libdoc(libdoc, str(path), serialised_keywords)
+        return CollectionUpdateWithKeywords(
+            self._serialise_libdoc(libdoc, str(path)), self._serialise_keywords(libdoc)
+        )
 
     def update_collections(
-        self, existing_collections: List[Dict], new_collections: List[Dict]
+        self,
+        existing_collections: List[Collection],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> List[Dict[str, int]]:
         """
         Updates collections already existing in app.
@@ -169,8 +191,10 @@ class RfhubImporter(object):
         return self.add_collections(collections_to_update + collections_to_insert)
 
     def delete_outdated_collections(
-        self, existing_collections: List[Dict], new_collections: List[Dict]
-    ) -> None:
+        self,
+        existing_collections: List[Collection],
+        new_collections: List[CollectionUpdateWithKeywords],
+    ) -> Set[int]:
         """Deletes outdated collections"""
         collections_to_delete = self._get_outdated_collections_ids(
             existing_collections, new_collections
@@ -179,7 +203,9 @@ class RfhubImporter(object):
             self.client.delete_collection(collection)
         return collections_to_delete
 
-    def add_collections(self, collections: List[Dict]) -> List[Dict[str, int]]:
+    def add_collections(
+        self, collections: List[CollectionUpdateWithKeywords]
+    ) -> List[Dict[str, int]]:
         """
         Adds collections and keywords from provided list to app.
         :param collections: List of collections object
@@ -187,59 +213,68 @@ class RfhubImporter(object):
         """
         loaded_collections = []
         for collection in collections:
-            coll_req = self.client.add_collection(collection)
+            coll_req = self.client.add_collection(collection.collection)
             if coll_req[0] != 201:
                 print(coll_req[1]["detail"])
                 raise StopIteration
             collection_id = coll_req[1]["id"]
-            for keyword in collection["keywords"]:
-                keyword["collection_id"] = collection_id
+            for keyword in collection.keywords:
+                keyword = KeywordCreate(
+                    **{**keyword.dict(), "collection_id": collection_id}
+                )
                 self.client.add_keyword(keyword)
             loaded_collections.append(
-                {"name": collection["name"], "keywords": len(collection["keywords"])}
+                {
+                    "name": collection.collection.name,
+                    "keywords": len(collection.keywords),
+                }
             )
             print(
-                f'{collection["name"]} library with {len(collection["keywords"])} keywords loaded.'
+                f"{collection.collection.name} library with {len(collection.keywords)} keywords loaded."
             )
         return loaded_collections
 
-    def _serialise_libdoc(self, libdoc: Dict, path: str, keywords: Dict) -> Dict:
+    def _serialise_libdoc(self, libdoc: LibraryDoc, path: str) -> CollectionUpdate:
         """
-        Serialises libdoc object to Collection object.
-        :param libdoc: libdoc input object
+        Serialises LibraryDoc object to CollectionUpdate object.
+        :param libdoc: LibraryDoc input object
         :param path: library path
-        :return: Collection object
+        :return: CollectionUpdate object
         """
+        return CollectionUpdate(
+            name=libdoc.name,
+            type=libdoc.type,
+            version=libdoc.version,
+            scope=libdoc.scope,
+            # named_args=libdoc.named_args, # we have not used this one, yet
+            path=path,
+            doc=libdoc.doc + self._extract_doc_from_libdoc_inits(libdoc.inits),
+            doc_format=libdoc._setter__doc_format,
+        )
 
-        lib_dict = libdoc.__dict__
-        lib_dict["doc_format"] = lib_dict.pop("_setter__doc_format")
-        lib_dict["doc"] += self._extract_doc_from_libdoc_inits(lib_dict["inits"])
-        for key in ("_setter__keywords", "inits", "named_args"):
-            lib_dict.pop(key)
-        lib_dict["path"] = path
-        lib_dict["keywords"] = keywords
-        return lib_dict
-
-    def _serialise_keywords(self, libdoc: Dict) -> Dict:
+    def _serialise_keywords(self, libdoc: LibraryDoc) -> List[KeywordUpdate]:
         """
-        Serialises keywords to Keyword object.
-        :param :libdoc input object
-        :return: Keyword object
+        Serialises keywords to KeywordUpdate object.
+        :param :LibraryDoc input object
+        :return: KeywordUpdate object
         """
+        return [
+            KeywordUpdate(
+                name=keyword.name,
+                args=self._serialise_args(keyword.args),
+                doc=keyword.doc,
+            )
+            for keyword in libdoc.keywords
+        ]
 
-        keywords = [keyword.__dict__ for keyword in libdoc.keywords]
-        for keyword in keywords:
-            keyword.pop("tags")
-            if keyword["args"]:
-                keyword["args"] = str(
-                    [
-                        str(item).replace("'", "").replace('"', "")
-                        for item in keyword["args"]
-                    ]
-                ).replace("'", '"')
-            else:
-                keyword["args"] = ""
-        return keywords
+    def _serialise_args(self, args: List[str]) -> str:
+        return (
+            str([str(item).replace("'", "").replace('"', "") for item in args]).replace(
+                "'", '"'
+            )
+            if args
+            else ""
+        )
 
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
         return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""
@@ -288,8 +323,7 @@ class RfhubImporter(object):
                 # read the first few lines; if we don't see
                 # what looks like libdoc data, return false
                 data = f.read(200)
-                index = data.lower().find("<keywordspec ")
-                return index > 0
+                return "<keywordspec " in data.lower()
         return False
 
     @staticmethod
@@ -316,9 +350,9 @@ class RfhubImporter(object):
         if file.name not in INIT_FILES and file.suffix in RESOURCE_PATTERNS:
             with open(file, "r", encoding="utf-8", errors="ignore") as f:
                 data = f.read()
-                return not RfhubImporter._has_test_case_table(
+                return not KeywordsImporter._has_test_case_table(
                     data
-                ) and RfhubImporter._has_keyword_table(data)
+                ) and KeywordsImporter._has_keyword_table(data)
         return False
 
     @staticmethod
@@ -341,144 +375,137 @@ class RfhubImporter(object):
 
     @staticmethod
     def _get_obsolete_collections_ids(
-        existing_collections: List[Dict], new_collections: List[Dict]
+        existing_collections: List[Collection],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but not in paths"""
         new_collections_paths = {
-            new_collection["path"] for new_collection in new_collections
+            new_collection.collection.path for new_collection in new_collections
         }
         return {
-            existing_collection["id"]
+            existing_collection.id
             for existing_collection in existing_collections
-            if existing_collection["path"] not in new_collections_paths
+            if existing_collection.path not in new_collections_paths
         }
 
     @staticmethod
     def _get_outdated_collections_ids(
-        existing_collections: List[Dict], new_collections: List[Dict]
+        existing_collections: List[Collection],
+        new_collections: List[CollectionUpdateWithKeywords],
     ) -> Set[int]:
         """Returns set of collection ids that were found in application but are outdated"""
         outdated_collections = set()
         if len(existing_collections) > 0:
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
-                    reduced_collection = RfhubImporter._reduce_collection_items(
+                    if KeywordsImporter._collection_path_and_name_match(
+                        new_collection.collection, existing_collection
+                    ) and KeywordsImporter._library_or_resource_changed(
                         new_collection, existing_collection
-                    )
-                    if RfhubImporter._collection_path_and_name_match(
-                        new_collection, reduced_collection
-                    ) and RfhubImporter._library_or_resource_changed(
-                        new_collection, reduced_collection
                     ):
-                        outdated_collections.add(existing_collection["id"])
+                        outdated_collections.add(existing_collection.id)
         return outdated_collections
 
     @staticmethod
     def _get_collections_to_update(
-        existing_collections: List[Dict], new_collections: List[Dict]
-    ) -> List[Dict]:
+        existing_collections: List[Collection],
+        new_collections: List[CollectionUpdateWithKeywords],
+    ) -> List[CollectionUpdateWithKeywords]:
         """Returns list of collections to update that were found in paths and application"""
         collections_to_update = []
         if len(existing_collections) >= 0:
             for new_collection in new_collections:
                 for existing_collection in existing_collections:
-                    reduced_collection = RfhubImporter._reduce_collection_items(
+                    if KeywordsImporter._collection_path_and_name_match(
+                        new_collection.collection, existing_collection
+                    ) and KeywordsImporter._library_or_resource_changed(
                         new_collection, existing_collection
-                    )
-                    if RfhubImporter._collection_path_and_name_match(
-                        new_collection, reduced_collection
                     ):
-                        if RfhubImporter._library_or_resource_changed(
-                            new_collection, reduced_collection
-                        ):
-                            collections_to_update.append(new_collection)
+                        collections_to_update.append(new_collection)
         return collections_to_update
 
     @staticmethod
     def _get_new_collections(
-        existing_collections: List[Dict], new_collections: List[Dict]
-    ) -> List[Dict]:
+        existing_collections: List[Collection],
+        new_collections: List[CollectionUpdateWithKeywords],
+    ) -> List[CollectionUpdateWithKeywords]:
         """Returns list of collections to insert that were found in paths but not in application"""
         existing_collections_paths = {
-            existing_collection["path"] for existing_collection in existing_collections
+            existing_collection.path for existing_collection in existing_collections
         }
         return [
             new_collection
             for new_collection in new_collections
-            if new_collection["path"] not in existing_collections_paths
+            if new_collection.collection.path not in existing_collections_paths
         ]
 
     @staticmethod
-    def _reduce_collection_items(
-        new_collection: Dict, existing_collection: Dict
-    ) -> Dict:
-        reduced_collection = RfhubImporter._get_reduced_collection(
-            new_collection, existing_collection
-        )
-        reduced_collection["keywords"] = RfhubImporter._get_reduced_keywords(
-            new_collection["keywords"], reduced_collection["keywords"]
-        )
-        return reduced_collection
-
-    @staticmethod
-    def _get_reduced_collection(
-        new_collection: Dict, existing_collection: Dict
-    ) -> Dict:
-        """Returns existing_collection dictionary with key/value pairs reduced to the ones from new_collection"""
-        return {k: existing_collection.get(k) for k in new_collection.keys()}
-
-    @staticmethod
-    def _get_reduced_keywords(
-        new_collection_keywords: List[Dict], existing_collection_keywords: List[Dict]
-    ) -> List[Dict]:
-        reduced_keywords_list = []
-        if min(len(new_collection_keywords), len(existing_collection_keywords)) > 0:
-            reduced_keywords_list = [
-                {
-                    k: v
-                    for k, v in keyword.items()
-                    if k in new_collection_keywords[0].keys()
-                }
-                for keyword in existing_collection_keywords
-            ]
-        return reduced_keywords_list
-
-    @staticmethod
     def _collection_path_and_name_match(
-        new_collection: Dict, existing_collection: Dict
+        new_collection: CollectionUpdate, existing_collection: Collection
     ) -> bool:
         return (
-            new_collection["name"] == existing_collection["name"]
-            and new_collection["path"] == existing_collection["path"]
+            new_collection.name == existing_collection.name
+            and new_collection.path == existing_collection.path
         )
 
     @staticmethod
     def _library_or_resource_changed(
-        new_collection: Dict, existing_collection: Dict
+        new_collection: CollectionUpdateWithKeywords, existing_collection: Collection
     ) -> bool:
-        if new_collection["type"] == "library":
-            return new_collection["version"] != existing_collection["version"]
+        if new_collection.collection.type == "library":
+            return new_collection.collection.version != existing_collection.version
         else:
             return (
                 any(
-                    keyword not in new_collection["keywords"]
-                    for keyword in existing_collection["keywords"]
+                    keyword not in new_collection.keywords
+                    for keyword in KeywordsImporter._convert_keywords_to_keywords_update(
+                        existing_collection.keywords
+                    )
                 )
                 or any(
-                    keyword not in existing_collection["keywords"]
-                    for keyword in new_collection["keywords"]
+                    keyword
+                    not in KeywordsImporter._convert_keywords_to_keywords_update(
+                        existing_collection.keywords
+                    )
+                    for keyword in new_collection.keywords
                 )
-                or RfhubImporter._library_or_resource_doc_changed(
-                    new_collection, existing_collection
+                or KeywordsImporter._library_or_resource_doc_changed(
+                    new_collection.collection, existing_collection
                 )
             )
 
     @staticmethod
+    def _convert_keywords_to_keywords_update(
+        keywords: List[NestedKeyword]
+    ) -> List[KeywordUpdate]:
+        """Convert list of Keywords object to List of KeywordUpdate object"""
+        return [
+            KeywordUpdate(name=keyword.name, doc=keyword.doc, args=keyword.args)
+            for keyword in keywords
+        ]
+
+    @staticmethod
+    def _convert_json_to_collection(collections: Dict) -> List[Collection]:
+        for collection in collections:
+            collection["keywords"] = [
+                NestedKeyword(**keyword) for keyword in collection["keywords"]
+            ]
+        return [Collection(**collection) for collection in collections]
+
+    @staticmethod
     def _library_or_resource_doc_changed(
-        new_collection: Dict, existing_collection: Dict
+        new_collection: CollectionUpdate, existing_collection: Collection
     ) -> bool:
         """Returns true if collection overall documentation has changed.
         Does not check for keywords changes"""
-        return {k: v for k, v in new_collection.items() if k != "keywords"} != {
-            k: v for k, v in existing_collection.items() if k != "keywords"
-        }
+        reduced_existing_collection = CollectionUpdate(
+            name=existing_collection.name,
+            type=existing_collection.type,
+            version=existing_collection.version,
+            scope=existing_collection.scope,
+            args=existing_collection.named_args,
+            path=existing_collection.path,
+            doc=existing_collection.doc,
+            doc_format=existing_collection.doc_format,
+        )
+        return new_collection != reduced_existing_collection

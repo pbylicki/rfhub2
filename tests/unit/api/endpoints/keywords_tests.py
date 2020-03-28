@@ -7,12 +7,28 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), self.KEYWORD_1)
 
+    def test_get_single_keyword_with_statistics(self):
+        response = self.client.get("api/v1/keywords/stats/1/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), self.KEYWORD_1_WITH_STATS)
+
     def test_get_404_for_nonexistent_keyword_id(self):
         response = self.client.get("api/v1/keywords/999/")
         self.assertEqual(response.status_code, 404)
 
     def test_get_all_keywords(self):
         response = self.client.get("api/v1/keywords/")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(len(body), 4)
+        self.assertEqual(
+            body, [self.KEYWORD_2, self.KEYWORD_3, self.KEYWORD_1, self.KEYWORD_4]
+        )
+
+    def test_get_all_keywords_with_collection_id(self):
+        response = self.client.get(
+            f"api/v1/keywords/?collection_id={self.COLLECTION_1['id']}"
+        )
         self.assertEqual(response.status_code, 200)
         body = response.json()
         self.assertEqual(len(body), 3)
@@ -29,8 +45,8 @@ class KeywordsApiTest(BaseApiEndpointTest):
         response = self.client.get("api/v1/keywords?skip=1")
         self.assertEqual(response.status_code, 200)
         body = response.json()
-        self.assertEqual(len(body), 2)
-        self.assertEqual(body, [self.KEYWORD_3, self.KEYWORD_1])
+        self.assertEqual(len(body), 3)
+        self.assertEqual(body, [self.KEYWORD_3, self.KEYWORD_1, self.KEYWORD_4])
 
     def test_get_all_keywords_with_skip_and_limit(self):
         response = self.client.get("api/v1/keywords?skip=1&limit=1")
@@ -53,6 +69,45 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(len(body), 1)
         self.assertEqual(body, [self.KEYWORD_3])
 
+    def test_get_all_keywords_with_custom_ordering(self):
+        response = self.client.get("api/v1/keywords?order=doc")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(
+            body, [self.KEYWORD_3, self.KEYWORD_2, self.KEYWORD_1, self.KEYWORD_4]
+        )
+
+    def test_get_all_keywords_with_statistics(self):
+        response = self.client.get("api/v1/keywords/stats/")
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(len(body), 4)
+        self.assertEqual(
+            body,
+            [
+                self.KEYWORD_2_WITH_STATS,
+                self.KEYWORD_3_WITH_STATS,
+                self.KEYWORD_1_WITH_STATS,
+                self.KEYWORD_4_WITH_STATS,
+            ],
+        )
+
+    def test_get_all_keywords_with_statistics_with_collection_id(self):
+        response = self.client.get(
+            f"api/v1/keywords/stats/?collection_id={self.COLLECTION_1['id']}"
+        )
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(len(body), 3)
+        self.assertEqual(
+            body,
+            [
+                self.KEYWORD_2_WITH_STATS,
+                self.KEYWORD_3_WITH_STATS,
+                self.KEYWORD_1_WITH_STATS,
+            ],
+        )
+
     def test_search_keywords(self):
         response = self.client.get(
             "api/v1/keywords/search?pattern=name:%20teardown%20in:%20first"
@@ -73,7 +128,8 @@ class KeywordsApiTest(BaseApiEndpointTest):
         response = self.client.get("api/v1/keywords/search/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            response.json(), [self.KEYWORD_2, self.KEYWORD_3, self.KEYWORD_1]
+            response.json(),
+            [self.KEYWORD_2, self.KEYWORD_3, self.KEYWORD_1, self.KEYWORD_4],
         )
 
     def test_search_keywords_with_skip_and_limit(self):
@@ -138,7 +194,7 @@ class KeywordsApiTest(BaseApiEndpointTest):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(response.text, "")
         response = self.auth_client.get("api/v1/keywords/")
-        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(len(response.json()), 3)
 
     def test_should_not_delete_existing_keyword_without_auth(self):
         response = self.client.delete("api/v1/keywords/1/")

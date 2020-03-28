@@ -1,10 +1,12 @@
 from requests import session, Response
 from typing import Dict, Tuple
 
+from rfhub2.model import CollectionUpdate, KeywordCreate, KeywordStatisticsList
+
 
 API_V1 = "api/v1"
 TEST_COLLECTION = {
-    "name": "healtcheck_collection",
+    "name": "healthcheck_collection",
     "type": "a",
     "version": "a",
     "scope": "a",
@@ -30,7 +32,7 @@ class Client(object):
             "accept": "application/json",
         }
 
-    def get_collections(self, skip: int = 0, limit: int = 100) -> Response:
+    def get_collections(self, skip: int = 0, limit: int = 100) -> Dict:
         """
         Gets list of collections object using request get method.
         """
@@ -38,11 +40,11 @@ class Client(object):
             endpoint="collections", params={"skip": skip, "limit": limit}
         )
 
-    def add_collection(self, data: Dict) -> Dict:
+    def add_collection(self, data: CollectionUpdate) -> Tuple[int, Dict]:
         """
         Adds collection using request post method.
         """
-        return self._post_request(endpoint="collections", data=data)
+        return self._post_request(endpoint="collections", data=data.json())
 
     def delete_collection(self, id: int) -> Response:
         """
@@ -50,11 +52,17 @@ class Client(object):
         """
         return self._delete_request(endpoint="collections", id=id)
 
-    def add_keyword(self, data: Dict) -> Dict:
+    def add_keyword(self, data: KeywordCreate) -> Tuple[int, Dict]:
         """
         Adds keyword using request post method.
         """
-        return self._post_request(endpoint="keywords", data=data)
+        return self._post_request(endpoint="keywords", data=data.json())
+
+    def add_statistics(self, data: KeywordStatisticsList) -> Tuple[int, Dict]:
+        """
+        Adds statistics using requests post method.
+        """
+        return self._post_request(endpoint="statistics/keywords", data=data.json())
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """
@@ -63,11 +71,11 @@ class Client(object):
         request = self.session.get(url=f"{self.api_url}/{endpoint}/", params=params)
         return request.json()
 
-    def _post_request(self, endpoint: str, data: Dict) -> Tuple[int, Dict]:
+    def _post_request(self, endpoint: str, data: str) -> Tuple[int, Dict]:
         """
         Sends post request to collections or keywords endpoint.
         """
-        request = self.session.post(url=f"{self.api_url}/{endpoint}/", json=data)
+        request = self.session.post(url=f"{self.api_url}/{endpoint}/", data=data)
         return request.status_code, request.json()
 
     def _delete_request(self, endpoint: str, id: int) -> Response:

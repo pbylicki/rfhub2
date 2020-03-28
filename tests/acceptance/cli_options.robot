@@ -43,22 +43,36 @@ Documentation For No Installed Keywords Should Be Displayed Properly
     ...    as such as BuiltIn, Collections, DateTime
     ...    etc.
 
-Documentation For Mode Should Be Displayed Properly
+Documentation For Load Should Be Displayed Properly
     [Documentation]    Documentation For Mode Should Be Displayed Properly
+    Output Should Contain
+    ...    -m, --mode [keywords|statistics]
+    ...    Choice parameter specifying what kind of
+    ...    data package should add:
+    ...    - `keywords` -
+    ...    default value, application is working with
+    ...    keywords documentation
+    ...    - `statistics` -
+    ...    application is working with data about
+    ...    keywords execution.
+
+Documentation For Load Mode Should Be Displayed Properly
+    [Documentation]    Documentation For Load Mode Should Be Displayed Properly
     [Tags]    rfhub2-64
     Output Should Contain
-    ...    -m, --mode [insert|append|update]
-    ...    Choice parameter specifying in what mode
-    ...    package should run:
-    ...    - `insert` - default
-    ...    value, removes all existing collections from
-    ...    app and add ones found in paths
+    ...    -l, --load-mode [insert|append|update]
+    ...    Choice parameter specifying in what load
+    ...    mode package should run:
+    ...    - `insert` - 
+    ...    default value, removes all existing
+    ...    collections from app and add ones found in
+    ...    paths
     ...    - `append`
-    ...    - adds collections found in paths without
-    ...    removal of existing ones
-    ...    - `update` -
-    ...    removes collections not found in paths, adds
-    ...    new ones and updates existing ones.
+    ...    - adds collections found 
+    ...    in paths without removal of existing ones
+    ...    `update` - removes collections not found in
+    ...    paths, adds new ones and updates existing
+    ...    ones.
 
 Documentation For Help Should Be Displayed Properly
     [Documentation]    Documentation For Help Should Be Displayed Properly

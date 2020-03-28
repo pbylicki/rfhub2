@@ -44,10 +44,16 @@ export class CollectionStore {
   getCollection(id: number): Promise<void> {
     this.selectedKeywordId = null;
     this.detailCollection = null;
-    return axios.get(`/api/v1/collections/${id}/`)
-      .then(resp => {
-        this.detailCollection = resp.data;
-      })
+    return axios.all([
+      axios.get(`/api/v1/collections/stats/${id}/`),
+      axios.get(`/api/v1/keywords/stats/?collection_id=${id}&limit=10000`)
+    ])
+    .then(axios.spread((collectionResp, keywordsResp) => {
+      const collection = collectionResp.data;
+      collection.keywords = keywordsResp.data;
+      this.detailCollection = collection;
+    }
+    ))
   }
 
   @action.bound
@@ -59,7 +65,7 @@ export class CollectionStore {
   @action.bound
   getCollections(skip: number = 0, limit: number = 100): Promise<void> {
     this.collectionHasMore = false
-    return axios.get<any, AxiosResponse<Collection[]>>(`/api/v1/collections/?skip=${skip}&limit=${limit}`)
+    return axios.get<any, AxiosResponse<Collection[]>>(`/api/v1/collections/stats/?skip=${skip}&limit=${limit}`)
       .then(resp => {
         const entries = new Map(resp.data.map((collection: Collection, index: number) => [skip + index, collection]));
         this.collectionsMap = new Map([...Array.from(this.collectionsMap), ...Array.from(entries)]);

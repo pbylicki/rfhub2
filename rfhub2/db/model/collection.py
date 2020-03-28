@@ -1,8 +1,10 @@
 from sqlalchemy import Column, Integer, Sequence, Text
 from sqlalchemy.orm import relationship
+from typing import List
 
 from rfhub2.db.model.base_class import Base
-from rfhub2.db.model.doc_mixin import DocMixin
+from rfhub2.db.model.mixins import DocMixin
+from rfhub2.db.repository.ordering import OrderingItem
 
 
 class Collection(Base, DocMixin):
@@ -31,3 +33,7 @@ class Collection(Base, DocMixin):
 
     def __repr__(self):  # pragma: no cover
         return str(self)
+
+    @classmethod
+    def default_ordering(cls) -> List[OrderingItem]:
+        return [OrderingItem("name")]

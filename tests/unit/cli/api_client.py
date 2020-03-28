@@ -2,6 +2,7 @@ import responses
 import unittest
 
 from rfhub2.cli.api_client import Client
+from rfhub2.model import CollectionUpdate, KeywordUpdate
 
 COLLECTION = [
     {
@@ -17,13 +18,18 @@ COLLECTION = [
         "keywords": [],
     }
 ]
-KEYWORD = {
-    "name": "Some keyword",
-    "doc": "Perform some check",
-    "args": None,
-    "id": 2,
-    "collection": {"id": 1, "name": "First collection"},
-}
+COLLECTION = CollectionUpdate(
+    name="Third",
+    type="Library",
+    version=None,
+    scope=None,
+    named_args=None,
+    path=None,
+    doc=None,
+    doc_format=None,
+)
+
+KEYWORD = KeywordUpdate(name="Some keyword", doc="Perform some check", args=None)
 
 
 class ApiClientTests(unittest.TestCase):
@@ -38,27 +44,27 @@ class ApiClientTests(unittest.TestCase):
             rsps.add(
                 responses.GET,
                 self.collection_endpoint,
-                json=COLLECTION,
+                json=[COLLECTION.json()],
                 status=200,
                 content_type="application/json",
             )
             response = self.client.get_collections()
-            self.assertEqual(response, COLLECTION)
+            self.assertEqual(response, [COLLECTION.json()])
 
     def test_add_collection(self):
         with responses.RequestsMock() as rsps:
             rsps.add(
                 responses.POST,
                 self.collection_endpoint,
-                json=COLLECTION[0],
+                json=COLLECTION.json(),
                 status=201,
                 adding_headers={
                     "Content-Type": "application/json",
                     "accept": "application/json",
                 },
             )
-            response = self.client.add_collection(data=COLLECTION[0])
-            self.assertEqual(response, (201, COLLECTION[0]))
+            response = self.client.add_collection(data=COLLECTION)
+            self.assertEqual(response, (201, COLLECTION.json()))
 
     def test_delete_collection(self):
         with responses.RequestsMock() as rsps:
@@ -76,7 +82,7 @@ class ApiClientTests(unittest.TestCase):
             rsps.add(
                 responses.POST,
                 self.keyword_endpoint,
-                json=KEYWORD,
+                json=KEYWORD.json(),
                 status=201,
                 adding_headers={
                     "Content-Type": "application/json",
@@ -84,4 +90,4 @@ class ApiClientTests(unittest.TestCase):
                 },
             )
             response = self.client.add_keyword(data=KEYWORD)
-            self.assertEqual(response, (201, KEYWORD))
+            self.assertEqual(response, (201, KEYWORD.json()))

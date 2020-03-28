@@ -40,7 +40,7 @@ Cli Should Preserve All Keywords When Paths And No Db Flush Set
     [Documentation]    Cli Should Preserve All Keywords When Paths And No Db Flush Set
     ...                This test is dependant on one above:
     ...                'Cli Should Populate App With Installed Keywords'
-    Run Cli Package With Options    --mode=append --no-installed-keywords
+    Run Cli Package With Options    --load-mode=append --no-installed-keywords
     Output Should Contain
     ...    Successfully loaded 0 collections with 0 keywords.
     Api Should Have With 10 Collections And 100 Keywords
@@ -75,32 +75,46 @@ Cli Should Update Existing Collections, Delete Obsolete And Add New
     ...    Run Cli Package Without Installed Keywords
     ...    Backup And Switch Initial With Updated Fixtures
     Run Cli Package With Options
-    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
+    ...    --load-mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Output Should Contain
     ...    SingleClassLib library with 4 keywords loaded.
     ...    test_resource library with 2 keywords loaded.
     ...    Test Libdoc File library with 1 keywords loaded.
     ...    Test Libdoc File Copy library with 1 keywords loaded.
 
-Cli Update Mode Should Leave Application With New Set Of Collections
-    [Documentation]     Cli Update Mode Should Leave Application 
+Cli Update Load Mode Should Leave Application With New Set Of Collections
+    [Documentation]     Cli Update Load Mode Should Leave Application 
     ...    With New Set Of Collections. This test bases on 
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
     [Tags]    rfhub2-64
     Api Should Have With 7 Collections And 16 Keywords
     
-Running Cli Update Mode Second Time Should Leave Collections Untouched
-    [Documentation]    Running Cli Update Mode Second Time 
+Running Cli Update Load Mode Second Time Should Leave Collections Untouched
+    [Documentation]    Running Cli Update Load Mode Second Time 
     ...    Should Leave Collections Untouched. This test bases on 
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
     Run Cli Package With Options
-    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
+    ...    --load-mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Output Should Contain    Successfully loaded 0 collections with 0 keywords.
     [Teardown]    Run Keywords    Restore Initial Fixtures    AND
     ...    Run Cli Package With Options
     ...    --mode=insert --no-installed-keywords
+
+Running Cli In Statistics Mode Should Populate App With Execution Data
+    [Documentation]    Running Cli In Statistics Mode 
+    ...    Should Populate App With Execution Data
+    Run Cli Package With Options    --mode=statistics ${SUBDIR_PATH}
+    Output Should Contain    Successfully loaded 1 files with 3 statistics.
+    
+Running Cli In Statistics Mode Should Populate App With New Execution Data
+    [Documentation]    Running Cli In Statistics Mode 
+    ...    Should Populate App With New Execution Data
+    Run Cli Package With Options    --mode=statistics ${STATISTICS_PATH}
+    Output Should Contain    Successfully loaded 1 files with 42 statistics
+    Output Should Contain    Records already exist for file from ${SUBDIR_PATH}${/}output.xml
+    [Teardown]    Delete All Statistics
 
 *** Keywords ***
 Api Should Have With ${n} Collections And ${m} Keywords

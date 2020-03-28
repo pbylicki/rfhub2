@@ -12,9 +12,6 @@ Resource          resources/variables.resource
 @{expected_keywords}     Overview    Single Class Lib Method 1    Single Class Lib Method 2    Single Class Lib Method 3
 
 *** Test Cases ***
-App Should Start With No Collections
-    Collections Count On Main Page Should Be 0
-
 Populated App Should Show Number Of Collections
     Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures/initial
     Collections Count On Main Page Should Be 8
@@ -123,7 +120,7 @@ Table Should Contain Library Data
     Wait Until Element Is Visible    ${main_page_table}
     ${list_len}    Get Length    ${Library_data}
     FOR    ${i}    IN RANGE    1    ${list_len}
-        Table Column Should Contain    ${main_page_table}    ${i}    @{Library_data}[${i-1}]
+        Table Column Should Contain    ${main_page_table}    ${i}    ${Library_data}[${i-1}]
     END
 
 Left Panel Should Contain Every Library
@@ -131,7 +128,7 @@ Left Panel Should Contain Every Library
     Wait Until Element Is Visible    ${main_page_table}
     ${list_len}    Get Length    ${expected_libraries}
     FOR    ${i}    IN RANGE    1    ${list_len}
-        Element Text Should Be    ${left_panel_list}/li[${i}]/div/span    @{expected_libraries}[${i-1}]
+        Element Text Should Be    ${left_panel_list}/li[${i}]/div/span    ${expected_libraries}[${i-1}]
     END
 
 Open ${library} In Left Panel
@@ -186,6 +183,6 @@ Test Setup For Collections Update
     Run Cli Package Without Installed Keywords
     Backup And Switch Initial With Updated Fixtures
     Run Cli Package With Options    
-    ...    --mode=update --no-installed-keywords ${INITIAL_FIXTURES}
+    ...    --load-mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Navigate To Main Page
     Collections Count On Main Page Should Be 7

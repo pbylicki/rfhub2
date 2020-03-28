@@ -1,5 +1,9 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
+
+
+from rfhub2.db.model.mixins import DocMixin, KeywordMixin
 
 
 class VersionInfo(BaseModel):
@@ -56,5 +60,43 @@ class Collection(NestedCollection, CollectionUpdate):
     html_doc: Optional[str]
 
 
+class CollectionWithStats(Collection, DocMixin):
+    times_used: Optional[int]
+
+
 class Keyword(NestedKeyword):
     collection: NestedCollection
+
+
+class KeywordWithStats(Keyword, KeywordMixin):
+    times_used: Optional[int]
+    avg_elapsed: Optional[float]
+
+
+class KeywordStatistics(BaseModel):
+    collection: str
+    keyword: str
+    execution_time: datetime
+    times_used: int
+    total_elapsed: int
+    min_elapsed: int
+    max_elapsed: int
+
+    class Config:
+        orm_mode = True
+
+
+class KeywordStatisticsList(BaseModel):
+    __root__: List[KeywordStatistics]
+
+    @staticmethod
+    def of(items: List[KeywordStatistics]) -> "KeywordStatisticsList":
+        return KeywordStatisticsList(__root__=items)
+
+
+class StatisticsDeleted(BaseModel):
+    deleted: int
+
+
+class StatisticsInserted(BaseModel):
+    inserted: int

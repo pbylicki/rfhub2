@@ -1,11 +1,12 @@
-import json
 from sqlalchemy import Column, ForeignKey, Integer, Sequence, Text
+from typing import List
 
 from rfhub2.db.model.base_class import Base
-from rfhub2.db.model.doc_mixin import DocMixin
+from rfhub2.db.model.mixins import KeywordMixin
+from rfhub2.db.repository.ordering import OrderingItem
 
 
-class Keyword(Base, DocMixin):
+class Keyword(Base, KeywordMixin):
     id = Column(Integer, Sequence("keyword_id_seq"), primary_key=True)
     name = Column(Text, index=True)
     doc = Column(Text)
@@ -20,9 +21,6 @@ class Keyword(Base, DocMixin):
     def __repr__(self):  # pragma: no cover
         return str(self)
 
-    @property
-    def arg_string(self) -> str:
-        """
-        Old implementation saves args list as JSON in text field, this is more readable representation for UI
-        """
-        return ", ".join(json.loads(self.args)) if self.args else ""
+    @classmethod
+    def default_ordering(cls) -> List[OrderingItem]:
+        return [OrderingItem("name")]

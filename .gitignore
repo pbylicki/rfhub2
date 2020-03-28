@@ -49,6 +49,7 @@ docs/_build/
 # robot logs.
 log.html
 report.html
+output.xml
 selenium-screenshot-*.png
 
 # sqlite DBs
@@ -59,5 +60,6 @@ selenium-screenshot-*.png
 
 # IDE
 .idea
+.vscode
 red.xml
 libspecs/

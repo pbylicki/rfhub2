@@ -1,0 +1,11 @@
+.git
+.mypy_cache
+atests-venv
+build
+dist
+rfhub2.egg-info
+scripts
+tests
+venv
+frontend/build
+frontend/node_modules

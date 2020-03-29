@@ -2,7 +2,10 @@ FROM node:13-alpine AS ui-build
 
 COPY frontend /src
 
-RUN cd /src && yarn install && yarn build
+RUN cd /src && \
+    yarn config set network-timeout 300000 && \
+    yarn install && \
+    yarn build
 
 FROM python:3.6-alpine
 

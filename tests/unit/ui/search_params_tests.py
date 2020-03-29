@@ -30,6 +30,8 @@ class SearchParamsTest(unittest.TestCase):
             ("keyword in: My Lib", "keyword", "my lib", True, False),
             ("name:keywordin:", "keywordin:", None, False, False),
             ("name: keyword in: lib", "keyword", "lib", False, False),
+            ("tags: tag", "tag", None, False, True),
+            ("tags:tag in: lib", "tag", "lib", False, True),
         ]
         for value, pattern, col_name, use_doc, use_tags in test_data:
             with self.subTest(pattern=value):

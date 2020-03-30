@@ -19,7 +19,7 @@ setup(
     install_requires=[
         'aiofiles>=0.4.0',
         'Click>=7.0',
-        'fastapi>=0.46.0,<0.53',
+        'fastapi>=0.46.0,<0.54',
         'pydantic>=1.0',
         'robotframework>=3.0.0',
         'SQLAlchemy>=1.2.0',

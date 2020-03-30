@@ -48,10 +48,9 @@ def get_statistics(
     limit: int = 100,
     ordering: List[OrderingItem] = Depends(get_ordering),
 ):
-    statistics: List[DBStatistics] = repository.get_many(
+    return repository.get_many(
         filter_params=filter_params, skip=skip, limit=limit, ordering=ordering
     )
-    return statistics
 
 
 @router.post("/", status_code=201)
@@ -64,7 +63,7 @@ def create_statistics(
     statistics: List[KeywordStatistics],
 ):
     db_statistics: List[DBStatistics] = [
-        DBStatistics(**stat.dict()) for stat in statistics
+        DBStatistics.create(stat) for stat in statistics
     ]
     try:
         inserted: int = repository.add_many(db_statistics)

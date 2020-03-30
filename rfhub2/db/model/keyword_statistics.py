@@ -3,6 +3,7 @@ from typing import List
 
 from rfhub2.db.model.base_class import Base
 from rfhub2.db.repository.ordering import OrderingItem
+from rfhub2 import model
 
 
 class KeywordStatistics(Base):
@@ -32,3 +33,26 @@ class KeywordStatistics(Base):
             OrderingItem("keyword"),
             OrderingItem("execution_time", False),
         ]
+
+    @staticmethod
+    def create(data: model.KeywordStatistics) -> "KeywordStatistics":
+        return KeywordStatistics(
+            collection=data.collection,
+            keyword=data.keyword,
+            execution_time=data.execution_time,
+            times_used=data.times_used,
+            total_elapsed=data.total_elapsed,
+            min_elapsed=data.min_elapsed,
+            max_elapsed=data.max_elapsed,
+        )
+
+    def to_model(self) -> model.KeywordStatistics:
+        return model.KeywordStatistics(
+            collection=self.collection,
+            keyword=self.keyword,
+            execution_time=self.execution_time,
+            times_used=self.times_used,
+            total_elapsed=self.total_elapsed,
+            min_elapsed=self.min_elapsed,
+            max_elapsed=self.max_elapsed,
+        )

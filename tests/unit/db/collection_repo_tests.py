@@ -44,7 +44,7 @@ class CollectionRepositoryTest(BaseRepositoryTest):
 
     def test_should_get_all_collections(self) -> None:
         result: List[Collection] = self.collection_repo.get_all()
-        self.assertEqual(result, self.collections)
+        self.assertEqual(result, self.model_collections)
 
     def test_should_get_all_collections_ordered_by_name(self) -> None:
         collection_a = Collection(name="A collection")
@@ -52,14 +52,19 @@ class CollectionRepositoryTest(BaseRepositoryTest):
         self.collection_repo.add(collection_a)
         self.collection_repo.add(collection_z)
         result: List[Collection] = self.collection_repo.get_all()
-        self.assertEqual(result, [collection_a] + self.collections + [collection_z])
+        self.assertEqual(
+            result,
+            [collection_a.to_model()]
+            + self.model_collections
+            + [collection_z.to_model()],
+        )
 
     def test_should_filter_collections_by_name(self) -> None:
         test_data = [
-            ("collection", self.collections[:2]),
-            ("thir", self.collections[2:]),
-            ("second collection", self.collections[1:2]),
-            ("", self.collections),
+            ("collection", self.model_collections[:2]),
+            ("thir", self.model_collections[2:]),
+            ("second collection", self.model_collections[1:2]),
+            ("", self.model_collections),
         ]
         for pattern, expected in test_data:
             with self.subTest(pattern=pattern, expected=expected):
@@ -68,9 +73,9 @@ class CollectionRepositoryTest(BaseRepositoryTest):
 
     def test_should_filter_collections_by_type(self) -> None:
         test_data = [
-            ("Robo", self.collections[:2]),
-            ("library", self.collections[2:]),
-            ("", self.collections),
+            ("Robo", self.model_collections[:2]),
+            ("library", self.model_collections[2:]),
+            ("", self.model_collections),
         ]
         for libtype, expected in test_data:
             with self.subTest(libtype=libtype, expected=expected):
@@ -79,11 +84,11 @@ class CollectionRepositoryTest(BaseRepositoryTest):
 
     def test_should_get_all_collections_with_limit(self) -> None:
         result: List[Collection] = self.collection_repo.get_all(limit=2)
-        self.assertEqual(result, self.collections[:2])
+        self.assertEqual(result, self.model_collections[:2])
 
     def test_should_get_all_collections_with_skip(self) -> None:
         result: List[Collection] = self.collection_repo.get_all(skip=2)
-        self.assertEqual(result, self.collections[2:])
+        self.assertEqual(result, self.model_collections[2:])
 
     def test_should_delete_collection_with_keywords(self) -> None:
         result: int = self.collection_repo.delete(self.collections[0].id)

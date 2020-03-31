@@ -88,7 +88,7 @@ def get_keyword(
     *, repository: KeywordRepository = Depends(get_keyword_repository), id: int
 ):
     keyword: Optional[DBKeyword] = repository.get(id)
-    return or_404(keyword)
+    return or_404(keyword).to_model()
 
 
 @router.post("/", response_model=Keyword, status_code=201)
@@ -104,8 +104,8 @@ def create_keyword(
     )
     if not collection:
         raise HTTPException(status_code=400, detail="Collection does not exist")
-    db_keyword: DBKeyword = DBKeyword(**keyword.dict())
-    return repository.add(db_keyword)
+    db_keyword: DBKeyword = repository.add(DBKeyword.create(keyword))
+    return db_keyword.to_model()
 
 
 @router.put("/{id}/", response_model=Keyword)
@@ -120,7 +120,7 @@ def update_keyword(
     updated: DBKeyword = repository.update(
         db_keyword, keyword_update.dict(exclude_unset=True)
     )
-    return updated
+    return updated.to_model()
 
 
 @router.delete("/{id}/")

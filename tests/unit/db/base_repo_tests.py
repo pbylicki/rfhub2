@@ -42,6 +42,11 @@ class BaseRepositoryTest(unittest.TestCase):
         db_session.commit()
         for item in self.collections:
             db_session.refresh(item)
+        self.model_keywords = [kw.to_model() for kw in self.keywords]
+        self.model_collections = [
+            collection.to_model() for collection in self.collections
+        ]
+        self.sorted_model_keywords = [kw.to_model() for kw in self.sorted_keywords]
 
     def tearDown(self):
         db_session.expunge_all()

@@ -4,8 +4,8 @@ from starlette.testclient import TestClient
 from rfhub2 import config
 from rfhub2.app import create_app
 from rfhub2.db.migrate import migrate_db
-from rfhub2.db.sample_data import recreate_data
 from rfhub2.db.session import db_session, engine
+from tests.unit.sample_data import recreate_data
 
 
 class BaseApiEndpointTest(unittest.TestCase):

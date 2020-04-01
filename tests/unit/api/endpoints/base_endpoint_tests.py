@@ -3,9 +3,9 @@ from starlette.testclient import TestClient
 
 from rfhub2 import config
 from rfhub2.app import create_app
-from rfhub2.db.init_db import init_db
+from rfhub2.db.migrate import migrate_db
 from rfhub2.db.sample_data import recreate_data
-from rfhub2.db.session import db_session
+from rfhub2.db.session import db_session, engine
 
 
 class BaseApiEndpointTest(unittest.TestCase):
@@ -234,10 +234,13 @@ class BaseApiEndpointTest(unittest.TestCase):
         "max_elapsed": 1000,
     }
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        migrate_db(engine)
+
     def setUp(self) -> None:
         self.app = create_app()
         db_session.rollback()
-        init_db(db_session)
         recreate_data(db_session)
         self.client: TestClient = TestClient(self.app)
         self.auth_client: TestClient = TestClient(self.app)

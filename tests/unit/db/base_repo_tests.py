@@ -1,16 +1,16 @@
 import unittest
 
 from rfhub2.db.base import Collection, Keyword
-from rfhub2.db.init_db import init_db
+from rfhub2.db.migrate import migrate_db
 from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.keyword_repository import KeywordRepository
-from rfhub2.db.session import db_session
+from rfhub2.db.session import db_session, engine
 
 
 class BaseRepositoryTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        init_db(db_session)
+        migrate_db(engine)
 
     def setUp(self) -> None:
         db_session.rollback()

@@ -17,6 +17,7 @@ setup(
     zip_safe=True,
     include_package_data=True,
     install_requires=[
+        'alembic>=1.2.0',
         'aiofiles>=0.4.0',
         'Click>=7.0',
         'fastapi>=0.46.0',

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import json
 from pathlib import Path
 import re
 from robot.errors import DataError
@@ -262,7 +263,7 @@ class KeywordsImporter(object):
             KeywordUpdate(
                 name=keyword.name,
                 args=self._serialise_args(keyword.args),
-                tags=self._serialise_args(keyword.tags),
+                tags=self._serialise_tags(keyword.tags),
                 doc=keyword.doc,
             )
             for keyword in libdoc.keywords
@@ -276,6 +277,9 @@ class KeywordsImporter(object):
             if args
             else ""
         )
+
+    def _serialise_tags(self, tags) -> str:
+        return [str(tag) for tag in tags]
 
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
         return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""

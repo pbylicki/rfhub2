@@ -1,3 +1,4 @@
+import json
 from sqlalchemy import Column, ForeignKey, Integer, Sequence, Text
 from typing import List
 
@@ -33,6 +34,7 @@ class Keyword(Base, KeywordMixin):
             name=data.name,
             doc=data.doc,
             args=data.args,
+            tags=Keyword.to_json_list(data.tags),
             collection_id=data.collection_id,
         )
 
@@ -43,7 +45,9 @@ class Keyword(Base, KeywordMixin):
             name=self.name,
             doc=self.doc,
             args=self.args,
-            arg_string=self.arg_string,
+            tags=Keyword.from_json_list(self.tags),
+            # tags=self.tags,
+            # arg_string=self.arg_string,
             html_doc=self.html_doc,
             synopsis=self.synopsis,
             collection=collection.to_nested_model(),
@@ -55,7 +59,16 @@ class Keyword(Base, KeywordMixin):
             name=self.name,
             doc=self.doc,
             args=self.args,
+            tags=Keyword.from_json_list(self.tags),
             arg_string=self.arg_string,
             html_doc=self.html_doc,
             synopsis=self.synopsis,
         )
+
+    @staticmethod
+    def from_json_list(json_list: str) -> List[str]:
+        return json.loads(json_list)
+
+    @staticmethod
+    def to_json_list(items: List[str]) -> str:
+        return json.dumps(items)

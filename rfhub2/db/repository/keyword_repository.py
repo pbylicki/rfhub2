@@ -148,3 +148,8 @@ class KeywordRepository(IdEntityRepository):
         result = self._items_with_stats.filter(self._id_filter(item_id)).first()
         if result:
             return self.from_stats_row(result)
+
+    def update(self, item: Keyword, update_data: dict) -> Keyword:
+        if 'tags' in update_data:
+            update_data['tags'] = Keyword.from_json_list(update_data['tags'])
+        super().update(item, update_data)

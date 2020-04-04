@@ -19,10 +19,3 @@ class KeywordMixin(DocMixin):
         Old implementation saves args list as JSON in text field, this is more readable representation for UI
         """
         return ", ".join(json.loads(self.args)) if self.args else ""
-
-    @property
-    def tags_string(self) -> str:
-        """
-        More readable representation of tags for UI.
-        """
-        return ", ".join(json.loads(self.tags)) if self.tags else ""

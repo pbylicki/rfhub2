@@ -17,9 +17,10 @@ setup(
     zip_safe=True,
     include_package_data=True,
     install_requires=[
+        'alembic>=1.2.0',
         'aiofiles>=0.4.0',
         'Click>=7.0',
-        'fastapi>=0.46.0,<0.53',
+        'fastapi>=0.46.0',
         'pydantic>=1.0',
         'robotframework>=3.0.0',
         'SQLAlchemy>=1.2.0',

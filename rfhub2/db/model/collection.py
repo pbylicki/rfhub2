@@ -5,6 +5,7 @@ from typing import List
 from rfhub2.db.model.base_class import Base
 from rfhub2.db.model.mixins import DocMixin
 from rfhub2.db.repository.ordering import OrderingItem
+from rfhub2 import model
 
 
 class Collection(Base, DocMixin):
@@ -37,3 +38,36 @@ class Collection(Base, DocMixin):
     @classmethod
     def default_ordering(cls) -> List[OrderingItem]:
         return [OrderingItem("name")]
+
+    @staticmethod
+    def create(data: model.CollectionUpdate) -> "Collection":
+        return Collection(
+            name=data.name,
+            type=data.type,
+            version=data.version,
+            scope=data.scope,
+            named_args=data.named_args,
+            path=data.path,
+            doc=data.doc,
+            doc_format=data.doc_format,
+        )
+
+    def to_model(self) -> model.Collection:
+        keywords = [kw.to_nested_model() for kw in self.keywords]
+        return model.Collection(
+            id=self.id,
+            name=self.name,
+            type=self.type,
+            version=self.version,
+            scope=self.scope,
+            named_args=self.named_args,
+            path=self.path,
+            doc=self.doc,
+            doc_format=self.doc_format,
+            html_doc=self.html_doc,
+            synopsis=self.synopsis,
+            keywords=keywords,
+        )
+
+    def to_nested_model(self) -> model.NestedCollection:
+        return model.NestedCollection(id=self.id, name=self.name)

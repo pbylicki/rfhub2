@@ -55,7 +55,7 @@ def get_collection(
     *, repository: CollectionRepository = Depends(get_collection_repository), id: int
 ):
     collection: Optional[DBCollection] = repository.get(id)
-    return or_404(collection)
+    return or_404(collection).to_model()
 
 
 @router.post("/", response_model=Collection, status_code=201)
@@ -65,8 +65,8 @@ def create_collection(
     repository: CollectionRepository = Depends(get_collection_repository),
     collection: CollectionUpdate,
 ):
-    db_collection: DBCollection = DBCollection(**collection.dict())
-    return repository.add(db_collection)
+    db_collection: DBCollection = repository.add(DBCollection.create(collection))
+    return db_collection.to_model()
 
 
 @router.put("/{id}/", response_model=Collection)
@@ -81,7 +81,7 @@ def update_collection(
     updated: DBCollection = repository.update(
         db_collection, collection_update.dict(exclude_unset=True)
     )
-    return updated
+    return updated.to_model()
 
 
 @router.delete("/{id}/")

@@ -6,7 +6,7 @@ from sqlalchemy.orm.query import Query
 from sqlalchemy.sql.elements import BinaryExpression
 
 from rfhub2.db.base import Collection, Keyword, KeywordStatistics
-from rfhub2.model import KeywordWithStats
+from rfhub2.model import KeywordWithStats, Keyword as ModelKeyword
 from rfhub2.db.repository.base_repository import IdEntityRepository
 from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.query_utils import glob_to_sql
@@ -58,14 +58,10 @@ class KeywordRepository(IdEntityRepository):
         collection_name: Optional[str],
         collection_id: Optional[int],
         use_doc: bool,
-        use_tags: bool,
     ):
         filter_criteria = []
         if pattern:
-            if use_tags:
-                filter_criteria.append(Keyword.tags.ilike(glob_to_sql(pattern)))
-            else:
-                filter_criteria.append(Keyword.name.ilike(glob_to_sql(pattern)))
+            filter_criteria.append(Keyword.name.ilike(glob_to_sql(pattern)))
             if use_doc:
                 filter_criteria = [
                     or_(filter_criteria[0], Keyword.doc.ilike(glob_to_sql(pattern)))
@@ -78,8 +74,18 @@ class KeywordRepository(IdEntityRepository):
 
     @staticmethod
     def from_stats_row(row: Tuple[Keyword, int, float]) -> KeywordWithStats:
+        keyword = row[0]
         return KeywordWithStats(
-            **row[0].__dict__, **{"times_used": row[1], "avg_elapsed": row[2]}
+            id=keyword.id,
+            name=keyword.name,
+            doc=keyword.doc,
+            args=keyword.args,
+            arg_string=keyword.arg_string,
+            html_doc=keyword.html_doc,
+            synopsis=keyword.synopsis,
+            collection=keyword.collection.to_nested_model(),
+            times_used=row[1],
+            avg_elapsed=row[2],
         )
 
     def get_all(
@@ -93,20 +99,23 @@ class KeywordRepository(IdEntityRepository):
         skip: int = 0,
         limit: int = 100,
         ordering: List[OrderingItem] = None,
-    ) -> List[Keyword]:
-        return (
-            self.session.query(Keyword)
-            .join(Keyword.collection)
-            .filter(
-                *self.filter_criteria(
-                    pattern, collection_name, collection_id, use_doc, use_tags
+    ) -> List[ModelKeyword]:
+        return [
+            keyword.to_model()
+            for keyword in (
+                self.session.query(Keyword)
+                .join(Keyword.collection)
+                .filter(
+                    *self.filter_criteria(
+                        pattern, collection_name, collection_id, use_doc, use_tags
+                    )
                 )
+                .order_by(*Keyword.ordering_criteria(ordering))
+                .offset(skip)
+                .limit(limit)
+                .all()
             )
-            .order_by(*Keyword.ordering_criteria(ordering))
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
+        ]
 
     def get_all_with_stats(
         self,

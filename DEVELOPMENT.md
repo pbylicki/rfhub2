@@ -92,3 +92,13 @@ black -t py36 rfhub2 tests
 
 You can consider adding a git hook or integrating it with your IDE for automated execution.
 
+### Database migrations
+When you introduce any changes to database schema, you should prepare Alembic revision reflecting these changes.
+
+To autogenerate revision file, make sure that SQLALCHEMY_DB_URI variable in config points to existing database instance
+containing database state from previous revision and execute
+
+```
+PYTHONPATH=. alembic -c rfhub2/alembic.ini revision --autogenerate -m "Your revision name"
+```
+Before commit, inspect generated file to make sure that revision contains only relevant changes to the schema.

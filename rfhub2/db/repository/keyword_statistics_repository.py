@@ -96,13 +96,16 @@ class KeywordStatisticsRepository(BaseRepository):
         limit: int = 100,
         ordering: List[OrderingItem] = None,
     ) -> List[KeywordStatistics]:
-        return (
-            self._items.filter(*self.filter_criteria(filter_params))
-            .order_by(*KeywordStatistics.ordering_criteria(ordering))
-            .offset(skip)
-            .limit(limit)
-            .all()
-        )
+        return [
+            stat.to_model()
+            for stat in (
+                self._items.filter(*self.filter_criteria(filter_params))
+                .order_by(*KeywordStatistics.ordering_criteria(ordering))
+                .offset(skip)
+                .limit(limit)
+                .all()
+            )
+        ]
 
     def add_many(self, items: List[KeywordStatistics]) -> int:
         count: int = len(items)

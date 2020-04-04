@@ -1,0 +1,3 @@
+[run]
+omit =
+ rfhub2/alembic/*

@@ -58,10 +58,14 @@ class KeywordRepository(IdEntityRepository):
         collection_name: Optional[str],
         collection_id: Optional[int],
         use_doc: bool,
+        use_tags: bool,
     ):
         filter_criteria = []
         if pattern:
-            filter_criteria.append(Keyword.name.ilike(glob_to_sql(pattern)))
+            if use_tags:
+                filter_criteria.append(Keyword.tags.ilike(glob_to_sql(pattern)))
+            else:
+                filter_criteria.append(Keyword.name.ilike(glob_to_sql(pattern)))
             if use_doc:
                 filter_criteria = [
                     or_(filter_criteria[0], Keyword.doc.ilike(glob_to_sql(pattern)))
@@ -80,6 +84,7 @@ class KeywordRepository(IdEntityRepository):
             name=keyword.name,
             doc=keyword.doc,
             args=keyword.args,
+            tags=Keyword.from_json_list(keyword.tags),
             arg_string=keyword.arg_string,
             html_doc=keyword.html_doc,
             synopsis=keyword.synopsis,
@@ -152,4 +157,4 @@ class KeywordRepository(IdEntityRepository):
     def update(self, item: Keyword, update_data: dict) -> Keyword:
         if 'tags' in update_data:
             update_data['tags'] = Keyword.from_json_list(update_data['tags'])
-        super().update(item, update_data)
+        return super().update(item, update_data)

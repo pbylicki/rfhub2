@@ -31,14 +31,14 @@ EXPECTED_KEYWORDS = [
         doc="This keyword was imported from file\n"
         "with .resource extension, available since RFWK 3.1",
         name="Keyword 1 Imported From Resource File",
-        tags='["first_tag"]',
+        tags=["first_tag"],
     ),
     KeywordUpdate(
         args='["arg_1", "arg_2"]',
         doc="This keyword was imported from file\n"
         "with .resource extension, available since RFWK 3.1",
         name="Keyword 2 Imported From Resource File",
-        tags='["first_tag", "second_tag"]',
+        tags=["first_tag", "second_tag"],
     ),
 ]
 EXPECTED_TRAVERSE_PATHS_INIT = {FIXTURE_PATH / "LibWithInit"}
@@ -77,19 +77,19 @@ EXPECTED_COLLECTION_KEYWORDS_1_1 = KeywordUpdate(
     args="",
     doc="Docstring for single_class_lib_method_1",
     name="Single Class Lib Method 1",
-    tags='["tag_1", "tag_2"]',
+    tags=["tag_1", "tag_2"],
 )
 EXPECTED_COLLECTION_KEYWORDS_1_2 = KeywordUpdate(
     args="",
     doc="Docstring for single_class_lib_method_2",
     name="Single Class Lib Method 2",
-    tags="",
+    tags=[],
 )
 EXPECTED_COLLECTION_KEYWORDS_1_3 = KeywordUpdate(
     args='["param_1", "param_2"]',
     doc="Docstring for single_class_lib_method_3 with two params",
     name="Single Class Lib Method 3",
-    tags="",
+    tags=[],
 )
 EXPECTED_COLLECTION_KEYWORDS_1 = [
     EXPECTED_COLLECTION_KEYWORDS_1_1,
@@ -118,7 +118,7 @@ EXPECTED_COLLECTION_2 = CollectionUpdate(
     version="3.2.0",
 )
 EXPECTED_COLLECTION_KEYWORDS_2_1 = KeywordUpdate(
-    args='["who"]', doc="", name="Someone Shall Pass", tags=""
+    args='["who"]', doc="", name="Someone Shall Pass", tags=[]
 )
 EXPECTED_COLLECTION_KEYWORDS_2 = [EXPECTED_COLLECTION_KEYWORDS_2_1]
 EXISTING_COLLECTION_2 = Collection(

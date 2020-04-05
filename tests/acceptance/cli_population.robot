@@ -36,8 +36,8 @@ Cli Should Populate App With Installed Keywords
     ...    Successfully loaded 10 collections with 318 keywords.
     Api Should Have With 10 Collections And 100 Keywords
 
-Cli Should Preserve All Keywords When Paths And No Db Flush Set
-    [Documentation]    Cli Should Preserve All Keywords When Paths And No Db Flush Set
+Cli Should Preserve All Keywords When Paths And Append Set
+    [Documentation]    Cli Should Preserve All Keywords When Paths And Append Set
     ...                This test is dependant on one above:
     ...                'Cli Should Populate App With Installed Keywords'
     Run Cli Package With Options    --load-mode=append --no-installed-keywords

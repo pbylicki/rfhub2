@@ -83,8 +83,26 @@ Search Should Return Expected Results
     name:Some    1    Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
     Some in:Te    1   Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
     name:Sh in:Te   1    Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
-    tags:tag_1   1    Single Class Lib Method 1    tag_1, tag_2    SingleClassLib    Docstring for single_class_lib_method_1
-    tags:tag in:Single   1    Single Class Lib Method 1    tag_1, tag_2    SingleClassLib    Docstring for single_class_lib_method_1
+    tags:tag_1   1    Single Class Lib Method 1    ${EMPTY}    SingleClassLib    Docstring for single_class_lib_method_1
+    tags:tag in:Single   1    Single Class Lib Method 1    ${EMPTY}    SingleClassLib    Docstring for single_class_lib_method_1
+
+Tags Should Be Dispalyed On Collection Details
+    [Documentation]    This test bases on 
+    ...    'Populated App Should Show Number Of Collections'
+    ...    to shorten execution time.
+    [Tags]    rfhub2-161    tags
+    [Template]    Tags Should Be Displayed For Collection
+    test_robot        first_tag    second_tag
+    SingleClassLib    tag_1        tag_2
+
+Tags Should Be Dispalyed On Search Results
+    [Documentation]    This test bases on 
+    ...    'Populated App Should Show Number Of Collections'
+    ...    to shorten execution time.
+    [Tags]    rfhub2-161    tags
+    [Template]    Tags Should Be Displayed For Search Results
+    tags:first_tag        first_tag
+    tags:tag in:Single    tag_1    tag_2
 
 First Page Table After Update Should Contain Proper Libraries Data
     [Documentation]    This test bases on 
@@ -160,7 +178,26 @@ Search For Method Should Return Expected Values
     Search For    ${method}
     Search Results Count Should Be ${results_count}
     Table Should Contain Library Data    @{results_data}
-    
+
+Tags Should Be Displayed For Collection
+    [Arguments]    ${collection}    @{tags}
+    Open ${${collection}} In Left Panel
+    Click ${${collection}_keyword_1} In Left Panel
+    Check If Tags Are Displayed Correctly    main    @{tags}
+
+Tags Should Be Displayed For Search Results
+    [Arguments]    ${search_string}    @{tags}
+    Search For    ${search_string}
+    Check If Tags Are Displayed Correctly    search    @{tags}
+
+Check If Tags Are Displayed Correctly
+    [Arguments]    ${table}    @{tags}
+    ${tags_count}    Get Length    ${tags}
+    Element ${${table}_page_table_tag_column}/div Count Should Be ${tags_count}
+    FOR    ${i}    ${tag}    IN ENUMERATE    @{tags}
+        Element Text Should Be    ${${table}_page_table_tag_column}/div[${i+1}]/span    ${tag}
+    END
+
 Search For
     [Arguments]    ${text}
     Navigate To Main Page
@@ -177,7 +214,7 @@ Search For
 
 Element ${element} Count Should Be ${n}
     ${count}    Get Element Count    ${element}
-    Should Be Equal As Integers    ${count}    ${n}
+    Should Be Equal As Integers    ${count}    ${n}    Element count should be ${n} but is ${count}
 
 Search Results Count Should Be ${n}
     Element ${search_result_table} Count Should Be ${n}

@@ -1,5 +1,3 @@
-from copy import deepcopy
-import json
 import unittest
 
 from rfhub2.db.base import Collection, Keyword
@@ -24,20 +22,14 @@ class BaseRepositoryTest(unittest.TestCase):
             Keyword(
                 name="Test setup",
                 doc="Prepare test environment, use teardown after this one",
-                tags=['tag_1', 'tag_2'],
             ),
-            Keyword(name="Login keyword", doc="Perform some check", tags=['tag_1', 'tag_2']),
-            Keyword(name="Teardown", doc="Clean up environment", tags=['tag_1', 'tag_2']),
+            Keyword(name="Login keyword", doc="Perform some check"),
+            Keyword(name="Teardown", doc="Clean up environment"),
         ]
         self.app_keyword = Keyword(name="Login to Application")
 
-        kwd_tmp = deepcopy(self.keywords)
-        for keyword in kwd_tmp:
-            if keyword.tags:
-                keyword.tags = json.dumps(keyword.tags)
-
         self.collections = [
-            Collection(name="First collection", type="robot", keywords=kwd_tmp),
+            Collection(name="First collection", type="robot", keywords=self.keywords),
             Collection(
                 name="Second collection", type="Robot", keywords=[self.app_keyword]
             ),
@@ -50,13 +42,6 @@ class BaseRepositoryTest(unittest.TestCase):
         db_session.commit()
         for item in self.collections:
             db_session.refresh(item)
-        self.collections = [
-            Collection(name="First collection", type="robot", keywords=self.keywords),
-            Collection(
-                name="Second collection", type="Robot", keywords=[self.app_keyword]
-            ),
-            Collection(name="Third", type="Library")
-        ]
         self.model_keywords = [kw.to_model() for kw in self.keywords]
         self.model_collections = [
             collection.to_model() for collection in self.collections

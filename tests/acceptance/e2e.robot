@@ -109,7 +109,7 @@ First Page Table After Update Should Contain Proper Libraries Data
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
     [Tags]    rfhub2-64    update
-    [Setup]    Run Keywords    Test Setup For Collections Update    AND    Sleep    1s    #For travis builds
+    [Setup]    Run Keywords    Test Setup For Collections Update    AND    Navigate To Main Page
     [Template]    Table Should Contain Library Data
     LibWithEmptyInit1        library     2.1.0       2
     LibWithEmptyInit2        library     1.0.0       2

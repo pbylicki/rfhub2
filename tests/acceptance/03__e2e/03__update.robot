@@ -3,7 +3,7 @@ Library        String
 Resource       ../resources/keywords.resource
 Resource       ../resources/e2e_keywords.resource
 Resource       ../resources/variables.resource
-Suite Setup    Test Setup For Collections Update
+# Suite Setup    Test Setup For Collections Update
 Test Setup     Navigate To Main Page
 
 *** Test Cases ***

@@ -24,18 +24,6 @@ Stop Rfhub2
     ${result}    Get Process Result
     Run Keyword If    len('''${result.stderr}''') > 0
     ...    Log    rfhub2 stderr: ${result.stderr}    DEBUG
-    
-Open Browser With App On Mainpage
-    Open Browser    url=localhost:8000    browser=gc
-    Maximize Browser Window
-
-Navigate To Main Page
-    Go To    localhost:8000
-
-Collections Count On Main Page Should Be ${n}
-    Reload Page
-    Run Keyword If    '${n}'!='0'    Wait Until Element Is Visible    ${main_page_table}
-    Element Text Should Be    ${main_page_collection_number}    Collections (${n})
 
 Run Cli Package With Options
     [Arguments]    ${options}

@@ -5,7 +5,7 @@ from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
 from robot.libdocpkg.model import LibraryDoc
 import robot.libraries
-from robot.model import tags
+from robot.model import Tags
 from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
@@ -278,7 +278,7 @@ class KeywordsImporter(object):
             else ""
         )
 
-    def _serialise_tags(self, tags: tags) -> List[str]:
+    def _serialise_tags(self, tags: Tags) -> List[str]:
         return list(tags._tags)
 
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:

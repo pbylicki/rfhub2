@@ -32,7 +32,6 @@ script:
   - python setup.py sdist bdist_wheel
   - rm test.db  #ensure we start clean slate
   - ./scripts/install_package_in_venv.sh
-  - robot -A tests/acceptance/conf/default.args tests/acceptance
   - robot -A tests/acceptance/conf/postgres.args tests/acceptance
 after_success:
   - codecov

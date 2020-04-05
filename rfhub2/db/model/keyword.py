@@ -1,6 +1,6 @@
 import json
 from sqlalchemy import Column, ForeignKey, Integer, Sequence, Text
-from typing import List
+from typing import List, Optional
 
 from rfhub2.db.model.base_class import Base
 from rfhub2.db.model.mixins import KeywordMixin
@@ -65,9 +65,10 @@ class Keyword(Base, KeywordMixin):
         )
 
     @staticmethod
-    def from_json_list(json_list: str) -> List[str]:
-        return json.loads(json_list)
+    def from_json_list(json_list: Optional[str]) -> List[str]:
+        return json.loads(json_list) if json_list else []
 
     @staticmethod
-    def to_json_list(items: List[str]) -> str:
-        return json.dumps(items)
+    def to_json_list(items: Optional[List[str]]) -> str:
+        item_list = items or []
+        return json.dumps(item_list)

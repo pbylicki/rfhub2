@@ -62,9 +62,9 @@ class KeywordRepositoryTest(BaseRepositoryTest):
     def test_should_filter_keywords_by_tag_only(self) -> None:
         test_data = [
             ("tag_23", []),
-            ("tag_2", self.keywords[1:]),
-            ("tag_", sorted(self.keywords, key=lambda k: k.name)),
-            ("", self.sorted_keywords),
+            ("tag_2", self.model_keywords[1:]),
+            ("tag_", sorted(self.model_keywords, key=lambda k: k.name)),
+            ("", self.sorted_model_keywords),
         ]
         for pattern, expected in test_data:
             with self.subTest(pattern=pattern, expected=expected):

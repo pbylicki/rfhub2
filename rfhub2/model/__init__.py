@@ -24,7 +24,7 @@ class KeywordUpdate(BaseModel):
     name: str
     doc: Optional[str]
     args: Optional[str]
-    tags: List[str]
+    tags: Optional[List[str]]
 
     class Config:
         orm_mode = True
@@ -50,6 +50,7 @@ class NestedKeyword(KeywordUpdate):
     synopsis: Optional[str]
     html_doc: Optional[str]
     arg_string: Optional[str]
+    tags: List[str]
 
 
 class Collection(NestedCollection, CollectionUpdate):

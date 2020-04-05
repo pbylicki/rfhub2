@@ -3,11 +3,16 @@
 ${rfhub2_header}                   //*[@id="root"]/div/header/div/h1/a
 ${main_page_prefix}                //*[@id="root"]/div/main/div[2]
 ${main_page_collection_number}     ${main_page_prefix}/div/div/div/h2
-${main_page_table}                 ${main_page_prefix}/div/div/div/table/tbody/tr[1]/td[1]
+${main_page_table}                 ${main_page_prefix}/div/div/div/table/tbody/tr[1]
+${main_page_table_tag_column}      ${main_page_table}/td[3]
+${search_page_table_tag_column}    ${main_page_table}/td[2]
 ${left_panel_list}                 //*[@id="root"]/div/div/div/ul
 ${single_class_lib}                //*[contains(text(),"SingleClassLib")]
+${single_class_lib_keyword_1}      //*[contains(text(),"Single Class Lib Method 1")]
 ${lib_with_init}                   //*[contains(text(),"LibWithInit")]
 ${lib_with_init_2_method_1}        //*[contains(text(),"Lib With Init 2 Method 1")]
+${test_robot}                      //*[contains(text(),"test_robot")]
+${test_robot_keyword_1}            //*[contains(text(),"Keyword 1 Imported From Robot")]
 ${overview}                        //*[contains(text(),"Overview")]
 ${test_libdoc_file}                //a[contains(text(), "Test Libdoc File")]
 ${detail_view_library_prefix}      ${main_page_prefix}/div/div/div

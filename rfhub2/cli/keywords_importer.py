@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-import json
 from pathlib import Path
 import re
 from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
 from robot.libdocpkg.model import LibraryDoc
 import robot.libraries
+from robot.model import tags
 from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
@@ -278,8 +278,8 @@ class KeywordsImporter(object):
             else ""
         )
 
-    def _serialise_tags(self, tags) -> str:
-        return [str(tag) for tag in tags]
+    def _serialise_tags(self, tags: tags) -> List[str]:
+        return list(tags._tags)
 
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
         return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""

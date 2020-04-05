@@ -1,5 +1,3 @@
-from copy import deepcopy
-import json
 import unittest
 
 from rfhub2.db.base import Collection, Keyword

@@ -9,6 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 import { StoreProps } from '../types/PropsTypes';
+import TagChipFactory from './TagChipFactory';
 
 @observer
 export default class CollectionDetails extends React.Component<StoreProps> {
@@ -54,7 +55,7 @@ export default class CollectionDetails extends React.Component<StoreProps> {
                 <TableRow id={keyword.id.toString()} key={keyword.id}>
                   <TableCell>{keyword.name}</TableCell>
                   <TableCell>{keyword.arg_string}</TableCell>
-                  <TableCell>{keyword.tags_string}</TableCell>
+                  <TableCell>{keyword.tags.map(tag => TagChipFactory.get(tag))}</TableCell>
                   <TableCell dangerouslySetInnerHTML={{ __html: keyword.html_doc }}></TableCell>
                   <TableCell>{keyword.times_used}</TableCell>
                   <TableCell>{this.timeField(keyword.avg_elapsed)}</TableCell>

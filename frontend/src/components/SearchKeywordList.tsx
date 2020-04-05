@@ -8,6 +8,7 @@ import VisibilitySensor from 'react-visibility-sensor';
 import Title from './Title';
 import { Keyword } from '../types/ModelTypes';
 import { StoreProps } from '../types/PropsTypes';
+import TagChipFactory from './TagChipFactory';
 
 interface SearchKeywordTableRowProps {
   keyword: Keyword;
@@ -16,7 +17,7 @@ interface SearchKeywordTableRowProps {
 const SearchKeywordTableRow: React.FC<SearchKeywordTableRowProps> = ({ keyword }) => (
   <TableRow key={keyword.id}>
     <TableCell><Link to={`/keywords/${keyword.collection.id}/${keyword.id}/`}>{keyword.name}</Link></TableCell>
-    <TableCell>{keyword.tags_string}</TableCell>
+    <TableCell>{keyword.tags.map(tag => TagChipFactory.get(tag))}</TableCell>
     <TableCell>{keyword.collection.name}</TableCell>
     <TableCell>{keyword.synopsis}</TableCell>
   </TableRow>

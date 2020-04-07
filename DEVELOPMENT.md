@@ -59,6 +59,10 @@ To create frontend build and add its files to rfhub2 package static files direct
 ```
 ./build_ui.sh
 ```
+You can specify *clean* parameter, if there is need to clean static files
+```
+./build_ui.sh clean
+```
 
 ### Populate application with data
 To populate application running on localhost:

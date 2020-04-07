@@ -1,0 +1,67 @@
+name: rfhub2-push-and-deploy
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'rfhub2/version.py'
+
+jobs:
+  push:
+    name: Push rfhub2 to PyPI
+    if: steps.extract_branch.outputs.branch == 'master'
+    needs: test
+    runs-on: ubuntu-latest
+    node-version: 13.x
+    python-version: 3.8
+
+    steps:
+      - uses: actions/checkout@v2
+  
+      - name: Set up Python ${{ python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ python-version }}
+  
+      - name: Cache Python packages
+        uses: actions/cache@v1
+        id: cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt', '**/requirements-postgres.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt', '**/requirements-postgres.txt') }}
+      
+      - name: Use Node.js ${{ node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ node-version }}
+      
+      - name: Install yarn dependencies
+        uses: bahmutov/npm-install@v1
+        with:
+          working-directory: frontend
+      
+      - name: Build UI
+        run: ./build_ui.sh
+
+      - name: Build rfhub2 python package
+        run: python setup.py sdist bdist_wheel
+
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+      
+      - name: Deploy to Heroku
+        uses: Suvink/heroku-static@v0.3
+        with:
+          heroku_app_name: rfhub2-demo
+          heroku_email: heroku@email.com
+          dontuseforce: false
+        env:
+          HEROKU_TOKEN: '${{ secrets.HEROKU_AUTH_TOKEN }}'
+          BOT_TOKEN: '${{ secrets.BOT_TOKEN }}'
+          CHAT_ID: '${{ secrets.CHAT_ID }}'

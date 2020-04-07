@@ -13,7 +13,7 @@ Start Rfhub2
     ...    As a side effect this creates a suite variable named \${rfhub process},
     ...    which is used by the 'Stop rfhub2' keyword.
     Remove File    ${DB_PATH}
-    ${rfhub2_process}    Start Process    ${ACTIVATE_VENV} ${DB_URI} rfhub2
+    ${rfhub2_process}    Start Process    ${DB_URI} rfhub2
     ...    shell=True    stdout=api_logs.log    stderr=stderr_logs.log
     Set Suite Variable    ${rfhub2_process}
     Wait Until Keyword Succeeds    20 seconds    0.5 second
@@ -32,7 +32,7 @@ Run Cli Package With Options
     ...    Attempt to run the rfhub2-cli package with the given options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli ${options}
+    ${output}    Run    rfhub2-cli ${options}
     Set Suite Variable    ${output}
 
 Run Cli Package
@@ -40,7 +40,7 @@ Run Cli Package
     ...    Attempt to run the rfhub2-cli package with the default options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli
+    ${output}    Run    rfhub2-cli
     Set Suite Variable    ${output}
 
 Output Should Contain

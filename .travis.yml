@@ -33,9 +33,7 @@ script:
   - rm test.db  #ensure we start clean slate
   - ./scripts/install_package_in_venv.sh
   - robot -A tests/acceptance/conf/default.args tests/acceptance
-  - robot -A tests/acceptance/conf/default_e2e.args tests/acceptance
   - robot -A tests/acceptance/conf/postgres.args tests/acceptance
-  - robot -A tests/acceptance/conf/postgres_e2e.args tests/acceptance
 after_success:
   - codecov
   - python publish_pypi.py

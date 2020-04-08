@@ -35,3 +35,4 @@ ${BACKUP_FIXTURES}                 ${FIXTURES_PATH}/initial_bkp/
 ${UPDATED_FIXTURES}                ${FIXTURES_PATH}/updated/
 ${STATISTICS_PATH}                 ${FIXTURES_PATH}${/}statistics
 ${SUBDIR_PATH}                     ${STATISTICS_PATH}${/}subdir
+${DB_PATH}                         ${CURDIR}/../../../test.db

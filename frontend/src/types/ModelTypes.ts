@@ -3,6 +3,7 @@ export interface Keyword {
     name: string
     doc: string
     args: string | null
+    tags: string[]
     arg_string: string
     synopsis: string
     html_doc: string
@@ -14,6 +15,7 @@ export interface NestedKeyword {
     name: string
     doc: string
     args: string | null
+    tags: string[]
     arg_string: string
     synopsis: string
     html_doc: string

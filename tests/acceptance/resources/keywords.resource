@@ -12,7 +12,9 @@ Start Rfhub2
     ...    Starts rfhub2 on the port given in the variable \${PORT}
     ...    As a side effect this creates a suite variable named \${rfhub process},
     ...    which is used by the 'Stop rfhub2' keyword.
-    ${rfhub2_process}    Start Process    ${ACTIVATE_VENV} ${DB_URI} rfhub2    shell=True
+    Remove File    ${DB_PATH}
+    ${rfhub2_process}    Start Process    ${ACTIVATE_VENV} ${DB_URI} rfhub2
+    ...    shell=True    stdout=api_logs.log    stderr=stderr_logs.log
     Set Suite Variable    ${rfhub2_process}
     Wait Until Keyword Succeeds    20 seconds    0.5 second
     ...    Verify URL Is Reachable    /api/v1/health
@@ -22,20 +24,7 @@ Stop Rfhub2
     ...    Stops the rfhub2 process created by "Start Rfhub2"
     Terminate Process    ${rfhub2_process}
     ${result}    Get Process Result
-    Run Keyword If    len('''${result.stderr}''') > 0
-    ...    Log    rfhub2 stderr: ${result.stderr}    DEBUG
-    
-Open Browser With App On Mainpage
-    Open Browser    url=localhost:8000    browser=gc
-    Maximize Browser Window
-
-Navigate To Main Page
-    Go To    localhost:8000
-
-Collections Count On Main Page Should Be ${n}
-    Reload Page
-    Run Keyword If    '${n}'!='0'    Wait Until Element Is Visible    ${main_page_table}
-    Element Text Should Be    ${main_page_collection_number}    Collections (${n})
+    Log    rfhub2 stderr: ${result.stderr} \nstdout: ${result.stdout}    DEBUG
 
 Run Cli Package With Options
     [Arguments]    ${options}

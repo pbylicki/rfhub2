@@ -29,7 +29,9 @@ COLLECTION = CollectionUpdate(
     doc_format=None,
 )
 
-KEYWORD = KeywordUpdate(name="Some keyword", doc="Perform some check", args=None)
+KEYWORD = KeywordUpdate(
+    name="Some keyword", doc="Perform some check", args=None, tags=[]
+)
 
 
 class ApiClientTests(unittest.TestCase):

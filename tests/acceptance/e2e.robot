@@ -1,10 +1,12 @@
 *** Settings ***
+Library           String
+Resource          resources/keywords.resource
+Resource          resources/e2e_keywords.resource
+Resource          resources/variables.resource
 Suite Setup       Open Browser With App On Mainpage
 Suite Teardown    Close Browser
 Test Setup        Navigate To Main Page
-Library           String
-Resource          resources/keywords.resource
-Resource          resources/variables.resource
+Force Tags        e2e
 
 *** Variables ***
 @{expected_libraries}    LibWithEmptyInit1    LibWithEmptyInit2    LibWithInit      SingleClassLib
@@ -76,18 +78,39 @@ Search Should Return Expected Results
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
+    [Tags]    rfhub2-161    tags
     [Template]    Search For Method Should Return Expected Values
-    Method 3    1    Single Class Lib Method 3    SingleClassLib    Docstring for single_class_lib_method_3 with two params
-    Keyword*Doub    1    Keyword With Args With Double Quotation Mark    test_robot    Keyword With Args With Double Quotation Mark
-    name:Some    1    Someone Shall Pass    ${EMPTY}    Test Libdoc File
-    Some in:Te    1   Someone Shall Pass    ${EMPTY}    Test Libdoc File
-    name:Sh in:Te   1    Someone Shall Pass    ${EMPTY}    Test Libdoc File
+    Method 3    1    Single Class Lib Method 3    ${EMPTY}    SingleClassLib    Docstring for single_class_lib_method_3 with two params
+    Keyword*Doub    1    Keyword With Args With Double Quotation Mark    ${EMPTY}    test_robot    Keyword With Args With Double Quotation Mark
+    name:Some    1    Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
+    Some in:Te    1   Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
+    name:Sh in:Te   1    Someone Shall Pass    ${EMPTY}    ${EMPTY}    Test Libdoc File
+    tags:tag_1   1    Single Class Lib Method 1    ${EMPTY}    SingleClassLib    Docstring for single_class_lib_method_1
+    tags:tag in:Single   1    Single Class Lib Method 1    ${EMPTY}    SingleClassLib    Docstring for single_class_lib_method_1
+
+Tags Should Be Displayed On Collection Details
+    [Documentation]    This test bases on 
+    ...    'Populated App Should Show Number Of Collections'
+    ...    to shorten execution time.
+    [Tags]    rfhub2-161    tags
+    [Template]    Tags Should Be Displayed For Collection
+    test_robot        first_tag    second_tag
+    SingleClassLib    tag_1        tag_2
+
+Tags Should Be Displayed On Search Results
+    [Documentation]    This test bases on 
+    ...    'Populated App Should Show Number Of Collections'
+    ...    to shorten execution time.
+    [Tags]    rfhub2-161    tags
+    [Template]    Tags Should Be Displayed For Search Results
+    tags:first_tag        first_tag
+    tags:tag in:Single    tag_1    tag_2
 
 First Page Table After Update Should Contain Proper Libraries Data
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
-    [Tags]    rfhub2-64
+    [Tags]    rfhub2-64    update
     [Setup]    Test Setup For Collections Update
     [Template]    Table Should Contain Library Data
     LibWithEmptyInit1        library     2.1.0       2
@@ -103,7 +126,7 @@ Single Class Library Details Should Be Updated On Frontend
     [Documentation]    This test bases on 
     ...    'First Page Table After Update Should Contain Proper Libraries Data'
     ...    to shorten execution time.
-    [Tags]    rfhub2-64
+    [Tags]    rfhub2-64    update
     Open ${single_class_lib} In Left Panel
     Click ${overview} In Left Panel
     Click Element    ${single_class_lib}
@@ -115,70 +138,6 @@ Single Class Library Details Should Be Updated On Frontend
     Library keywords Should Be Keywords (4)
 
 *** Keywords ***
-Table Should Contain Library Data
-    [Arguments]    @{Library_data}
-    Wait Until Element Is Visible    ${main_page_table}
-    ${list_len}    Get Length    ${Library_data}
-    FOR    ${i}    IN RANGE    1    ${list_len}
-        Table Column Should Contain    ${main_page_table}    ${i}    ${Library_data}[${i-1}]
-    END
-
-Left Panel Should Contain Every Library
-    [Arguments]    @{Library_data}
-    Wait Until Element Is Visible    ${main_page_table}
-    ${list_len}    Get Length    ${expected_libraries}
-    FOR    ${i}    IN RANGE    1    ${list_len}
-        Element Text Should Be    ${left_panel_list}/li[${i}]/div/span    ${expected_libraries}[${i-1}]
-    END
-
-Open ${library} In Left Panel
-    ${is_visible}    Run Keyword And Return Status     Element Should Not Be Visible    ${hamburger}
-    Run Keyword Unless    ${is_visible}    Click Element    ${hamburger}
-    Wait Until Element Is Visible    ${library}
-    Click Element    ${library}
-    Wait Until Element Is Visible    //*[contains(text(),'Overview')]
-
-Left Panel For Single Library Should Contain Expected Keywords
-    [Arguments]    @{keywords}
-    ${list_len}    Get Length    ${keywords}
-    FOR    ${i}    IN RANGE    1    ${list_len}
-        Run Keyword And Continue On Failure    Element Text Should Be    ${single_class_lib_items}/a[${i+1}]/div/div    @{keywords}[${i}]
-    END
-
-Click ${keyword} In Left Panel
-    Click Element    ${keyword}
-    Wait Until Element Is Visible    ${detail_view_library_version}
-
-Library ${field} Should Be ${value}
-    Element Text Should Be    ${detail_view_library_${field}}    ${value}
-
-Search For Method Should Return Expected Values
-    [Arguments]    ${method}    ${results_count}    @{results_data}
-    Search For    ${method}
-    Search Results Count Should Be ${results_count}
-    Table Should Contain Library Data    @{results_data}
-    
-Search For
-    [Arguments]    ${text}
-    Navigate To Main Page
-    Input Text    ${search_field}    ${text}
-    Reload Page
-    Sleep    0.5s    #selenium be too fast
-    # proper way which is not stable
-    # Set Selenium Speed    0.2s
-    # @{chars}    Split String To Characters    ${text}
-    # FOR    ${char}    IN    @{chars}
-        # Press Keys    ${search_field}    ${char}
-    # END
-    # Set Selenium Speed    0
-
-Element ${element} Count Should Be ${n}
-    ${count}    Get Element Count    ${element}
-    Should Be Equal As Integers    ${count}    ${n}
-
-Search Results Count Should Be ${n}
-    Element ${search_result_table} Count Should Be ${n}
-
 Test Setup For Collections Update
     Run Cli Package Without Installed Keywords
     Backup And Switch Initial With Updated Fixtures

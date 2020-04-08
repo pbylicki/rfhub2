@@ -5,6 +5,7 @@ from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
 from robot.libdocpkg.model import LibraryDoc
 import robot.libraries
+from robot.model import Tags
 from typing import Dict, List, Set, Tuple
 
 from .api_client import Client
@@ -262,6 +263,7 @@ class KeywordsImporter(object):
             KeywordUpdate(
                 name=keyword.name,
                 args=self._serialise_args(keyword.args),
+                tags=self._serialise_tags(keyword.tags),
                 doc=keyword.doc,
             )
             for keyword in libdoc.keywords
@@ -275,6 +277,9 @@ class KeywordsImporter(object):
             if args
             else ""
         )
+
+    def _serialise_tags(self, tags: Tags) -> List[str]:
+        return list(tags._tags)
 
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
         return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""
@@ -480,7 +485,9 @@ class KeywordsImporter(object):
     ) -> List[KeywordUpdate]:
         """Convert list of Keywords object to List of KeywordUpdate object"""
         return [
-            KeywordUpdate(name=keyword.name, doc=keyword.doc, args=keyword.args)
+            KeywordUpdate(
+                name=keyword.name, doc=keyword.doc, args=keyword.args, tags=keyword.tags
+            )
             for keyword in keywords
         ]
 

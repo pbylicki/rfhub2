@@ -45,6 +45,7 @@ Documentation For No Installed Keywords Should Be Displayed Properly
 
 Documentation For Load Should Be Displayed Properly
     [Documentation]    Documentation For Mode Should Be Displayed Properly
+    [Tags]    rfhub2-67    statistics
     Output Should Contain
     ...    -m, --mode [keywords|statistics]
     ...    Choice parameter specifying what kind of
@@ -58,7 +59,7 @@ Documentation For Load Should Be Displayed Properly
 
 Documentation For Load Mode Should Be Displayed Properly
     [Documentation]    Documentation For Load Mode Should Be Displayed Properly
-    [Tags]    rfhub2-64
+    [Tags]    rfhub2-64    update
     Output Should Contain
     ...    -l, --load-mode [insert|append|update]
     ...    Choice parameter specifying in what load

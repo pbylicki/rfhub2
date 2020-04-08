@@ -21,6 +21,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "synopsis": "Prepare test environment, use teardown after this one",
         "html_doc": "<p>Prepare test environment, use teardown after this one</p>",
         "args": None,
+        "tags": [],
         "arg_string": "",
     }
     NESTED_KEYWORD_2 = {
@@ -30,6 +31,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "synopsis": "Perform some check",
         "html_doc": "<p>Perform some check</p>",
         "args": None,
+        "tags": [],
         "arg_string": "",
     }
     NESTED_KEYWORD_3 = {
@@ -39,6 +41,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "synopsis": "Clean up environment",
         "html_doc": "<p>Clean up environment</p>",
         "args": None,
+        "tags": [],
         "arg_string": "",
     }
     NESTED_KEYWORD_4 = {
@@ -48,6 +51,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "synopsis": "zzzzzz",
         "html_doc": "<p>zzzzzz</p>",
         "args": None,
+        "tags": [],
         "arg_string": "",
     }
     COLLECTION_1 = {
@@ -110,6 +114,7 @@ class BaseApiEndpointTest(unittest.TestCase):
         "html_doc": "<p>New doc</p>",
         "args": None,
         "arg_string": "",
+        "tags": [],
         "collection": {"id": COLLECTION_2["id"], "name": COLLECTION_2["name"]},
     }
     KEYWORD_TO_UPDATE = {

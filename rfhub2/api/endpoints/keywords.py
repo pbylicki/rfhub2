@@ -69,6 +69,7 @@ def search_keywords(
         pattern=params.pattern,
         collection_name=params.collection_name,
         use_doc=params.use_doc,
+        use_tags=params.use_tags,
         skip=skip,
         limit=limit,
         ordering=ordering,

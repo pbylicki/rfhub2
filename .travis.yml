@@ -26,7 +26,7 @@ before_script:
   - sudo mv chromedriver /usr/local/bin
   - "export DISPLAY=:99.0"
 script:
-  - python -m coverage run --source rfhub2 -m unittest tests
+  - python -m coverage run --source rfhub2 -m unittest -b tests
   - black --check -t py36 rfhub2 tests
   - ./build_ui.sh
   - python setup.py sdist bdist_wheel

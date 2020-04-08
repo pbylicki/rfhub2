@@ -59,6 +59,20 @@ class KeywordRepositoryTest(BaseRepositoryTest):
                 )
                 self.assertEqual(result, expected)
 
+    def test_should_filter_keywords_by_tag_only(self) -> None:
+        test_data = [
+            ("tag_23", []),
+            ("tag_2", self.model_keywords[1:]),
+            ("tag_", sorted(self.model_keywords, key=lambda k: k.name)),
+            ("", self.sorted_model_keywords),
+        ]
+        for pattern, expected in test_data:
+            with self.subTest(pattern=pattern, expected=expected):
+                result: List[Keyword] = self.keyword_repo.get_all(
+                    pattern=pattern, use_doc=False, use_tags=True
+                )
+                self.assertEqual(result, expected)
+
     def test_should_get_all_keywords_with_limit(self) -> None:
         result: List[Keyword] = self.keyword_repo.get_all(limit=2)
         self.assertEqual(result, self.sorted_model_keywords[:2])

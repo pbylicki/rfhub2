@@ -1,6 +1,7 @@
 from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
 from alembic import command
+from pathlib import Path
 from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.engine.reflection import Inspector
 
@@ -18,7 +19,8 @@ def has_revision(connection: Connection) -> bool:
 
 
 def migrate_db(engine: Engine) -> None:
-    alembic_cfg = Config("rfhub2/alembic.ini")
+    config_path = Path(__file__).resolve().parent.parent / "alembic.ini"
+    alembic_cfg = Config(config_path)
     with engine.begin() as connection:
         # check if database has not been migrated yet with alembic
         if has_tables(connection) and not has_revision(connection):

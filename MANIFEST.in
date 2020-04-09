@@ -1,4 +1,5 @@
 include README.md
+include rfhub2/alembic.ini
 recursive-include rfhub2/static *
 recursive-include rfhub2/templates *
 recursive-exclude rfhub2 *~ #*#

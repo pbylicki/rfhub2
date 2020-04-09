@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 filename = 'rfhub2/version.py'
 exec(open(filename).read())
@@ -47,6 +47,8 @@ setup(
     ],
     packages=[
         'rfhub2',
+        'rfhub2.alembic',
+        'rfhub2.alembic.versions',
         'rfhub2.api',
         'rfhub2.api.endpoints',
         'rfhub2.api.middleware',

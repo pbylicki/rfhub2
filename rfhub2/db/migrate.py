@@ -3,6 +3,8 @@ from alembic.runtime.migration import MigrationContext
 from alembic import command
 from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.engine.reflection import Inspector
+from pathlib import Path
+from os import chdir
 
 
 def has_tables(connection: Connection) -> bool:
@@ -18,8 +20,10 @@ def has_revision(connection: Connection) -> bool:
 
 
 def migrate_db(engine: Engine) -> None:
-    alembic_cfg = Config("rfhub2/alembic.ini")
+    alembic_cfg_path = Path(__file__).resolve().parent.parent.parent / "rfhub2" / "alembic.ini"
+    alembic_cfg = Config(alembic_cfg_path)
     with engine.begin() as connection:
+        chdir(Path(__file__).resolve().parent.parent / "alembic" / "versions")
         # check if database has not been migrated yet with alembic
         if has_tables(connection) and not has_revision(connection):
             # stamp database with the initial revision id, representing pre-alembic database schema

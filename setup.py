@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 filename = 'rfhub2/version.py'
 exec(open(filename).read())

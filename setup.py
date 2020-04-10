@@ -47,6 +47,8 @@ setup(
     ],
     packages=[
         'rfhub2',
+        'rfhub2.alembic',
+        'rfhub2.alembic.versions',
         'rfhub2.api',
         'rfhub2.api.endpoints',
         'rfhub2.api.middleware',

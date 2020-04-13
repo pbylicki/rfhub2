@@ -4,5 +4,5 @@ codecov==2.0.22
 responses==0.10.12
 twine==1.14.0
 wheel==0.34.2
-robotframework-requests==0.6.5
+robotframework-requests==0.6.6
 robotframework-seleniumlibrary==4.3.0

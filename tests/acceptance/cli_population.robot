@@ -27,13 +27,13 @@ Cli Should Populate App With Installed Keywords
     ...    XML library with 37 keywords loaded.
     ...    Easter library with 1 keywords loaded.
     ...    Process library with 15 keywords loaded.
-    ...    String library with 31 keywords loaded.
+    ...    String library with 32 keywords loaded.
     ...    DateTime library with 8 keywords loaded.
     ...    OperatingSystem library with 56 keywords loaded.
     ...    Screenshot library with 3 keywords loaded.
-    ...    BuiltIn library with 104 keywords loaded.
+    ...    BuiltIn library with 105 keywords loaded.
     ...    Telnet library with 20 keywords loaded.
-    ...    Successfully loaded 10 collections with 318 keywords.
+    ...    Successfully loaded 10 collections with 320 keywords.
     Api Should Have With 10 Collections And 100 Keywords
 
 Cli Should Preserve All Keywords When Paths And Append Set

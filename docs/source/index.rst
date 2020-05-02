@@ -8,8 +8,8 @@ Welcome to RfHub2's documentation!
 
 Introduction
 ----------------------------------
-| RfHub2 is an opensource project aimed to provide nice and easy way of collecting, browsing and sharing documentation of existing keywords written in RobotFramework and python. Built with `Material-UI <https://material-ui.com/>`__ and `FastAPI <https://fastapi.tiangolo.com/>`__, served by `Uvicorn <https://www.uvicorn.org/>`__.
-| Project is inspired by `robotframework-hub <htstps://github.com/boakley/robotframework-hub>`__ created by Bryan Oakley and can be treated as its spiritual successor.
+| RfHub2 is an opensource project aimed to provide nice and easy way of collecting, browsing and sharing documentation of existing keywords written in `RobotFramework <https://robotframework.org/>`__ and python. Built with `Material-UI <https://material-ui.com/>`__ and `FastAPI <https://fastapi.tiangolo.com/>`__, served by `Uvicorn <https://www.uvicorn.org/>`__.
+| Project is inspired by `robotframework-hub <https://github.com/boakley/robotframework-hub>`__ created by Bryan Oakley and can be treated as its spiritual successor.
 
 RfHub2 is hosted on `GitHub <https://github.com/pbylicki/rfhub2>`__,
 where sourcecode, current issues and additional documentation can be
@@ -21,4 +21,5 @@ found.
    install.rst
    run.rst
    searching.rst
+   development.rst
    license.rst

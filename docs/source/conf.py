@@ -14,16 +14,18 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
+import datetime
+now = datetime.datetime.now()
 
 # -- Project information -----------------------------------------------------
-
 project = 'RfHub2'
-copyright = '2020, Paweł‚ Bylicki, Maciej Wiczk, Marcin Maciaszek'
-author = 'Paweł‚ Bylicki, Maciej Wiczk, Marcin Maciaszek'
+copyright = f'{now.year}, Paweł Bylicki, Maciej Wiczk, Marcin Maciaszek'
+author = 'Paweł Bylicki, Maciej Wiczk, Marcin Maciaszek'
 
 # The full version, including alpha/beta/rc tags
-release = '0.18'
-
+filename = '../../rfhub2/version.py'
+exec(open(filename).read())
+release = version
 
 # -- General configuration ---------------------------------------------------
 
@@ -32,6 +34,8 @@ release = '0.18'
 # ones.
 extensions = [
 ]
+
+master_doc = 'index'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

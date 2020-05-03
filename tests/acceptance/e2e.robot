@@ -23,16 +23,16 @@ First Page Table Should Contain Proper Libraries Data
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
     [Template]    Table Should Contain Library Data
-    LibWithEmptyInit1       library     2.1.0       2
-    LibWithEmptyInit2       library     1.0.0       2
-    LibWithInit             library     6.6.6       4
-    SingleClassLib          library     1.2.3       3
-    Test Libdoc File        library     3.2.0       1
-    test_res_lib_dir        resource    ${EMPTY}    2
-    test_resource           resource    ${EMPTY}    2    
-    test_robot              resource    ${EMPTY}    4
+    LibWithEmptyInit1       LIBRARY     2.1.0       2
+    LibWithEmptyInit2       LIBRARY     1.0.0       2
+    LibWithInit             LIBRARY     6.6.6       4
+    SingleClassLib          LIBRARY     1.2.3       3
+    Test Libdoc File        LIBRARY     3.2.0       1
+    test_res_lib_dir        RESOURCE    ${EMPTY}    2
+    test_resource           RESOURCE    ${EMPTY}    2    
+    test_robot              RESOURCE    ${EMPTY}    4
 
-Left Panel Should Contain Expected Libraries Library
+Left Panel Should Contain Expected Libraries
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
@@ -56,7 +56,7 @@ Left Panel Keywords Should Navigate To Library Details And Show Correct Data
     Click ${lib_with_init_2_method_1} In Left Panel
     Library title Should Be LibWithInit
     Library version Should Be version: 6.6.6
-    Library scope Should Be scope: global
+    Library scope Should Be scope: GLOBAL
     Library overview Should Be This is a docstring that should be imported as overview
     Library ext_docs Should Be Here goes some docs that should appear on rfhub2 if init is parametrised
     Library keywords Should Be Keywords (4)
@@ -70,7 +70,7 @@ Main Page Libraries Should Navigate To Library Details
     Wait Until Element Is Visible    ${detail_view_library_version}
     Library title Should Be Test Libdoc File
     Library version Should Be version: 3.2.0
-    Library scope Should Be scope: global
+    Library scope Should Be scope: GLOBAL
     Library overview Should Be Documentation for library Test Libdoc File.
     Library keywords Should Be Keywords (1)
 
@@ -113,13 +113,13 @@ First Page Table After Update Should Contain Proper Libraries Data
     [Tags]    rfhub2-64    update
     [Setup]    Test Setup For Collections Update
     [Template]    Table Should Contain Library Data
-    LibWithEmptyInit1        library     2.1.0       2
-    LibWithEmptyInit2        library     1.0.0       2
-    LibWithInit              library     6.6.6       4
-    SingleClassLib           library     1.2.8       4
-    Test Libdoc File         library     3.2.1       1
-    Test Libdoc File Copy    library     3.2.1       1
-    test_resource            resource    ${EMPTY}    2
+    LibWithEmptyInit1        LIBRARY     2.1.0       2
+    LibWithEmptyInit2        LIBRARY     1.0.0       2
+    LibWithInit              LIBRARY     6.6.6       4
+    SingleClassLib           LIBRARY     1.2.8       4
+    Test Libdoc File         LIBRARY     3.2.1       1
+    Test Libdoc File Copy    LIBRARY     3.2.1       1
+    test_resource            RESOURCE    ${EMPTY}    2
     [Teardown]    Restore Initial Fixtures
 
 Single Class Library Details Should Be Updated On Frontend
@@ -133,7 +133,7 @@ Single Class Library Details Should Be Updated On Frontend
     Wait Until Element Is Visible    ${detail_view_library_version}
     Library title Should Be SingleClassLib
     Library version Should Be version: 1.2.8
-    Library scope Should Be scope: test case
+    Library scope Should Be scope: TEST
     Library overview Should Be Overview that should be imported for SingleClassLib.
     Library keywords Should Be Keywords (4)
 

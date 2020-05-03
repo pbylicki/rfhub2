@@ -41,7 +41,7 @@ Left Panel For Single Library Should Contain Expected Keywords
     [Arguments]    @{keywords}
     ${list_len}    Get Length    ${keywords}
     FOR    ${i}    IN RANGE    1    ${list_len}
-        Run Keyword And Continue On Failure    Element Text Should Be    ${single_class_lib_items}/a[${i+1}]/div/div    @{keywords}[${i}]
+        Run Keyword And Continue On Failure    Element Text Should Be    ${single_class_lib_items}/a[${i+1}]/div/div    ${keywords}[${i}]
     END
 
 Click ${keyword} In Left Panel

@@ -72,7 +72,7 @@ Preserving already loaded collections and adding new ones:
     rfhub2-cli -l append ../your_repo ../your_other_repo
 
 Frontend
-"""""""
+""""""""
 To run frontend development server execute:
 ::
 
@@ -135,7 +135,7 @@ To create documentation on local environment, run:
 
     cd docs && make html
 
-Documentation will be built in ``rfhub2/docs/build/html``. Opening ``index.html`` will show its content in browser.
+Documentation will be built in ``rfhub2/docs/_build/html``. Opening ``index.html`` will show its content in browser.
 
 Docker
 ======

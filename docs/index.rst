@@ -18,8 +18,8 @@ found.
 .. toctree::
    :maxdepth: 2
 
-   install.rst
-   run.rst
-   searching.rst
-   development.rst
-   license.rst
+   source/install.rst
+   source/run.rst
+   source/searching.rst
+   source/development.rst
+   source/license.rst

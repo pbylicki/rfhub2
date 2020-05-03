@@ -3,7 +3,7 @@ Searching RfHub2
 
 Browsing tables
 ^^^^^^^^^^^^^^^
-All collected libraries and resoures are available on both on left-hand side menu and main table,
+All collected libraries and resoures are available both on left-hand side menu and main table,
 allowing You to browse general information on each asset. Drilling down into each resource will redirect to
 detailed asset information, with all of the information it could collect.
 

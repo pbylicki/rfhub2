@@ -71,7 +71,7 @@ Preserving already loaded collections and adding new ones:
 
     rfhub2-cli -l append ../your_repo ../your_other_repo
 
-Fronted
+Frontend
 """""""
 To run frontend development server execute:
 ::

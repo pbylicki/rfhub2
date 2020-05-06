@@ -15,7 +15,7 @@ EXPECTED_LIBDOC = {
     "doc": "Documentation for library ``Test Libdoc File``.",
     "doc_format": "ROBOT",
     "name": "Test Libdoc File",
-    "scope": "global",
+    "scope": "GLOBAL",
     "type": "library",
     "version": "3.2.0",
     "keywords": [{"name": "Someone Shall Pass", "args": '["who"]', "doc": ""}],
@@ -68,8 +68,8 @@ EXPECTED_COLLECTION = CollectionUpdate(
     doc_format="ROBOT",
     name="SingleClassLib",
     path=str(FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py"),
-    scope="test case",
-    type="library",
+    scope="TEST",
+    type="LIBRARY",
     version="1.2.3",
 )
 
@@ -113,8 +113,8 @@ EXPECTED_COLLECTION_2 = CollectionUpdate(
     doc_format="ROBOT",
     name="Test Libdoc File",
     path=str(FIXTURE_PATH / "test_libdoc_file.xml"),
-    scope="global",
-    type="library",
+    scope="GLOBAL",
+    type="LIBRARY",
     version="3.2.0",
 )
 EXPECTED_COLLECTION_KEYWORDS_2_1 = KeywordUpdate(
@@ -440,9 +440,9 @@ class KeywordsImporterTests(unittest.TestCase):
                         "id": 1,
                         "name": "SingleClassLib",
                         "keywords": [],
-                        "type": "library",
+                        "type": "LIBRARY",
                         "doc_format": "ROBOT",
-                        "scope": "test case",
+                        "scope": "TEST",
                         "version": "1.2.3",
                         "path": str(
                             FIXTURE_PATH / "SingleClassLib" / "SingleClassLib.py"

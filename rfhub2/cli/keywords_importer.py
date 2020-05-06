@@ -457,7 +457,7 @@ class KeywordsImporter(object):
     def _library_or_resource_changed(
         new_collection: CollectionUpdateWithKeywords, existing_collection: Collection
     ) -> bool:
-        if new_collection.collection.type == "library":
+        if new_collection.collection.type.lower() == "library":
             return new_collection.collection.version != existing_collection.version
         else:
             return (

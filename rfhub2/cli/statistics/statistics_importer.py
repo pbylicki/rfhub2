@@ -2,7 +2,7 @@ from pathlib import Path
 from progress.bar import IncrementalBar
 from typing import List, Set, Tuple
 
-from .api_client import Client
+from rfhub2.cli.api_client import Client
 from .statistics_extractor import StatisticsExtractor
 from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 

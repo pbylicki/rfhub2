@@ -5,7 +5,10 @@ from pathlib import Path
 from robot.libdocpkg import LibraryDocumentation
 import robot.libraries
 
-from rfhub2.cli.keywords_importer import CollectionUpdateWithKeywords, KeywordsImporter
+from rfhub2.cli.keywords.keywords_importer import (
+    CollectionUpdateWithKeywords,
+    KeywordsImporter,
+)
 from rfhub2.cli.api_client import Client
 from rfhub2.model import Collection, CollectionUpdate, KeywordUpdate, NestedKeyword
 

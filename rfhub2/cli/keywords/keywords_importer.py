@@ -2,7 +2,10 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
 from rfhub2.cli.api_client import Client
-from rfhub2.cli.keywords.keywords_extractor import CollectionUpdateWithKeywords, KeywordsExtractor
+from rfhub2.cli.keywords.keywords_extractor import (
+    CollectionUpdateWithKeywords,
+    KeywordsExtractor,
+)
 from rfhub2.model import (
     Collection,
     CollectionUpdate,

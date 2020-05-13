@@ -7,6 +7,7 @@ from tests.unit.cli.api_client import ApiClientTests
 from tests.unit.cli.keywords.keywords_extractor import KeywordsExtractorTests
 from tests.unit.cli.keywords.keywords_importer import KeywordsImporterTests
 from tests.unit.cli.statistics.statistics_extractor import StatisticsExtractorTests
+from tests.unit.cli.statistics.statistics_importer import StatisticsImporterTests
 from tests.unit.db.collection_repo_tests import CollectionRepositoryTest
 from tests.unit.db.collection_tests import CollectionTest
 from tests.unit.db.keyword_repo_tests import KeywordRepositoryTest

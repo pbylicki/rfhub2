@@ -64,8 +64,6 @@ class KeywordsImporter:
         Import libraries to application from paths specified when invoking client.
         :return: Number of libraries and keywords loaded
         """
-        # libraries_paths = self.get_libraries_paths()
-        # collections = self.create_collections(libraries_paths)
         keywords_extractor = KeywordsExtractor(self.paths, self.no_installed_keywords)
         libraries_paths = keywords_extractor.get_libraries_paths()
         collections = keywords_extractor.create_collections(libraries_paths)

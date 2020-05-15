@@ -2,7 +2,7 @@ from pathlib import Path
 from responses import RequestsMock
 import unittest
 
-from rfhub2.cli.statistics_importer import StatisticsImporter
+from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 from rfhub2.cli.api_client import Client
 from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 

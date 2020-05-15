@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from rfhub2.cli.statistics_extractor import StatisticsExtractor, XmlKeyword
+from rfhub2.cli.statistics.statistics_extractor import StatisticsExtractor, XmlKeyword
 from rfhub2.model import KeywordStatistics
 
 FIXTURE_PATH = Path.cwd() / "tests" / "fixtures" / "statistics"

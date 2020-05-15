@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Tuple
 
 from rfhub2.cli.api_client import Client
-from rfhub2.cli.keywords_importer import KeywordsImporter
-from rfhub2.cli.statistics_importer import StatisticsImporter
+from rfhub2.cli.keywords.keywords_importer import KeywordsImporter
+from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 
 
 @click.command()

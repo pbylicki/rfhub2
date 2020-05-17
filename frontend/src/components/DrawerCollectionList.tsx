@@ -14,6 +14,7 @@ import { Collection, NestedKeyword } from '../types/ModelTypes';
 import { CollectionStore } from '../stores/CollectionStore';
 import Tooltip from 'react-tooltip-lite'
 import EllipsisText from "react-ellipsis-text";
+import CircularLoading from './CircularLoading';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -116,9 +117,10 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
 
 export const DrawerCollectionList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.getCollections(store.collections.length)
-
+  let progress = (store.loading) ? <CircularLoading store={store} /> : null
   return (
-    <List>
+    <React.Fragment>
+      <List>
       {store.collections.map((collection, index) => {
           if (store.collectionHasMore && index === store.collections.length - 3) {
             return (
@@ -135,6 +137,8 @@ export const DrawerCollectionList: React.FC<StoreProps> = observer(({ store }) =
           }
         }
       )}
-    </List>
+      </List>
+      {progress}
+    </React.Fragment>
   )
 })

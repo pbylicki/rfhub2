@@ -1,6 +1,8 @@
 *** Settings ***
-Resource    resources/keywords.resource
-Resource    resources/variables.resource
+Documentation    This Suite contains testcases for rfhub2-cli app
+...              population mechanisms.
+Resource         resources/keywords.resource
+Resource         resources/variables.resource
 
 *** Test Cases ***
 Cli Should Populate App With Keywords From Provided Paths Only

@@ -13,11 +13,12 @@ class TestCaseImporter:
     def import_data(self) -> Tuple[int, int]:
         """
         Wrapper for import_libraries, import_statistics and import_test_cases to unify modules.
-        :return: Number of libraries and keyword loaded
+        :return: Number of suites and testcases loaded
         """
         return self.import_test_cases()
 
     def import_test_cases(self) -> Tuple[int, int]:
-        tc = TestCasesExtractor(self.paths)
-        a = tc.create_testdoc_from_paths()
-        return 10, 15
+        extractor = TestCasesExtractor(self.paths)
+        suites = extractor.create_testdoc_from_paths()
+        tc_count = sum(suite.test_count for suite in suites if not suite.parent)
+        return len(suites), tc_count

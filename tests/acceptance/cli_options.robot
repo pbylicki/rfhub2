@@ -1,7 +1,9 @@
 *** Settings ***
-Library        OperatingSystem
-Resource       resources/keywords.resource
-Suite Setup    Run Package With Help Option
+Documentation    This Suite contains testcases checking 
+...              rfhub2-cli documentation for each option.  
+Library          OperatingSystem
+Resource         resources/keywords.resource
+Suite Setup      Run Package With Help Option
 
 *** Test Cases ***
 Documentation For Whole Package Should Be Displayed Properly

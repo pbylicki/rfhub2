@@ -30,7 +30,6 @@ class Test:
 class Suite:
     doc: str
     id: str
-    has_tests: bool
     longname: str
     name: str
     parent: str
@@ -73,9 +72,9 @@ class TestCasesExtractor:
         """
         Serializes testdoc object into Suite dataclass object.
         """
-        return Suite(doc=testdoc.doc, id=testdoc.id, has_tests=testdoc.has_tests, longname=testdoc.longname,
-                     name=testdoc.name, parent=testdoc.parent, source=testdoc.source,  # suites=testdoc.name,
-                     test_count=testdoc.test_count, tests=self.get_tests(testdoc),
+        return Suite(doc=testdoc.doc, id=testdoc.id, longname=testdoc.longname, name=testdoc.name,
+                     parent=testdoc.parent._name if hasattr(testdoc.parent, '_name') else None,
+                     source=testdoc.source, test_count=testdoc.test_count, tests=self.get_tests(testdoc),
                      setup=self.get_setup_keywords(testdoc), teardown=self.get_teardown_keywords(testdoc))
 
     def get_tests(self, testdoc: TestSuite) -> List[Test]:
@@ -83,9 +82,10 @@ class TestCasesExtractor:
         Returns list of tests.
         """
         return [Test(doc=test.doc, id=test.id, longname=test.longname, name=test.name, parent=test.parent,
-                     source=test.source, tags=list(test.tags), template=test.template, timeout=test.timeout,
-                     keywords=self.get_normal_keywords(testdoc), setup=self.get_setup_keywords(testdoc),
-                     teardown=self.get_teardown_keywords(testdoc)) for test in testdoc.tests]
+                     source=test.source if hasattr(test, 'source') else None,
+                     tags=list(test.tags), template=test.template, timeout=test.timeout,
+                     keywords=self.get_normal_keywords(test), setup=self.get_setup_keywords(test),
+                     teardown=self.get_teardown_keywords(test)) for test in testdoc.tests]
 
     def get_setup_keywords(self, testdoc: TestSuite) -> List[Keyword]:
         """

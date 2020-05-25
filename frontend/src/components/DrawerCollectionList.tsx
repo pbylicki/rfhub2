@@ -53,7 +53,7 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
           <ListItemText disableTypography>
             <EllipsisText
               text={item.name}
-              length='32'
+              length={32}
             />
           </ListItemText>
           {isSelected(item.id) ? <ExpandLess /> : <ExpandMore />}
@@ -67,7 +67,7 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
           <ListItemText disableTypography>
             <EllipsisText
               text={item.name}
-              length='32'
+              length={32}
             />
           </ListItemText>
         </ListItem>
@@ -117,7 +117,7 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
 
 export const DrawerCollectionList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.getCollections(store.collections.length)
-  let progress = (store.loading) ? <CircularLoading store={store} /> : null
+  let progress = (store.loading.getCollections) ? <CircularLoading view={store.loading.getCollections} /> : null
   return (
     <React.Fragment>
       <List>

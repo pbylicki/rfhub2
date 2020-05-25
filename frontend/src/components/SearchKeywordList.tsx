@@ -29,8 +29,8 @@ export const SearchKeywordList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.searchKeywords(store.searchTerm, store.searchResults.size)
 
   let table, title
-  if (store.loading === true && !store.detailCollection) {
-    title = <CircularLoading store={store} />
+  if (store.loading.searchKeywords === true && !store.detailCollection) {
+    title = <CircularLoading view={store.loading.searchKeywords} />
   } else {
     if (store.searchResults.size > 0) {
       const resultCountLabel = store.searchHasMore ? `${store.searchResults.size}+` : store.searchResults.size.toString()

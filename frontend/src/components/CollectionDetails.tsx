@@ -31,8 +31,8 @@ export default class CollectionDetails extends React.Component<StoreProps> {
   render() {
     const store = this.props.store;
     let view
-    if (store.loading === true && !store.detailCollection) {
-      view = <CircularLoading store={store} />
+    if (store.loading.getCollection === true && !store.detailCollection) {
+      view = <CircularLoading view={store.loading.getCollection} />
     } else {
       if (store && store.detailCollection) {
         view = (

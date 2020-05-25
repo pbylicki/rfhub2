@@ -12,6 +12,7 @@ import VisibilitySensor from 'react-visibility-sensor';
 import Title from './Title';
 import { Collection } from '../types/ModelTypes';
 import { StoreProps } from '../types/PropsTypes';
+import CircularLoading from './CircularLoading';
 
 interface CollectionTableRowProps {
   collection: Collection
@@ -30,6 +31,7 @@ const CollectionTableRow: React.FC<CollectionTableRowProps> = ({ collection }) =
 export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.getCollections(store.collections.length)
   const resultCountLabel = store.collectionHasMore ? `${store.collections.length}+` : store.collections.length.toString()
+  let progress = (store.loading.getCollections) ? <CircularLoading view={store.loading.getCollections} /> : null
   return (
   <React.Fragment>
     <Title>Collections ({resultCountLabel})</Title>
@@ -61,6 +63,7 @@ export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
         })}
       </TableBody>
     </Table>
+    {progress}
   </React.Fragment>
 )});
 export default CollectionList

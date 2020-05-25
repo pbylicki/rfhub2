@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 import { StoreProps } from '../types/PropsTypes';
 import TagChipFactory from './TagChipFactory';
+import CircularLoading from './CircularLoading';
 
 @observer
 export default class CollectionDetails extends React.Component<StoreProps> {
@@ -30,47 +31,51 @@ export default class CollectionDetails extends React.Component<StoreProps> {
   render() {
     const store = this.props.store;
     let view
-    if (store && store.detailCollection) {
-      view = (
-        <React.Fragment>
-          <Title>{store.detailCollection.name}</Title>
-          <div>version: {store.detailCollection.version}</div>
-          <div>scope: {store.detailCollection.scope}</div>
-          <div>path: {store.detailCollection.path}</div>
-          <div dangerouslySetInnerHTML={{ __html: store.detailCollection.html_doc }}></div>
-          <Title>Keywords ({store.detailCollection.keywords.length})</Title>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Keyword</TableCell>
-                <TableCell>Arguments</TableCell>
-                <TableCell>Tags</TableCell>
-                <TableCell>Documentation</TableCell>
-                <TableCell>Times Used</TableCell>
-                <TableCell>Avg Time Elapsed</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {store.detailCollection.keywords.map(keyword => (
-                <TableRow id={keyword.id.toString()} key={keyword.id}>
-                  <TableCell>{keyword.name}</TableCell>
-                  <TableCell>{keyword.arg_string}</TableCell>
-                  <TableCell>{keyword.tags.map(tag => TagChipFactory.get(tag))}</TableCell>
-                  <TableCell dangerouslySetInnerHTML={{ __html: keyword.html_doc }}></TableCell>
-                  <TableCell>{keyword.times_used}</TableCell>
-                  <TableCell>{this.timeField(keyword.avg_elapsed)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </React.Fragment>
-      )
+    if (store.loading.getCollection === true && !store.detailCollection) {
+      view = <CircularLoading view={store.loading.getCollection} />
     } else {
-      view = (
-        <React.Fragment>
-          <Title>Collection not found</Title>
-        </React.Fragment>
-      )
+      if (store && store.detailCollection) {
+        view = (
+          <React.Fragment>
+            <Title>{store.detailCollection.name}</Title>
+            <div>version: {store.detailCollection.version}</div>
+            <div>scope: {store.detailCollection.scope}</div>
+            <div>path: {store.detailCollection.path}</div>
+            <div dangerouslySetInnerHTML={{ __html: store.detailCollection.html_doc }}></div>
+            <Title>Keywords ({store.detailCollection.keywords.length})</Title>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Keyword</TableCell>
+                  <TableCell>Arguments</TableCell>
+                  <TableCell>Tags</TableCell>
+                  <TableCell>Documentation</TableCell>
+                  <TableCell>Times Used</TableCell>
+                  <TableCell>Avg Time Elapsed</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {store.detailCollection.keywords.map(keyword => (
+                  <TableRow id={keyword.id.toString()} key={keyword.id}>
+                    <TableCell>{keyword.name}</TableCell>
+                    <TableCell>{keyword.arg_string}</TableCell>
+                    <TableCell>{keyword.tags.map(tag => TagChipFactory.get(tag))}</TableCell>
+                    <TableCell dangerouslySetInnerHTML={{ __html: keyword.html_doc }}></TableCell>
+                    <TableCell>{keyword.times_used}</TableCell>
+                    <TableCell>{this.timeField(keyword.avg_elapsed)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </React.Fragment>
+        )
+    } else {
+        view = (
+          <React.Fragment>
+            <Title>Collection not found</Title>
+          </React.Fragment>
+        )
+      }
     }
 
     return (

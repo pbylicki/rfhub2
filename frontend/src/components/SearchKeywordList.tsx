@@ -9,6 +9,8 @@ import Title from './Title';
 import { Keyword } from '../types/ModelTypes';
 import { StoreProps } from '../types/PropsTypes';
 import TagChipFactory from './TagChipFactory';
+import CircularLoading from './CircularLoading';
+
 
 interface SearchKeywordTableRowProps {
   keyword: Keyword;
@@ -27,41 +29,45 @@ export const SearchKeywordList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.searchKeywords(store.searchTerm, store.searchResults.size)
 
   let table, title
-  if (store.searchResults.size > 0) {
-    const resultCountLabel = store.searchHasMore ? `${store.searchResults.size}+` : store.searchResults.size.toString()
-    title = `Found ${resultCountLabel} keywords matching "${store.searchTerm}"`
-    table = (
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Tags</TableCell>
-            <TableCell>Collection</TableCell>
-            <TableCell>Description</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Array.from(store.searchResults.values()).map((keyword, index) => {
-            if (store.searchHasMore && index === store.searchResults.size - 3) {
-              return (
-                <VisibilitySensor key={keyword.id}>
-                  {({ isVisible }) => {
-                    if (isVisible) {
-                      loadMore()
-                    }
-                    return (<SearchKeywordTableRow keyword={keyword} />)
-                  }}
-                </VisibilitySensor>)
-            } else {
-              return (<SearchKeywordTableRow key={keyword.id} keyword={keyword} />)
-            }
-          }
-          )}
-        </TableBody>
-      </Table>
-    )
+  if (store.loading.searchKeywords === true && !store.detailCollection) {
+    title = <CircularLoading view={store.loading.searchKeywords} />
   } else {
-    title = "No keywords found"
+    if (store.searchResults.size > 0) {
+      const resultCountLabel = store.searchHasMore ? `${store.searchResults.size}+` : store.searchResults.size.toString()
+      title = `Found ${resultCountLabel} keywords matching "${store.searchTerm}"`
+      table = (
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Tags</TableCell>
+              <TableCell>Collection</TableCell>
+              <TableCell>Description</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Array.from(store.searchResults.values()).map((keyword, index) => {
+              if (store.searchHasMore && index === store.searchResults.size - 3) {
+                return (
+                  <VisibilitySensor key={keyword.id}>
+                    {({ isVisible }) => {
+                      if (isVisible) {
+                        loadMore()
+                      }
+                      return (<SearchKeywordTableRow keyword={keyword} />)
+                    }}
+                  </VisibilitySensor>)
+              } else {
+                return (<SearchKeywordTableRow key={keyword.id} keyword={keyword} />)
+              }
+            }
+            )}
+          </TableBody>
+        </Table>
+      )
+    } else {
+      title = "No keywords found"
+    }
   }
   return (
     <React.Fragment>

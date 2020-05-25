@@ -56,6 +56,7 @@ setup(
         'rfhub2.cli',
         'rfhub2.cli.keywords',
         'rfhub2.cli.statistics',
+        'rfhub2.cli.test_cases',
         'rfhub2.db',
         'rfhub2.db.model',
         'rfhub2.db.repository',

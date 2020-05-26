@@ -12,6 +12,11 @@ export class CollectionStore {
   @observable detailCollection: Collection | null = null
   @observable selectedKeywordId: number | null = null
   @observable versionInfo: VersionInfo | null = null
+  @observable loading = {
+    searchKeywords: false,
+    getCollections: false,
+    getCollection: false,
+  }
 
   constructor() {
     this.getVersionInfo()
@@ -42,6 +47,7 @@ export class CollectionStore {
 
   @action.bound
   getCollection(id: number): Promise<void> {
+    this.loading.getCollection = true;
     this.selectedKeywordId = null;
     this.detailCollection = null;
     return axios.all([
@@ -52,6 +58,7 @@ export class CollectionStore {
       const collection = collectionResp.data;
       collection.keywords = keywordsResp.data;
       this.detailCollection = collection;
+      this.loading.getCollection = false;
     }
     ))
   }
@@ -64,12 +71,14 @@ export class CollectionStore {
 
   @action.bound
   getCollections(skip: number = 0, limit: number = 100): Promise<void> {
+    this.loading.getCollections = true;
     this.collectionHasMore = false
     return axios.get<any, AxiosResponse<Collection[]>>(`/api/v1/collections/stats/?skip=${skip}&limit=${limit}`)
       .then(resp => {
         const entries = new Map(resp.data.map((collection: Collection, index: number) => [skip + index, collection]));
         this.collectionsMap = new Map([...Array.from(this.collectionsMap), ...Array.from(entries)]);
         this.collectionHasMore = resp.data.length === limit;
+        this.loading.getCollections = false;
       })
   }
 
@@ -81,6 +90,7 @@ export class CollectionStore {
 
   @action.bound
   searchKeywords(pattern: string, skip: number = 0, limit: number = 100): Promise<void> {
+    this.loading.searchKeywords = true;
     this.searchTerm = pattern;
     if (pattern.length > 0) {
       this.searchHasMore = false
@@ -89,6 +99,7 @@ export class CollectionStore {
           const entries = new Map(resp.data.map((keyword: Keyword, index: number) => [skip + index, keyword]));
           const searchHasMore = resp.data.length === limit;
           this.updateSearchResults(entries, searchHasMore);
+          this.loading.searchKeywords = false;
         })
     } else {
       this.clearSearchResults();

@@ -81,7 +81,7 @@ class TestCasesExtractor:
         """
         Returns list of tests.
         """
-        return [Test(doc=test.doc, id=test.id, longname=test.longname, name=test.name, parent=test.parent,
+        return [Test(doc=test.doc, id=test.id, longname=test.longname, name=test.name, parent=test.parent.name,
                      source=test.source if hasattr(test, 'source') else None,
                      tags=list(test.tags), template=test.template, timeout=test.timeout,
                      keywords=self.get_normal_keywords(test), setup=self.get_setup_keywords(test),

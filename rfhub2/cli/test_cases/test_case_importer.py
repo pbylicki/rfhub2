@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Set, Tuple
+from typing import Tuple
 
 from rfhub2.cli.api_client import Client
 from .test_cases_extractor import TestCasesExtractor

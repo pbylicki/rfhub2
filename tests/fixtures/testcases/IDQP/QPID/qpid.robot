@@ -1,5 +1,7 @@
 *** Settings ***
-Documentation    This is second leve documentation from suite qpid.robot
+Documentation     This is second leve documentation from suite qpid.robot
+Suite Setup       Run Keywords    No Operation    AND    Comment    Comment Value
+Suite Teardown    Run Keywords    No Operation    Sleep Well Robot
 
 *** Test Cases ***
 Dummy Test Case One
@@ -20,3 +22,6 @@ Dummy Test Case Three
     [Timeout]    5 s
     Log    Actually, I'm run. But I do nothing
 
+*** Keywords ***
+Sleep Well Robot
+    Sleep  2s

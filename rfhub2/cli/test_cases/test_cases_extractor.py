@@ -8,6 +8,7 @@ from typing import List, Tuple
 @dataclass
 class Keyword:
     name: str
+    args: List[str]
 
 
 @dataclass
@@ -92,9 +93,9 @@ class TestCasesExtractor:
         """
         if getattr(testdoc.keywords, kw_type):
             if isinstance(getattr(testdoc.keywords, kw_type), list):
-                return [Keyword(name=keyword.name) for keyword in getattr(testdoc.keywords, kw_type)]
+                return [Keyword(name=keyword.name, args=list(getattr(testdoc.keywords, kw_type).args)) for keyword in getattr(testdoc.keywords, kw_type)]
             else:
-                return [Keyword(name=getattr(testdoc.keywords, kw_type).name)]
+                return [Keyword(name=getattr(testdoc.keywords, kw_type).name, args=list(getattr(testdoc.keywords, kw_type).args))]
         else:
             return []
 
@@ -102,4 +103,4 @@ class TestCasesExtractor:
         """
         Returns list of keywords.
         """
-        return [Keyword(name=keyword.name) for keyword in testdoc.keywords.normal._items]
+        return [Keyword(name=keyword.name, args=list(keyword.args)) for keyword in testdoc.keywords.normal._items]

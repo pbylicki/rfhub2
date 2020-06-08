@@ -1,6 +1,6 @@
 black==19.3b0
 coverage==5.1
-codecov==2.1.3
+codecov==2.1.4
 responses==0.10.14
 twine==1.14.0
 wheel==0.34.2

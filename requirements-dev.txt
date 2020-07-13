@@ -1,5 +1,5 @@
 black==19.3b0
-coverage==5.1
+coverage==5.2
 codecov==2.1.7
 responses==0.10.15
 twine==1.14.0

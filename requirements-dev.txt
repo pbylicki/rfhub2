@@ -5,5 +5,5 @@ responses==0.10.15
 twine==1.14.0
 wheel==0.34.2
 robotframework-requests==0.7.0
-robotframework-seleniumlibrary==4.4.0
+robotframework-seleniumlibrary==4.5.0
 sphinx==1.8.5

@@ -3,7 +3,7 @@ coverage==5.2.1
 codecov==2.1.8
 responses==0.10.16
 twine==1.14.0
-wheel==0.34.2
+wheel==0.35.1
 robotframework-requests==0.7.0
 robotframework-seleniumlibrary==4.5.0
 sphinx==1.8.5

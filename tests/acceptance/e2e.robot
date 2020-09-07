@@ -51,7 +51,7 @@ Left Panel Keywords Should Navigate To Library Details And Show Correct Data
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
     [Tags]    rfhub2-155
-    Sleep    1s    #Let the page load on travis
+    Sleep    2s    #Let the page load on travis
     Open ${lib_with_init} In Left Panel
     Click ${lib_with_init_2_method_1} In Left Panel
     Library title Should Be LibWithInit

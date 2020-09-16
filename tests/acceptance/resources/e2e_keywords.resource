@@ -45,10 +45,12 @@ Left Panel For Single Library Should Contain Expected Keywords
     END
 
 Click ${keyword} In Left Panel
+    Wait Until Element Is Visible    ${keyword}    1s
     Click Element    ${keyword}
     Wait Until Element Is Visible    ${detail_view_library_version}
 
 Library ${field} Should Be ${value}
+    Wait Until Element Is Visible    ${detail_view_library_${field}}    0.5s
     Element Text Should Be    ${detail_view_library_${field}}    ${value}
 
 Search For Method Should Return Expected Values
@@ -71,6 +73,7 @@ Tags Should Be Displayed For Search Results
 Check If Tags Are Displayed Correctly
     [Arguments]    ${table}    @{tags}
     ${tags_count}    Get Length    ${tags}
+    Wait Until Element Is Visible    ${${table}_page_table_tag_column}/div    5s
     Element ${${table}_page_table_tag_column}/div Count Should Be ${tags_count}
     FOR    ${i}    ${tag}    IN ENUMERATE    @{tags}
         Element Text Should Be    ${${table}_page_table_tag_column}/div[${i+1}]/span    ${tag}

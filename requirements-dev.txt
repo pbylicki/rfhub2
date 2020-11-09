@@ -6,4 +6,4 @@ twine==1.14.0
 wheel==0.35.1
 robotframework-requests==0.7.1
 robotframework-seleniumlibrary==4.5.0
-sphinx==1.8.5
+sphinx==3.3.0

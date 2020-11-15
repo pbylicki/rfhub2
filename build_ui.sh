@@ -1,7 +1,5 @@
 #!/bin/bash
 pushd frontend
-#rm -rf node_modules
-#yarn install
 yarn build
 popd
 rm -r rfhub2/static/*

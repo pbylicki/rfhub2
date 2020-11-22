@@ -21,6 +21,7 @@ import { collectionStore } from './stores/CollectionStore';
 import SearchKeywordList from './components/SearchKeywordList';
 import CollectionDetails from './components/CollectionDetails';
 import SearchBar from './components/SearchBar';
+import SearchModal from './components/SearchModal';
 import './App.css';
 import Copyright from './components/Copyright';
 import { StoreProps } from './types/PropsTypes';
@@ -175,6 +176,7 @@ export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
             <MenuIcon />
           </IconButton>
           <AppTitle store={store} />
+          <SearchModal />
           <SearchBar store={store} history={history} />
         </Toolbar>
       </AppBar>

@@ -15,7 +15,7 @@ Apart from searching with plain text, search queries can be narrowed down, using
    | Using ``name: Log`` will search for keywords with Log in their names.
  - | ``in:`` operator will narrow search only to library or resource, with matching name.
    | Using ``Should in: BuiltIn`` will search for all keywords
-   | with Should in their names, coming from BuilIn library.
+   | with Should in their names, coming from BuiltIn library.
  - | ``tags:`` operator will narrow search to keywords tags.
    | Using ``Tags: Manual`` will search for all keywords with Manual tag.
 

@@ -78,7 +78,7 @@ const DrawerCollectionListItem: React.FC<DrawerCollectionListItemProps> = observ
     <React.Fragment>
       {(collection.name.length > 32) ? (
         <Tooltip content={collection.name} direction="right" distance={26}>
-          collectionListItem(collection)
+          {collectionListItem(collection)}
         </Tooltip>
       ) : (
         collectionListItem(collection)

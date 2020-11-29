@@ -44,9 +44,13 @@ Left Panel For Single Library Should Contain Expected Keywords
         Run Keyword And Continue On Failure    Element Text Should Be    ${single_class_lib_items}/a[${i+1}]/div/div    ${keywords}[${i}]
     END
 
+Click Element When Visible
+    [Arguments]    ${element}
+    Wait Until Element Is Visible    ${element}
+    Click Element    ${element}
+
 Click ${keyword} In Left Panel
-    Wait Until Element Is Visible    ${keyword}    1s
-    Click Element    ${keyword}
+    Click Element When Visible    ${keyword}
     Wait Until Element Is Visible    ${detail_view_library_version}
 
 Library ${field} Should Be ${value}

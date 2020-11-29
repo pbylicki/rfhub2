@@ -15,6 +15,7 @@ ${test_robot}                      //*[contains(text(),"test_robot")]
 ${test_robot_keyword_1}            //*[contains(text(),"Keyword 1 Imported From Robot")]
 ${overview}                        //*[contains(text(),"Overview")]
 ${test_libdoc_file}                //a[contains(text(), "Test Libdoc File")]
+${e2e_keywords_file}               //a[contains(text(), "e2e_keywords")]
 ${detail_view_library_prefix}      ${main_page_prefix}/div/div/div
 ${detail_view_library_title}       ${detail_view_library_prefix}/h2[1]
 ${detail_view_library_version}     ${detail_view_library_prefix}/div[1]
@@ -22,6 +23,7 @@ ${detail_view_library_scope}       ${detail_view_library_prefix}/div[2]
 ${detail_view_library_overview}    ${detail_view_library_prefix}/div[4]/p
 ${detail_view_library_ext_docs}    ${detail_view_library_prefix}/div[4]/p[2]
 ${detail_view_library_keywords}    ${detail_view_library_prefix}/h2[2]
+${detail_view_library_table}       ${main_page_prefix}/div/div/div/table
 ${single_class_lib_items}          ${left_panel_list}/div/div/div/div
 ${search_field}                    //*[@id="root"]/div/header/div/div/div[2]/input
 ${search_hits_number}              ${main_page_collection_number}

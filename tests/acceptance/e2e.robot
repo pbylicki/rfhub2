@@ -65,8 +65,7 @@ Main Page Libraries Should Navigate To Library Details
     [Documentation]    This test bases on 
     ...    'Populated App Should Show Number Of Collections'
     ...    to shorten execution time.
-    Wait Until Element Is Visible    ${test_libdoc_file}
-    Click Element    ${test_libdoc_file}
+    Click Element When Visible    ${test_libdoc_file}
     Wait Until Element Is Visible    ${detail_view_library_version}
     Library title Should Be Test Libdoc File
     Library version Should Be version: 3.2.0
@@ -137,6 +136,24 @@ Single Class Library Details Should Be Updated On Frontend
     Library overview Should Be Overview that should be imported for SingleClassLib.
     Library keywords Should Be Keywords (4)
 
+App Should Display Libraries With Times Used Statistics
+    [Documentation]    App Should Display Libraries With Times Used Statistics
+    [Setup]    Test Setup For Collections Statistics
+    [Template]    Table Should Contain Library Data  
+    e2e_keywords       RESOURCE	   ${EMPTY}    12	  ${EMPTY}
+    keywords	       RESOURCE	   ${EMPTY}    12	  66
+
+App Should Display Keywords Statistics For Single Libary
+    [Documentation]    App Should Display Keywords Statistics For Single Libary
+    ...    this tests is dependant on 'App Should Display Libraries 
+    ...    With Times Used Statistics' to shorter execution time
+    Click Element When Visible    ${e2e_keywords_file}
+    Wait Until Element Is Visible    ${detail_view_library_version}
+    Sleep    2s
+    Row 2 In Column 1 Of Table ${detail_view_library_table} Should Contain Check If Tags Are Displayed Correctly
+    Row 2 In Column 5 Of Table ${detail_view_library_table} Should Contain 4
+    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 106 ms
+
 *** Keywords ***
 Test Setup For Collections Update
     Run Cli Package Without Installed Keywords
@@ -145,3 +162,14 @@ Test Setup For Collections Update
     ...    --load-mode=update --no-installed-keywords ${INITIAL_FIXTURES}
     Navigate To Main Page
     Collections Count On Main Page Should Be 7
+
+Test Setup For Collections Statistics
+    Run Cli Package With Options    --no-installed-keywords ${STATISTICS_PATH} ${CURDIR}/resources
+    Run Cli Package With Options    -m statistics ${STATISTICS_PATH}
+    Navigate To Main Page
+    Sleep    1s
+    Collections Count On Main Page Should Be 2
+
+Row ${m} In Column ${n} Of Table ${table} Should Contain ${value}
+    Table Cell Should Contain    ${table}    ${m}    ${n}    ${value}
+

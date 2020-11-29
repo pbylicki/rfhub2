@@ -1,0 +1,183 @@
+from rfhub2.db.base import Suite, SuiteRel, TestCase
+from rfhub2.db.repository.suite_repository import SuiteRepository
+from rfhub2.db.session import db_session
+from tests.unit.db.base_repo_tests import BaseRepositoryTest
+
+
+class SuiteRepositoryTest(BaseRepositoryTest):
+    def setUp(self) -> None:
+        db_session.rollback()
+        db_session.query(TestCase).delete()
+        db_session.query(SuiteRel).delete()
+        db_session.query(Suite).delete()
+        self.suite_repo = SuiteRepository(db_session)
+        self.suite_1 = Suite(
+            name="Suite 1", longname="Suite 1", keywords="[]", is_root=True
+        )
+        self.suite_2 = Suite(
+            name="Suite 2", longname="Suite 2", keywords="[]", is_root=True
+        )
+        self.suite_3 = Suite(
+            name="Suite 3", longname="Suite 3", keywords="[]", is_root=True
+        )
+        self.suite_11 = Suite(
+            name="Suite 1-1", longname="Suite 1.Suite 1-1", keywords="[]", is_root=False
+        )
+        self.suite_12 = Suite(
+            name="Suite 1-2", longname="Suite 1.Suite 1-2", keywords="[]", is_root=False
+        )
+        self.suite_111 = Suite(
+            name="Suite 1-1-1",
+            longname="Suite 1.Suite 1-1.Suite 1-1-1",
+            keywords="[]",
+            is_root=False,
+        )
+        self.suite_112 = Suite(
+            name="Suite 1-1-2",
+            longname="Suite 1.Suite 1-1.Suite 1-1-2",
+            keywords="[]",
+            is_root=False,
+        )
+        self.suite_121 = Suite(
+            name="Suite 1-2-1",
+            longname="Suite 1.Suite 1-2.Suite 1-2-1",
+            keywords="[]",
+            is_root=False,
+        )
+        self.suites = [
+            self.suite_1,
+            self.suite_2,
+            self.suite_3,
+            self.suite_11,
+            self.suite_12,
+            self.suite_111,
+            self.suite_112,
+            self.suite_121,
+        ]
+
+        db_session.add_all(self.suites)
+        db_session.commit()
+        for item in self.suites:
+            db_session.refresh(item)
+
+        self.suite_rels = [
+            SuiteRel(parent_id=self.suite_1.id, child_id=self.suite_1.id, degree=0),
+            SuiteRel(parent_id=self.suite_1.id, child_id=self.suite_11.id, degree=1),
+            SuiteRel(parent_id=self.suite_1.id, child_id=self.suite_12.id, degree=1),
+            SuiteRel(parent_id=self.suite_1.id, child_id=self.suite_111.id, degree=2),
+            SuiteRel(parent_id=self.suite_1.id, child_id=self.suite_112.id, degree=2),
+            SuiteRel(parent_id=self.suite_1.id, child_id=self.suite_121.id, degree=2),
+            SuiteRel(parent_id=self.suite_11.id, child_id=self.suite_11.id, degree=0),
+            SuiteRel(parent_id=self.suite_11.id, child_id=self.suite_111.id, degree=1),
+            SuiteRel(parent_id=self.suite_11.id, child_id=self.suite_112.id, degree=1),
+            SuiteRel(parent_id=self.suite_12.id, child_id=self.suite_12.id, degree=0),
+            SuiteRel(parent_id=self.suite_12.id, child_id=self.suite_121.id, degree=1),
+            SuiteRel(parent_id=self.suite_111.id, child_id=self.suite_111.id, degree=0),
+            SuiteRel(parent_id=self.suite_112.id, child_id=self.suite_112.id, degree=0),
+            SuiteRel(parent_id=self.suite_121.id, child_id=self.suite_121.id, degree=0),
+            SuiteRel(parent_id=self.suite_2.id, child_id=self.suite_2.id, degree=0),
+            SuiteRel(parent_id=self.suite_3.id, child_id=self.suite_3.id, degree=0),
+        ]
+        self.test_cases = [
+            TestCase(
+                suite_id=self.suite_2.id,
+                name="TC2",
+                longname="TC2",
+                tags="[]",
+                keywords="[]",
+            ),
+            TestCase(
+                suite_id=self.suite_111.id,
+                name="TC1",
+                longname="TC1",
+                tags="[]",
+                keywords="[]",
+            ),
+            TestCase(
+                suite_id=self.suite_111.id,
+                name="TC3",
+                longname="TC3",
+                tags="[]",
+                keywords="[]",
+            ),
+            TestCase(
+                suite_id=self.suite_112.id,
+                name="TC4",
+                longname="TC4",
+                tags="[]",
+                keywords="[]",
+            ),
+            TestCase(
+                suite_id=self.suite_121.id,
+                name="TC5",
+                longname="TC5",
+                tags="[]",
+                keywords="[]",
+            ),
+        ]
+        db_session.add_all(self.suite_rels)
+        db_session.add_all(self.test_cases)
+        db_session.commit()
+
+        # model instances
+        self.model_suite_1 = SuiteRepository.from_row((self.suite_1, None, 4))
+        self.model_suite_11 = SuiteRepository.from_row(
+            (self.suite_11, self.suite_1.id, 3)
+        )
+        self.model_suite_111 = SuiteRepository.from_row(
+            (self.suite_111, self.suite_11.id, 2)
+        )
+        self.model_suite_112 = SuiteRepository.from_row(
+            (self.suite_112, self.suite_11.id, 1)
+        )
+        self.model_suite_12 = SuiteRepository.from_row(
+            (self.suite_12, self.suite_1.id, 1)
+        )
+        self.model_suite_121 = SuiteRepository.from_row(
+            (self.suite_121, self.suite_12.id, 1)
+        )
+        self.model_suite_2 = SuiteRepository.from_row((self.suite_2, None, 1))
+        self.model_suite_3 = SuiteRepository.from_row((self.suite_3, None, 0))
+
+        self.model_suites = [
+            self.model_suite_1,
+            self.model_suite_11,
+            self.model_suite_111,
+            self.model_suite_112,
+            self.model_suite_12,
+            self.model_suite_121,
+            self.model_suite_2,
+            self.model_suite_3,
+        ]
+
+    def test_should_get_suite_by_id(self) -> None:
+        result = self.suite_repo.get(self.suite_2.id)
+        self.assertEqual(result, self.model_suite_2)
+
+    def test_should_get_none_for_nonexistent_id(self) -> None:
+        result = self.suite_repo.get(9999)
+        self.assertIsNone(result)
+
+    def test_should_get_all_suites(self) -> None:
+        result = self.suite_repo.get_all()
+        self.assertEqual(result, self.model_suites)
+
+    def test_should_get_all_suites_by_parent_id(self) -> None:
+        result = self.suite_repo.get_all(parent_id=self.suite_1.id)
+        self.assertEqual(result, [self.model_suite_11, self.model_suite_12])
+
+    def test_should_get_only_root_suites(self) -> None:
+        result = self.suite_repo.get_all(root_only=True)
+        self.assertEqual(
+            result, [self.model_suite_1, self.model_suite_2, self.model_suite_3]
+        )
+
+    def test_should_get_all_suites_with_limit_and_skip(self) -> None:
+        result = self.suite_repo.get_all(limit=2, skip=4)
+        self.assertEqual(result, [self.model_suite_12, self.model_suite_121])
+
+    def test_should_get_all_suites_with_pattern(self) -> None:
+        result = self.suite_repo.get_all(pattern="1-2")
+        self.assertEqual(
+            result, [self.model_suite_112, self.model_suite_12, self.model_suite_121]
+        )

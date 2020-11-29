@@ -12,6 +12,7 @@ from tests.unit.db.collection_repo_tests import CollectionRepositoryTest
 from tests.unit.db.collection_tests import CollectionTest
 from tests.unit.db.keyword_repo_tests import KeywordRepositoryTest
 from tests.unit.db.keyword_tests import KeywordTest
+from tests.unit.db.suite_repo_tests import SuiteRepositoryTest
 from tests.unit.ui.search_params_tests import SearchParamsTest
 from tests.unit.ui.ui_router_tests import UIRouterTest
 from tests.unit.utils.path_ops_tests import PathOpsTest

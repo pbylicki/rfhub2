@@ -99,3 +99,19 @@ class StatisticsDeleted(BaseModel):
 
 class StatisticsInserted(BaseModel):
     inserted: int
+
+
+class KeywordRef(BaseModel):
+    name: str
+    args: List[str]
+
+
+class Suite(BaseModel):
+    id: int
+    name: str
+    longname: str
+    doc: Optional[str]
+    is_root: bool
+    parent_id: Optional[int]
+    test_count: int
+    keywords: List[KeywordRef]

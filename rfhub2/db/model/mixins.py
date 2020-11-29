@@ -1,5 +1,9 @@
 import json
-from robot.libdocpkg.htmlwriter import DocToHtml
+
+try:
+    from robot.libdocpkg.htmlutils import DocToHtml
+except ImportError:
+    from robot.libdocpkg.htmlwriter import DocToHtml
 
 
 class DocMixin:

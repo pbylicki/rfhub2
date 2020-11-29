@@ -4,7 +4,7 @@ Starting application
 Running application (web server)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To run with default (SQLite) database:
+To run with default (SQLite) database and default url (localhost:8000):
 
 ::
 

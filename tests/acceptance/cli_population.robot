@@ -115,7 +115,7 @@ Running Cli In Statistics Mode Should Populate App With New Execution Data
     ...    Should Populate App With New Execution Data
     [Tags]    rfhub2-67    statistics
     Run Cli Package With Options    --mode=statistics ${STATISTICS_PATH}
-    Output Should Contain    Successfully loaded 1 files with 42 statistics
+    Output Should Contain    Successfully loaded 1 files with 87 statistics
     Output Should Contain    Records already exist for file from ${SUBDIR_PATH}${/}output.xml
     [Teardown]    Delete All Statistics
 

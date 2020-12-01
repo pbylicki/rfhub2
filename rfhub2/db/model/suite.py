@@ -4,6 +4,7 @@ from typing import List
 from rfhub2.db.model.base_class import Base
 from rfhub2.db.model.mixins import DocMixin
 from rfhub2.db.repository.ordering import OrderingItem
+from rfhub2.model import KeywordRefList, SuiteHierarchy, SuiteHierarchyWithId
 
 
 class Suite(Base, DocMixin):
@@ -25,3 +26,24 @@ class Suite(Base, DocMixin):
     @classmethod
     def default_ordering(cls) -> List[OrderingItem]:
         return [OrderingItem("longname")]
+
+    @staticmethod
+    def create(hierarchy: SuiteHierarchy, is_root: bool = True) -> "Suite":
+        return Suite(
+            name=hierarchy.name,
+            longname=hierarchy.longname,
+            doc=hierarchy.doc,
+            keywords=hierarchy.keywords.json(),
+            is_root=is_root,
+        )
+
+    def to_hierarchy(self) -> SuiteHierarchyWithId:
+        return SuiteHierarchyWithId(
+            id=self.id,
+            name=self.name,
+            longname=self.longname,
+            doc=self.doc,
+            is_root=self.is_root,
+            keywords=KeywordRefList.parse_raw(self.keywords),
+            suites=[],
+        )

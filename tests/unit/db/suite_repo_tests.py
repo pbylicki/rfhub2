@@ -1,6 +1,15 @@
+from sqlalchemy.exc import IntegrityError
+
 from rfhub2.db.base import Suite, SuiteRel, TestCase
 from rfhub2.db.repository.suite_repository import SuiteRepository
 from rfhub2.db.session import db_session
+from rfhub2.model import (
+    KeywordRef,
+    KeywordRefList,
+    KeywordType,
+    Suite as ModelSuite,
+    SuiteHierarchy,
+)
 from tests.unit.db.base_repo_tests import BaseRepositoryTest
 
 
@@ -11,8 +20,19 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         db_session.query(SuiteRel).delete()
         db_session.query(Suite).delete()
         self.suite_repo = SuiteRepository(db_session)
+
+        self.keyword_refs = [
+            KeywordRef(name="Login", args=["admin"], kw_type=KeywordType.SETUP)
+        ]
+        self.keyword_refs_json = (
+            '[{"name": "Login", "args": ["admin"], "kw_type": "SETUP"}]'
+        )
+        self.empty_keywords = KeywordRefList.of([])
         self.suite_1 = Suite(
-            name="Suite 1", longname="Suite 1", keywords="[]", is_root=True
+            name="Suite 1",
+            longname="Suite 1",
+            keywords=self.keyword_refs_json,
+            is_root=True,
         )
         self.suite_2 = Suite(
             name="Suite 2", longname="Suite 2", keywords="[]", is_root=True
@@ -56,7 +76,7 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         ]
 
         db_session.add_all(self.suites)
-        db_session.commit()
+        db_session.flush()
         for item in self.suites:
             db_session.refresh(item)
 
@@ -150,6 +170,80 @@ class SuiteRepositoryTest(BaseRepositoryTest):
             self.model_suite_3,
         ]
 
+        self.hierarchy_d = SuiteHierarchy(
+            name="d", longname="a.b.d", keywords=self.empty_keywords, suites=[]
+        )
+        self.hierarchy_e = SuiteHierarchy(
+            name="e", longname="a.b.e", keywords=self.empty_keywords, suites=[]
+        )
+        self.hierarchy_b = SuiteHierarchy(
+            name="b",
+            longname="a.b",
+            keywords=self.empty_keywords,
+            suites=[self.hierarchy_d, self.hierarchy_e],
+        )
+        self.hierarchy_c = SuiteHierarchy(
+            name="c", longname="a.c", keywords=self.empty_keywords, suites=[]
+        )
+        self.hierarchy_a = SuiteHierarchy(
+            name="a",
+            longname="a",
+            keywords=KeywordRefList.of(self.keyword_refs),
+            suites=[self.hierarchy_b, self.hierarchy_c],
+        )
+
+        self.model_suite_a = ModelSuite(
+            id=9,
+            name="a",
+            longname="a",
+            is_root=True,
+            test_count=0,
+            keywords=KeywordRefList.of(self.keyword_refs),
+        )
+        self.model_suite_b = ModelSuite(
+            id=10,
+            name="b",
+            longname="a.b",
+            is_root=False,
+            parent_id=9,
+            test_count=0,
+            keywords=self.empty_keywords,
+        )
+        self.model_suite_c = ModelSuite(
+            id=11,
+            name="c",
+            longname="a.c",
+            is_root=False,
+            parent_id=9,
+            test_count=0,
+            keywords=self.empty_keywords,
+        )
+        self.model_suite_d = ModelSuite(
+            id=12,
+            name="d",
+            longname="a.b.d",
+            is_root=False,
+            parent_id=10,
+            test_count=0,
+            keywords=self.empty_keywords,
+        )
+        self.model_suite_e = ModelSuite(
+            id=13,
+            name="e",
+            longname="a.b.e",
+            is_root=False,
+            parent_id=10,
+            test_count=0,
+            keywords=self.empty_keywords,
+        )
+        self.model_suites_added = [
+            self.model_suite_a,
+            self.model_suite_b,
+            self.model_suite_d,
+            self.model_suite_e,
+            self.model_suite_c,
+        ]
+
     def test_should_get_suite_by_id(self) -> None:
         result = self.suite_repo.get(self.suite_2.id)
         self.assertEqual(result, self.model_suite_2)
@@ -180,4 +274,31 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         result = self.suite_repo.get_all(pattern="1-2")
         self.assertEqual(
             result, [self.model_suite_112, self.model_suite_12, self.model_suite_121]
+        )
+
+    def test_should_add_nested_suite_hierarchy(self) -> None:
+        self.suite_repo.add_hierarchy(self.hierarchy_a)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(suites, self.model_suites + self.model_suites_added)
+
+    def test_should_add_single_suite_hierarchy(self) -> None:
+        hierarchy = self.hierarchy_a.copy(update={"suites": []})
+        self.suite_repo.add_hierarchy(hierarchy)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(suites, self.model_suites + [self.model_suite_a])
+
+    def test_should_rollback_when_adding_suite_hierarchy_fails(self) -> None:
+        db_session.add(Suite.create(self.hierarchy_e))
+        db_session.commit()
+        with self.assertRaises(IntegrityError):
+            self.suite_repo.add_hierarchy(self.hierarchy_a)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(
+            suites,
+            self.model_suites
+            + [
+                self.model_suite_e.copy(
+                    update={"id": 9, "is_root": True, "parent_id": None}
+                )
+            ],
         )

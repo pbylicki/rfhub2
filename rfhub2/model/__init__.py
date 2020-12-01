@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -101,9 +102,24 @@ class StatisticsInserted(BaseModel):
     inserted: int
 
 
+class KeywordType(str, Enum):
+    SETUP = "SETUP"
+    NORMAL = "NORMAL"
+    TEARDOWN = "TEARDOWN"
+
+
 class KeywordRef(BaseModel):
     name: str
     args: List[str]
+    kw_type: KeywordType
+
+
+class KeywordRefList(BaseModel):
+    __root__: List[KeywordRef]
+
+    @staticmethod
+    def of(items: List[KeywordRef]) -> "KeywordRefList":
+        return KeywordRefList(__root__=items)
 
 
 class Suite(BaseModel):
@@ -114,4 +130,34 @@ class Suite(BaseModel):
     is_root: bool
     parent_id: Optional[int]
     test_count: int
-    keywords: List[KeywordRef]
+    keywords: KeywordRefList
+
+
+class SuiteHierarchy(BaseModel):
+    name: str
+    longname: str
+    doc: Optional[str]
+    keywords: KeywordRefList
+    suites: List["SuiteHierarchy"]
+
+
+SuiteHierarchy.update_forward_refs()
+
+
+class SuiteHierarchyWithId(BaseModel):
+    id: int
+    name: str
+    longname: str
+    doc: Optional[str]
+    is_root: bool
+    keywords: KeywordRefList
+    suites: List["SuiteHierarchyWithId"]
+
+    def with_suites(
+        self, suites: List["SuiteHierarchyWithId"]
+    ) -> "SuiteHierarchyWithId":
+        self.suites = suites
+        return self
+
+
+SuiteHierarchyWithId.update_forward_refs()

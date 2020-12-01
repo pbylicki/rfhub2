@@ -1,4 +1,4 @@
-import json
+from itertools import zip_longest
 from typing import List, Optional, Tuple
 
 from sqlalchemy import or_
@@ -6,7 +6,12 @@ from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
 
 from rfhub2.db.base import Suite, SuiteRel, TestCase
-from rfhub2.model import KeywordRef, Suite as ModelSuite
+from rfhub2.model import (
+    KeywordRefList,
+    Suite as ModelSuite,
+    SuiteHierarchy,
+    SuiteHierarchyWithId,
+)
 from rfhub2.db.repository.base_repository import BaseRepository
 from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.query_utils import glob_to_sql
@@ -101,9 +106,49 @@ class SuiteRepository(BaseRepository):
             is_root=suite.is_root,
             parent_id=row[1],
             test_count=row[2],
-            keywords=SuiteRepository.from_keywords_json(suite.keywords),
+            keywords=KeywordRefList.parse_raw(suite.keywords),
         )
 
-    @staticmethod
-    def from_keywords_json(json_list: Optional[str]) -> List[KeywordRef]:
-        return [KeywordRef(**d) for d in json.loads(json_list)] if json_list else []
+    def add_hierarchy(
+        self, hierarchy: SuiteHierarchy
+    ) -> Optional[SuiteHierarchyWithId]:
+        try:
+            hierarchies = self._add_suites([hierarchy], is_root=True)
+            self._add_suite_rels(hierarchies, [])
+            self.session.commit()
+            return hierarchies[0]
+        except Exception as e:
+            self.session.rollback()
+            raise e
+
+    def _add_suites(
+        self, hierarchies: List[SuiteHierarchy], is_root: bool
+    ) -> List[SuiteHierarchyWithId]:
+        if hierarchies:
+            suites = [Suite.create(hierarchy, is_root) for hierarchy in hierarchies]
+            self.session.add_all(suites)
+            self.session.flush()
+            hierarchies_with_id = [suite.to_hierarchy() for suite in suites]
+            subhierarchies = [
+                self._add_suites(hierarchy.suites, is_root=False)
+                for hierarchy in hierarchies
+            ]
+            return [
+                h.with_suites(ss)
+                for h, ss in zip_longest(hierarchies_with_id, subhierarchies)
+            ]
+        else:
+            return []
+
+    def _add_suite_rels(
+        self, hierarchies: List[SuiteHierarchyWithId], parents: List[int]
+    ) -> None:
+        for hierarchy in hierarchies:
+            new_parents = [hierarchy.id] + parents
+            self.session.add_all(
+                [
+                    SuiteRel(parent_id=parent, child_id=hierarchy.id, degree=degree)
+                    for degree, parent in enumerate(new_parents)
+                ]
+            )
+            self._add_suite_rels(hierarchy.suites, new_parents)

@@ -22,11 +22,6 @@ class SuiteRepository(BaseRepository):
     def _items(self) -> Query:
         return self.items(parent_id=None)
 
-    def get(self, item_id: int) -> Optional[ModelSuite]:
-        result = self._items.filter(Suite.id == item_id).first()
-        if result:
-            return self.from_row(result)
-
     @staticmethod
     def filter_criteria(
         pattern: Optional[str], root_only: bool, use_doc: bool, use_tags: bool
@@ -44,6 +39,51 @@ class SuiteRepository(BaseRepository):
         if root_only:
             filter_criteria.append(Suite.is_root.is_(True))
         return filter_criteria
+
+    @staticmethod
+    def from_row(row: Tuple[Suite, Optional[int], int]) -> ModelSuite:
+        suite = row[0]
+        return ModelSuite(
+            id=suite.id,
+            name=suite.name,
+            longname=suite.longname,
+            doc=suite.doc,
+            is_root=suite.is_root,
+            parent_id=row[1],
+            test_count=row[2],
+            keywords=KeywordRefList.parse_raw(suite.keywords),
+        )
+
+    def add_hierarchy(
+        self, hierarchy: SuiteHierarchy
+    ) -> Optional[SuiteHierarchyWithId]:
+        try:
+            hierarchies = self._add_suites([hierarchy], is_root=True)
+            self._add_suite_rels(hierarchies, [])
+            self.session.commit()
+            return hierarchies[0]
+        except Exception as e:
+            self.session.rollback()
+            raise e
+
+    def delete_hierarchy(self, suite_id: int) -> int:
+        suite_ids = (
+            self.session.query(SuiteRel.child_id)
+            .filter(SuiteRel.parent_id == suite_id)
+            .subquery()
+        )
+        deleted = (
+            self.session.query(Suite)
+            .filter(Suite.id.in_(suite_ids))
+            .delete(synchronize_session=False)
+        )
+        self.session.commit()
+        return deleted
+
+    def get(self, item_id: int) -> Optional[ModelSuite]:
+        result = self._items.filter(Suite.id == item_id).first()
+        if result:
+            return self.from_row(result)
 
     def get_all(
         self,
@@ -94,32 +134,6 @@ class SuiteRepository(BaseRepository):
         if parent_id:
             query = query.filter(parents.c.parent_id == parent_id)
         return query
-
-    @staticmethod
-    def from_row(row: Tuple[Suite, Optional[int], int]) -> ModelSuite:
-        suite = row[0]
-        return ModelSuite(
-            id=suite.id,
-            name=suite.name,
-            longname=suite.longname,
-            doc=suite.doc,
-            is_root=suite.is_root,
-            parent_id=row[1],
-            test_count=row[2],
-            keywords=KeywordRefList.parse_raw(suite.keywords),
-        )
-
-    def add_hierarchy(
-        self, hierarchy: SuiteHierarchy
-    ) -> Optional[SuiteHierarchyWithId]:
-        try:
-            hierarchies = self._add_suites([hierarchy], is_root=True)
-            self._add_suite_rels(hierarchies, [])
-            self.session.commit()
-            return hierarchies[0]
-        except Exception as e:
-            self.session.rollback()
-            raise e
 
     def _add_suites(
         self, hierarchies: List[SuiteHierarchy], is_root: bool

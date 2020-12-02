@@ -302,3 +302,36 @@ class SuiteRepositoryTest(BaseRepositoryTest):
                 )
             ],
         )
+
+    def test_should_delete_single_suite_with_no_test_cases(self) -> None:
+        deleted = self.suite_repo.delete_hierarchy(self.suite_3.id)
+        self.assertEqual(deleted, 1)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(suites, self.model_suites[:7])
+
+    def test_should_delete_single_suite_and_related_test_cases(self) -> None:
+        deleted = self.suite_repo.delete_hierarchy(self.suite_2.id)
+        self.assertEqual(deleted, 1)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(suites, self.model_suites[:6] + [self.model_suite_3])
+
+    def test_should_delete_suite_hierarchy_and_related_test_cases(self) -> None:
+        deleted = self.suite_repo.delete_hierarchy(self.suite_11.id)
+        self.assertEqual(deleted, 3)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(
+            suites,
+            [
+                self.model_suite_1.copy(update={"test_count": 1}),
+                self.model_suite_12,
+                self.model_suite_121,
+                self.model_suite_2,
+                self.model_suite_3,
+            ],
+        )
+
+    def test_delete_should_not_fail_for_nonexistent_id(self) -> None:
+        deleted = self.suite_repo.delete_hierarchy(999)
+        self.assertEqual(deleted, 0)
+        suites = self.suite_repo.get_all()
+        self.assertEqual(suites, self.model_suites)

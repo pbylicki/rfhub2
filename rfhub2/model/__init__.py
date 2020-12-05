@@ -151,7 +151,6 @@ class Suite(BaseModel):
 
 class SuiteHierarchy(BaseModel):
     name: str
-    longname: str
     doc: Optional[str]
     source: Optional[str]
     keywords: KeywordRefList

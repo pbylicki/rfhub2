@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, Index, Integer, Sequence, Text
-from typing import List
+from typing import List, Optional
 
 from rfhub2.db.model.base_class import Base
 from rfhub2.db.model.mixins import DocMixin
@@ -39,10 +39,16 @@ class Suite(Base, DocMixin):
         return [OrderingItem("longname")]
 
     @staticmethod
-    def create(hierarchy: SuiteHierarchy, is_root: bool = True) -> "Suite":
+    def create(
+        hierarchy: SuiteHierarchy,
+        is_root: bool = True,
+        parent: Optional[SuiteHierarchyWithId] = None,
+    ) -> "Suite":
         return Suite(
             name=hierarchy.name,
-            longname=hierarchy.longname,
+            longname=f"{parent.longname}.{hierarchy.name}"
+            if parent
+            else hierarchy.name,
             doc=hierarchy.doc,
             source=hierarchy.source,
             keywords=hierarchy.keywords.json(),

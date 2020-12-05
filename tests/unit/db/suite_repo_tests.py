@@ -205,35 +205,30 @@ class SuiteRepositoryTest(BaseRepositoryTest):
 
         self.hierarchy_d = SuiteHierarchy(
             name="d",
-            longname="a.b.d",
             keywords=self.empty_keywords,
             metadata=self.empty_metadata,
             suites=[],
         )
         self.hierarchy_e = SuiteHierarchy(
             name="e",
-            longname="a.b.e",
             keywords=self.empty_keywords,
             metadata=self.empty_metadata,
             suites=[],
         )
         self.hierarchy_b = SuiteHierarchy(
             name="b",
-            longname="a.b",
             keywords=self.empty_keywords,
             metadata=self.empty_metadata,
             suites=[self.hierarchy_d, self.hierarchy_e],
         )
         self.hierarchy_c = SuiteHierarchy(
             name="c",
-            longname="a.c",
             keywords=self.empty_keywords,
             metadata=self.empty_metadata,
             suites=[],
         )
         self.hierarchy_a = SuiteHierarchy(
             name="a",
-            longname="a",
             doc="doc",
             source="/path",
             keywords=KeywordRefList.of(self.keyword_refs),
@@ -346,7 +341,9 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         self.assertEqual(suites, self.model_suites + [self.model_suite_a])
 
     def test_should_rollback_when_adding_suite_hierarchy_fails(self) -> None:
-        db_session.add(Suite.create(self.hierarchy_e))
+        suite = Suite.create(self.hierarchy_e)
+        suite.longname = "a.b.e"
+        db_session.add(suite)
         db_session.commit()
         with self.assertRaises(IntegrityError):
             self.suite_repo.add_hierarchy(self.hierarchy_a)

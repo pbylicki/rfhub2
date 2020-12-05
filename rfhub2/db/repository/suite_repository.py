@@ -140,16 +140,21 @@ class SuiteRepository(BaseRepository):
         return query
 
     def _add_suites(
-        self, hierarchies: List[SuiteHierarchy], is_root: bool
+        self,
+        hierarchies: List[SuiteHierarchy],
+        is_root: bool,
+        parent: Optional[SuiteHierarchyWithId] = None,
     ) -> List[SuiteHierarchyWithId]:
         if hierarchies:
-            suites = [Suite.create(hierarchy, is_root) for hierarchy in hierarchies]
+            suites = [
+                Suite.create(hierarchy, is_root, parent) for hierarchy in hierarchies
+            ]
             self.session.add_all(suites)
             self.session.flush()
             hierarchies_with_id = [suite.to_hierarchy() for suite in suites]
             subhierarchies = [
-                self._add_suites(hierarchy.suites, is_root=False)
-                for hierarchy in hierarchies
+                self._add_suites(h.suites, is_root=False, parent=h_id)
+                for h, h_id in zip_longest(hierarchies, hierarchies_with_id)
             ]
             return [
                 h.with_suites(ss)

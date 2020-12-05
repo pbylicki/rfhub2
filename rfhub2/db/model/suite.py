@@ -6,6 +6,7 @@ from rfhub2.db.model.mixins import DocMixin
 from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.model import (
     KeywordRefList,
+    NestedSuite,
     SuiteHierarchy,
     SuiteHierarchyWithId,
     SuiteMetadata,
@@ -70,3 +71,6 @@ class Suite(Base, DocMixin):
             metadata=SuiteMetadata.parse_raw(self.metadata_items),
             rpa=self.rpa,
         )
+
+    def to_nested(self) -> NestedSuite:
+        return NestedSuite(id=self.id, name=self.name, longname=self.longname)

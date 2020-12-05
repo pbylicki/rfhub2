@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List, Optional
 
 
@@ -11,6 +11,14 @@ class VersionInfo(BaseModel):
 
 class Healthcheck(BaseModel):
     db: str
+
+
+class TagList(BaseModel):
+    __root__: List[str]
+
+    @staticmethod
+    def of(items: List[str]) -> "TagList":
+        return TagList(__root__=items)
 
 
 class NestedCollection(BaseModel):
@@ -158,6 +166,12 @@ class SuiteHierarchy(BaseModel):
     metadata: SuiteMetadata
     rpa: bool = False
 
+    @validator("name")
+    def name_cannot_have_dots(cls, v):
+        if "." in v:
+            raise ValueError("cannot have dots")
+        return v
+
 
 SuiteHierarchy.update_forward_refs()
 
@@ -182,3 +196,47 @@ class SuiteHierarchyWithId(BaseModel):
 
 
 SuiteHierarchyWithId.update_forward_refs()
+
+
+class TestCaseCreate(BaseModel):
+    name: str
+    line: int
+    suite_id: int
+    doc: Optional[str]
+    source: Optional[str]
+    template: Optional[str]
+    timeout: Optional[str]
+    keywords: KeywordRefList
+    tags: TagList
+
+
+class TestCaseUpdate(BaseModel):
+    name: Optional[str]
+    line: Optional[int]
+    suite_id: Optional[int]
+    doc: Optional[str]
+    source: Optional[str]
+    template: Optional[str]
+    timeout: Optional[str]
+    keywords: Optional[KeywordRefList]
+    tags: Optional[TagList]
+
+
+class NestedSuite(BaseModel):
+    id: int
+    name: str
+    longname: str
+
+
+class TestCase(BaseModel):
+    id: int
+    name: str
+    longname: str
+    line: int
+    suite: NestedSuite
+    doc: Optional[str]
+    source: Optional[str]
+    template: Optional[str]
+    timeout: Optional[str]
+    keywords: KeywordRefList
+    tags: TagList

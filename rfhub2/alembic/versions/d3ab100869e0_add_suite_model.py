@@ -45,21 +45,26 @@ def upgrade():
         "testcase",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("suite_id", sa.Integer(), nullable=False),
+        sa.Column("line", sa.Integer(), nullable=False),
         sa.Column("name", sa.Text(), nullable=False),
-        sa.Column("longname", sa.Text(), nullable=False),
         sa.Column("doc", sa.Text(), nullable=True),
+        sa.Column("source", sa.Text(), nullable=True),
+        sa.Column("template", sa.Text(), nullable=True),
+        sa.Column("timeout", sa.Text(), nullable=True),
         sa.Column("tags", sa.Text(), nullable=False),
         sa.Column("keywords", sa.Text(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.ForeignKeyConstraint(["suite_id"], ["suite.id"], ondelete="CASCADE"),
     )
     op.create_index(op.f("ix_testcase_name"), "testcase", ["name"], unique=False)
-    op.create_index(op.f("ix_testcase_longname"), "testcase", ["longname"], unique=True)
+    op.create_index(
+        op.f("ix_testcase_suite_id_name"), "testcase", ["suite_id", "name"], unique=True
+    )
     # ### end Alembic commands ###
 
 
 def downgrade():
-    op.drop_index(op.f("ix_testcase_longname"), table_name="testcase")
+    op.drop_index(op.f("ix_testcase_suite_id_name"), table_name="testcase")
     op.drop_index(op.f("ix_testcase_name"), table_name="testcase")
     op.drop_table("testcase")
     op.drop_table("suiterel")

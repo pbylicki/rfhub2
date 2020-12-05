@@ -133,39 +133,19 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         ]
         self.test_cases = [
             TestCase(
-                suite_id=self.suite_2.id,
-                name="TC2",
-                longname="TC2",
-                tags="[]",
-                keywords="[]",
+                suite_id=self.suite_2.id, name="TC2", line=1, tags="[]", keywords="[]"
             ),
             TestCase(
-                suite_id=self.suite_111.id,
-                name="TC1",
-                longname="TC1",
-                tags="[]",
-                keywords="[]",
+                suite_id=self.suite_111.id, name="TC1", line=1, tags="[]", keywords="[]"
             ),
             TestCase(
-                suite_id=self.suite_111.id,
-                name="TC3",
-                longname="TC3",
-                tags="[]",
-                keywords="[]",
+                suite_id=self.suite_111.id, name="TC3", line=1, tags="[]", keywords="[]"
             ),
             TestCase(
-                suite_id=self.suite_112.id,
-                name="TC4",
-                longname="TC4",
-                tags="[]",
-                keywords="[]",
+                suite_id=self.suite_112.id, name="TC4", line=1, tags="[]", keywords="[]"
             ),
             TestCase(
-                suite_id=self.suite_121.id,
-                name="TC5",
-                longname="TC5",
-                tags="[]",
-                keywords="[]",
+                suite_id=self.suite_121.id, name="TC5", line=1, tags="[]", keywords="[]"
             ),
         ]
         db_session.add_all(self.suite_rels)

@@ -7,8 +7,10 @@ from rfhub2.model import (
     KeywordRef,
     KeywordRefList,
     KeywordType,
+    MetadataItem,
     Suite as ModelSuite,
     SuiteHierarchy,
+    SuiteMetadata,
 )
 from tests.unit.db.base_repo_tests import BaseRepositoryTest
 
@@ -28,41 +30,72 @@ class SuiteRepositoryTest(BaseRepositoryTest):
             '[{"name": "Login", "args": ["admin"], "kw_type": "SETUP"}]'
         )
         self.empty_keywords = KeywordRefList.of([])
+        self.metadata_items = [MetadataItem(key="version", value="1.0")]
+        self.metadata_items_json = '[{"key": "version", "value": "1.0"}]'
+        self.empty_metadata = SuiteMetadata.of([])
         self.suite_1 = Suite(
             name="Suite 1",
             longname="Suite 1",
             keywords=self.keyword_refs_json,
+            metadata_items=self.metadata_items_json,
             is_root=True,
+            rpa=False,
         )
         self.suite_2 = Suite(
-            name="Suite 2", longname="Suite 2", keywords="[]", is_root=True
+            name="Suite 2",
+            longname="Suite 2",
+            keywords="[]",
+            metadata_items="[]",
+            is_root=True,
+            rpa=False,
         )
         self.suite_3 = Suite(
-            name="Suite 3", longname="Suite 3", keywords="[]", is_root=True
+            name="Suite 3",
+            longname="Suite 3",
+            keywords="[]",
+            metadata_items="[]",
+            is_root=True,
+            rpa=False,
         )
         self.suite_11 = Suite(
-            name="Suite 1-1", longname="Suite 1.Suite 1-1", keywords="[]", is_root=False
+            name="Suite 1-1",
+            longname="Suite 1.Suite 1-1",
+            keywords="[]",
+            metadata_items="[]",
+            is_root=False,
+            rpa=False,
         )
         self.suite_12 = Suite(
-            name="Suite 1-2", longname="Suite 1.Suite 1-2", keywords="[]", is_root=False
+            name="Suite 1-2",
+            longname="Suite 1.Suite 1-2",
+            keywords="[]",
+            metadata_items="[]",
+            is_root=False,
+            rpa=False,
         )
         self.suite_111 = Suite(
             name="Suite 1-1-1",
             longname="Suite 1.Suite 1-1.Suite 1-1-1",
             keywords="[]",
+            metadata_items="[]",
             is_root=False,
+            rpa=False,
         )
         self.suite_112 = Suite(
             name="Suite 1-1-2",
             longname="Suite 1.Suite 1-1.Suite 1-1-2",
             keywords="[]",
+            metadata_items="[]",
             is_root=False,
+            rpa=False,
         )
         self.suite_121 = Suite(
             name="Suite 1-2-1",
             longname="Suite 1.Suite 1-2.Suite 1-2-1",
             keywords="[]",
+            metadata_items="[]",
             is_root=False,
+            rpa=False,
         )
         self.suites = [
             self.suite_1,
@@ -171,34 +204,55 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         ]
 
         self.hierarchy_d = SuiteHierarchy(
-            name="d", longname="a.b.d", keywords=self.empty_keywords, suites=[]
+            name="d",
+            longname="a.b.d",
+            keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
+            suites=[],
         )
         self.hierarchy_e = SuiteHierarchy(
-            name="e", longname="a.b.e", keywords=self.empty_keywords, suites=[]
+            name="e",
+            longname="a.b.e",
+            keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
+            suites=[],
         )
         self.hierarchy_b = SuiteHierarchy(
             name="b",
             longname="a.b",
             keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
             suites=[self.hierarchy_d, self.hierarchy_e],
         )
         self.hierarchy_c = SuiteHierarchy(
-            name="c", longname="a.c", keywords=self.empty_keywords, suites=[]
+            name="c",
+            longname="a.c",
+            keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
+            suites=[],
         )
         self.hierarchy_a = SuiteHierarchy(
             name="a",
             longname="a",
+            doc="doc",
+            source="/path",
             keywords=KeywordRefList.of(self.keyword_refs),
+            metadata=self.empty_metadata,
             suites=[self.hierarchy_b, self.hierarchy_c],
+            rpa=True,
         )
 
         self.model_suite_a = ModelSuite(
             id=9,
             name="a",
             longname="a",
+            doc="doc",
+            source="/path",
             is_root=True,
+            rpa=True,
             test_count=0,
             keywords=KeywordRefList.of(self.keyword_refs),
+            metadata=self.empty_metadata,
         )
         self.model_suite_b = ModelSuite(
             id=10,
@@ -208,6 +262,7 @@ class SuiteRepositoryTest(BaseRepositoryTest):
             parent_id=9,
             test_count=0,
             keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
         )
         self.model_suite_c = ModelSuite(
             id=11,
@@ -217,6 +272,7 @@ class SuiteRepositoryTest(BaseRepositoryTest):
             parent_id=9,
             test_count=0,
             keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
         )
         self.model_suite_d = ModelSuite(
             id=12,
@@ -226,6 +282,7 @@ class SuiteRepositoryTest(BaseRepositoryTest):
             parent_id=10,
             test_count=0,
             keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
         )
         self.model_suite_e = ModelSuite(
             id=13,
@@ -235,6 +292,7 @@ class SuiteRepositoryTest(BaseRepositoryTest):
             parent_id=10,
             test_count=0,
             keywords=self.empty_keywords,
+            metadata=self.empty_metadata,
         )
         self.model_suites_added = [
             self.model_suite_a,

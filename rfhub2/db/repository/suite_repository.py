@@ -11,6 +11,7 @@ from rfhub2.model import (
     Suite as ModelSuite,
     SuiteHierarchy,
     SuiteHierarchyWithId,
+    SuiteMetadata,
 )
 from rfhub2.db.repository.base_repository import BaseRepository
 from rfhub2.db.repository.ordering import OrderingItem
@@ -48,10 +49,13 @@ class SuiteRepository(BaseRepository):
             name=suite.name,
             longname=suite.longname,
             doc=suite.doc,
+            source=suite.source,
             is_root=suite.is_root,
+            rpa=suite.rpa,
             parent_id=row[1],
             test_count=row[2],
             keywords=KeywordRefList.parse_raw(suite.keywords),
+            metadata=SuiteMetadata.parse_raw(suite.metadata_items),
         )
 
     def add_hierarchy(

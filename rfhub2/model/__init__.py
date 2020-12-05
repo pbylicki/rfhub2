@@ -122,23 +122,42 @@ class KeywordRefList(BaseModel):
         return KeywordRefList(__root__=items)
 
 
+class MetadataItem(BaseModel):
+    key: str
+    value: str
+
+
+class SuiteMetadata(BaseModel):
+    __root__: List[MetadataItem]
+
+    @staticmethod
+    def of(items: List[MetadataItem]) -> "SuiteMetadata":
+        return SuiteMetadata(__root__=items)
+
+
 class Suite(BaseModel):
     id: int
     name: str
     longname: str
     doc: Optional[str]
+    source: Optional[str]
     is_root: bool
     parent_id: Optional[int]
     test_count: int
     keywords: KeywordRefList
+    metadata: SuiteMetadata
+    rpa: bool = False
 
 
 class SuiteHierarchy(BaseModel):
     name: str
     longname: str
     doc: Optional[str]
+    source: Optional[str]
     keywords: KeywordRefList
     suites: List["SuiteHierarchy"]
+    metadata: SuiteMetadata
+    rpa: bool = False
 
 
 SuiteHierarchy.update_forward_refs()
@@ -149,9 +168,12 @@ class SuiteHierarchyWithId(BaseModel):
     name: str
     longname: str
     doc: Optional[str]
+    source: Optional[str]
     is_root: bool
     keywords: KeywordRefList
     suites: List["SuiteHierarchyWithId"]
+    metadata: SuiteMetadata
+    rpa: bool = False
 
     def with_suites(
         self, suites: List["SuiteHierarchyWithId"]

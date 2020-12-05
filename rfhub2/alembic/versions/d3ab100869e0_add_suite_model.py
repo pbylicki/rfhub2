@@ -23,8 +23,11 @@ def upgrade():
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("longname", sa.Text(), nullable=False),
         sa.Column("doc", sa.Text(), nullable=True),
+        sa.Column("source", sa.Text(), nullable=True),
         sa.Column("keywords", sa.Text(), nullable=False),
+        sa.Column("metadata_items", sa.Text(), nullable=False),
         sa.Column("is_root", sa.Boolean(), nullable=False),
+        sa.Column("rpa", sa.Boolean(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_suite_name"), "suite", ["name"], unique=False)

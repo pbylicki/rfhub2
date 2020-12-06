@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 
 from rfhub2.db.base import Suite, SuiteRel, TestCase
+from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.suite_repository import SuiteRepository
 from rfhub2.db.session import db_session
 from rfhub2.model import (
@@ -307,6 +308,14 @@ class SuiteRepositoryTest(BaseRepositoryTest):
         result = self.suite_repo.get_all(pattern="1-2")
         self.assertEqual(
             result, [self.model_suite_112, self.model_suite_12, self.model_suite_121]
+        )
+
+    def test_should_get_all_suites_ordered_by_test_count(self) -> None:
+        result = self.suite_repo.get_all(
+            root_only=True, ordering=[OrderingItem("test_count")]
+        )
+        self.assertEqual(
+            result, [self.model_suite_3, self.model_suite_2, self.model_suite_1]
         )
 
     def test_should_add_nested_suite_hierarchy(self) -> None:

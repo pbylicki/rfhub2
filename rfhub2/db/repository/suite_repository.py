@@ -1,9 +1,10 @@
 from itertools import zip_longest
-from typing import List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from sqlalchemy import or_
+from sqlalchemy import or_, Column
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
+from sqlalchemy.orm.session import Session
 
 from rfhub2.db.base import Suite, SuiteRel, TestCase
 from rfhub2.model import (
@@ -19,9 +20,29 @@ from rfhub2.db.repository.query_utils import glob_to_sql
 
 
 class SuiteRepository(BaseRepository):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+        self.test_counts = (
+            self.session.query(
+                SuiteRel.parent_id.label("suite_id"),
+                func.count(TestCase.id).label("test_count"),
+            )
+            .outerjoin(SuiteRel, TestCase.suite_id == SuiteRel.child_id)
+            .group_by(SuiteRel.parent_id)
+            .subquery()
+        )
+
     @property
     def _items(self) -> Query:
         return self.items(parent_id=None)
+
+    @property
+    def custom_column_mapping(self) -> Dict[str, Column]:
+        return {"test_count": self.test_count_column}
+
+    @property
+    def test_count_column(self) -> Column:
+        return func.coalesce(self.test_counts.c.test_count, 0)
 
     @staticmethod
     def filter_criteria(
@@ -106,7 +127,9 @@ class SuiteRepository(BaseRepository):
             for row in (
                 self.items(parent_id)
                 .filter(*self.filter_criteria(pattern, root_only, use_doc, use_tags))
-                .order_by(*Suite.ordering_criteria(ordering))
+                .order_by(
+                    *Suite.ordering_criteria(ordering, self.custom_column_mapping)
+                )
                 .offset(skip)
                 .limit(limit)
                 .all()
@@ -114,26 +137,15 @@ class SuiteRepository(BaseRepository):
         ]
 
     def items(self, parent_id: Optional[int] = None):
-        test_counts = (
-            self.session.query(
-                SuiteRel.parent_id.label("suite_id"),
-                func.count(TestCase.id).label("test_count"),
-            )
-            .outerjoin(SuiteRel, TestCase.suite_id == SuiteRel.child_id)
-            .group_by(SuiteRel.parent_id)
-            .subquery()
-        )
         parents = (
             self.session.query(SuiteRel.parent_id, SuiteRel.child_id)
             .filter(SuiteRel.degree == 1)
             .subquery()
         )
         query = (
-            self.session.query(
-                Suite, parents.c.parent_id, func.coalesce(test_counts.c.test_count, 0)
-            )
+            self.session.query(Suite, parents.c.parent_id, self.test_count_column)
             .outerjoin(parents, Suite.id == parents.c.child_id)
-            .outerjoin(test_counts, Suite.id == test_counts.c.suite_id)
+            .outerjoin(self.test_counts, Suite.id == self.test_counts.c.suite_id)
         )
         if parent_id:
             query = query.filter(parents.c.parent_id == parent_id)

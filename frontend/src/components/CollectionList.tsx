@@ -8,6 +8,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
 import VisibilitySensor from 'react-visibility-sensor';
 import Title from './Title';
 import { Collection } from '../types/ModelTypes';
@@ -30,6 +31,18 @@ const CollectionTableRow: React.FC<CollectionTableRowProps> = ({ collection }) =
 
 export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
   const loadMore = () => store.getCollections(store.collections.length)
+  const [name, setNameOrder] = React.useState(false);
+
+  const handleSort = (sortCol) => {
+    if (name === false) {
+      setNameOrder(true)
+      store.getOrderedCollections(`-${sortCol}`);
+    } else {
+      setNameOrder(false)
+      store.getOrderedCollections(sortCol);
+    }
+  };
+
   const resultCountLabel = store.collectionHasMore ? `${store.collections.length}+` : store.collections.length.toString()
   let progress = (store.loading.getCollections) ? <CircularLoading view={store.loading.getCollections} /> : null
   return (
@@ -38,7 +51,11 @@ export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
     <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
+          <TableCell>
+            <Button href="#text-buttons" color="primary" onClick={() => handleSort("name")}>
+              Name
+            </Button>
+          </TableCell>
           <TableCell>Type</TableCell>
           <TableCell>Version</TableCell>
           <TableCell align="right">Keywords</TableCell>

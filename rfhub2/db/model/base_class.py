@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from sqlalchemy import Column
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from typing import List
+from typing import Dict, List
 
 from rfhub2.db.repository.ordering import OrderingItem
 
@@ -25,13 +25,15 @@ class CustomBase(object):
         return []
 
     @classmethod
-    def ordering_criteria(cls, items: List[OrderingItem]):
+    def ordering_criteria(
+        cls, items: List[OrderingItem], custom_columns: Dict[str, Column] = dict()
+    ):
         def criterion(col: Column, ordering_item: OrderingItem) -> Column:
             return col if ordering_item.asc else col.desc()
 
         if not items:
             items = cls.default_ordering()
-        mapping = cls.column_mapping()
+        mapping = {**cls.column_mapping(), **custom_columns}
         return OrderedDict(
             (item.field, criterion(mapping[item.field], item))
             for item in items

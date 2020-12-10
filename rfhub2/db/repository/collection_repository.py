@@ -1,11 +1,13 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
-from sqlalchemy import func
+from sqlalchemy import func, Column
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
+from sqlalchemy.orm.session import Session
 from sqlalchemy.sql.elements import BinaryExpression
 
-from rfhub2.db.base import Collection, KeywordStatistics
+
+from rfhub2.db.base import Collection, Keyword, KeywordStatistics
 from rfhub2.model import CollectionWithStats, Collection as ModelCollection
 from rfhub2.db.repository.base_repository import IdEntityRepository
 from rfhub2.db.repository.ordering import OrderingItem
@@ -13,13 +15,17 @@ from rfhub2.db.repository.query_utils import glob_to_sql
 
 
 class CollectionRepository(IdEntityRepository):
-    @property
-    def _items(self) -> Query:
-        return self.session.query(Collection).options(selectinload(Collection.keywords))
-
-    @property
-    def _items_with_stats(self) -> Query:
-        collection_statistics = (
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+        self.keyword_count = (
+            self.session.query(
+                (func.sum(Keyword.id)).label("keyword_count"),
+                Keyword.collection_id,
+            )
+            .group_by(Keyword.collection_id)
+            .subquery()
+        )
+        self.collection_statistics = (
             self.session.query(
                 (func.sum(KeywordStatistics.times_used)).label("times_used"),
                 KeywordStatistics.collection,
@@ -27,12 +33,35 @@ class CollectionRepository(IdEntityRepository):
             .group_by(KeywordStatistics.collection)
             .subquery()
         )
+
+    @property
+    def custom_column_mapping(self) -> Dict[str, Column]:
+        return {"keyword_count": self.keyword_count_column}
+
+    @property
+    def keyword_count_column(self) -> Column:
+        return func.coalesce(self.keyword_count.c.keyword_count, 0)
+
+    @property
+    def _items(self) -> Query:
         return (
-            self.session.query(Collection, collection_statistics.c.times_used)
+            self.session.query(Collection, self.keyword_count.c.keyword_count)
             .outerjoin(
-                collection_statistics,
-                Collection.name == collection_statistics.c.collection,
+                self.keyword_count, 
+                Collection.id == self.keyword_count.c.collection_id
             )
+            .options(selectinload(Collection.keywords))
+        )
+
+    @property
+    def _items_with_stats(self) -> Query:
+        return (
+            self.session.query(Collection, self.keyword_count.c.keyword_count, self.collection_statistics.c.times_used)
+            .outerjoin(
+                self.collection_statistics,
+                Collection.name == self.collection_statistics.c.collection,
+            )
+            .outerjoin(self.keyword_count, Collection.id == self.keyword_count.c.collection_id)
             .options(selectinload(Collection.keywords))
         )
 

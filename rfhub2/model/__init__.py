@@ -61,7 +61,7 @@ class Collection(NestedCollection, CollectionUpdate):
 
 class CollectionWithStats(Collection):
     times_used: Optional[int]
-
+    keyword_count: Optional[int]
 
 class Keyword(NestedKeyword):
     collection: NestedCollection

@@ -19,7 +19,7 @@ class CollectionRepository(IdEntityRepository):
         super().__init__(db_session)
         self.keyword_count = (
             self.session.query(
-                (func.sum(Keyword.id)).label("keyword_count"),
+                (func.count(Keyword.id)).label("keyword_count"),
                 Keyword.collection_id,
             )
             .group_by(Keyword.collection_id)
@@ -94,7 +94,8 @@ class CollectionRepository(IdEntityRepository):
             html_doc=collection.html_doc,
             synopsis=collection.synopsis,
             keywords=keywords,
-            times_used=row[1],
+            keyword_count=row[1],
+            times_used=row[2],
         )
 
     def get_all(

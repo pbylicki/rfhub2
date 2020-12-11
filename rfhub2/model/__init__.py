@@ -57,14 +57,16 @@ class Collection(NestedCollection, CollectionUpdate):
     keywords: List[NestedKeyword]
     synopsis: Optional[str]
     html_doc: Optional[str]
+    keyword_count: Optional[int]
 
 
 class CollectionWithStats(Collection):
     times_used: Optional[int]
-    keyword_count: Optional[int]
+
 
 class Keyword(NestedKeyword):
     collection: NestedCollection
+
 
 
 class KeywordWithStats(Keyword):

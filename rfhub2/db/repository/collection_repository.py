@@ -78,10 +78,10 @@ class CollectionRepository(IdEntityRepository):
         return filter_criteria
 
     @staticmethod
-    def from_stats_row(row: Tuple[Collection, int]) -> CollectionWithStats:
+    def from_row(row: Tuple[Collection, int]) -> ModelCollection:
         collection = row[0]
         keywords = [kw.to_nested_model() for kw in collection.keywords]
-        return CollectionWithStats(
+        return ModelCollection(
             id=collection.id,
             name=collection.name,
             type=collection.type,
@@ -95,8 +95,11 @@ class CollectionRepository(IdEntityRepository):
             synopsis=collection.synopsis,
             keywords=keywords,
             keyword_count=row[1],
-            times_used=row[2],
         )
+
+    @staticmethod
+    def from_stats_row(row: Tuple[Collection, int]) -> CollectionWithStats:
+        return CollectionWithStats(**{**CollectionRepository.from_row(row).dict(), "times_used": row[2]})
 
     def get_all(
         self,
@@ -108,8 +111,8 @@ class CollectionRepository(IdEntityRepository):
         ordering: List[OrderingItem] = None,
     ) -> List[ModelCollection]:
         return [
-            collection.to_model()
-            for collection in (
+            self.from_row(row)
+            for row in (
                 self._items.filter(*self.filter_criteria(pattern, libtype))
                 .order_by(*Collection.ordering_criteria(ordering))
                 .offset(skip)

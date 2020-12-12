@@ -67,6 +67,7 @@ class Collection(Base, DocMixin):
             html_doc=self.html_doc,
             synopsis=self.synopsis,
             keywords=keywords,
+            keyword_count=self.keyword_count,
         )
 
     def to_nested_model(self) -> model.NestedCollection:

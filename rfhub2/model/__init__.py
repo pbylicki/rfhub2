@@ -68,7 +68,6 @@ class Keyword(NestedKeyword):
     collection: NestedCollection
 
 
-
 class KeywordWithStats(Keyword):
     times_used: Optional[int]
     avg_elapsed: Optional[float]

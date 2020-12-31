@@ -55,7 +55,7 @@ def get_collection(
     *, repository: CollectionRepository = Depends(get_collection_repository), id: int
 ):
     collection: Optional[DBCollection] = repository.get(id)
-    return or_404(collection).to_model()
+    return or_404(collection)
 
 
 @router.post("/", response_model=Collection, status_code=201)

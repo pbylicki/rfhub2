@@ -36,11 +36,15 @@ class CollectionRepository(IdEntityRepository):
 
     @property
     def custom_column_mapping(self) -> Dict[str, Column]:
-        return {"keyword_count": self.keyword_count_column}
+        return {"keyword_count": self.keyword_count_column, "times_used": self.times_used_column}
 
     @property
     def keyword_count_column(self) -> Column:
         return func.coalesce(self.keyword_count.c.keyword_count, 0)
+
+    @property
+    def times_used_column(self) -> Column:
+        return func.coalesce(self.collection_statistics.c.times_used, 0)
 
     @property
     def _items(self) -> Query:
@@ -114,7 +118,7 @@ class CollectionRepository(IdEntityRepository):
             self.from_row(row)
             for row in (
                 self._items.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(*Collection.ordering_criteria(ordering))
+                .order_by(*Collection.ordering_criteria(ordering, self.custom_column_mapping))
                 .offset(skip)
                 .limit(limit)
                 .all()
@@ -134,7 +138,7 @@ class CollectionRepository(IdEntityRepository):
             self.from_stats_row(row)
             for row in (
                 self._items_with_stats.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(*Collection.ordering_criteria(ordering))
+                .order_by(*Collection.ordering_criteria(ordering, self.custom_column_mapping))
                 .offset(skip)
                 .limit(limit)
                 .all()
@@ -145,3 +149,17 @@ class CollectionRepository(IdEntityRepository):
         result = self._items_with_stats.filter(self._id_filter(item_id)).first()
         if result:
             return self.from_stats_row(result)
+
+    def get(self, item_id: int) -> Optional[ModelCollection]:
+        result = self._items.filter(self._id_filter(item_id)).first()
+        if result:
+            return self.from_row(result)
+
+    def delete(self, item_id: int) -> int:
+        deleted = (
+            self.session.query(Collection)
+            .filter(Collection.id == item_id)
+            .delete(synchronize_session=False)
+        )
+        self.session.commit()
+        return deleted

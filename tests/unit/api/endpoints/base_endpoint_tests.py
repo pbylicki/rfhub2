@@ -56,6 +56,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     }
     COLLECTION_1 = {
         "id": 1,
+        "keyword_count": 3,
         "name": "First collection",
         "type": "robot",
         "version": None,
@@ -70,6 +71,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     }
     COLLECTION_2 = {
         "id": 2,
+        "keyword_count": 1,
         "name": "Second collection",
         "type": "Robot",
         "version": None,
@@ -84,6 +86,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     }
     COLLECTION_3 = {
         "id": 3,
+        "keyword_count": 0,
         "name": "Third",
         "type": "Library",
         "version": None,
@@ -137,6 +140,7 @@ class BaseApiEndpointTest(unittest.TestCase):
     COLLECTION_CREATED = {
         **COLLECTION_TO_CREATE,
         "id": 4,
+        "keyword_count": 0,
         "synopsis": "New Resource collection",
         "html_doc": "<p>New Resource collection</p>",
         "keywords": [],

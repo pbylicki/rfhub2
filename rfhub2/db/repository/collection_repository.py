@@ -19,8 +19,7 @@ class CollectionRepository(IdEntityRepository):
         super().__init__(db_session)
         self.keyword_count = (
             self.session.query(
-                (func.count(Keyword.id)).label("keyword_count"),
-                Keyword.collection_id,
+                (func.count(Keyword.id)).label("keyword_count"), Keyword.collection_id
             )
             .group_by(Keyword.collection_id)
             .subquery()
@@ -36,7 +35,10 @@ class CollectionRepository(IdEntityRepository):
 
     @property
     def custom_column_mapping(self) -> Dict[str, Column]:
-        return {"keyword_count": self.keyword_count_column, "times_used": self.times_used_column}
+        return {
+            "keyword_count": self.keyword_count_column,
+            "times_used": self.times_used_column,
+        }
 
     @property
     def keyword_count_column(self) -> Column:
@@ -49,10 +51,11 @@ class CollectionRepository(IdEntityRepository):
     @property
     def _items(self) -> Query:
         return (
-            self.session.query(Collection, self.keyword_count.c.keyword_count)
+            self.session.query(
+                Collection, func.coalesce(self.keyword_count.c.keyword_count, 0)
+            )
             .outerjoin(
-                self.keyword_count, 
-                Collection.id == self.keyword_count.c.collection_id
+                self.keyword_count, Collection.id == self.keyword_count.c.collection_id
             )
             .options(selectinload(Collection.keywords))
         )
@@ -60,12 +63,18 @@ class CollectionRepository(IdEntityRepository):
     @property
     def _items_with_stats(self) -> Query:
         return (
-            self.session.query(Collection, self.keyword_count.c.keyword_count, self.collection_statistics.c.times_used)
+            self.session.query(
+                Collection,
+                func.coalesce(self.keyword_count.c.keyword_count, 0),
+                self.collection_statistics.c.times_used,
+            )
             .outerjoin(
                 self.collection_statistics,
                 Collection.name == self.collection_statistics.c.collection,
             )
-            .outerjoin(self.keyword_count, Collection.id == self.keyword_count.c.collection_id)
+            .outerjoin(
+                self.keyword_count, Collection.id == self.keyword_count.c.collection_id
+            )
             .options(selectinload(Collection.keywords))
         )
 
@@ -103,7 +112,9 @@ class CollectionRepository(IdEntityRepository):
 
     @staticmethod
     def from_stats_row(row: Tuple[Collection, int]) -> CollectionWithStats:
-        return CollectionWithStats(**{**CollectionRepository.from_row(row).dict(), "times_used": row[2]})
+        return CollectionWithStats(
+            **{**CollectionRepository.from_row(row).dict(), "times_used": row[2]}
+        )
 
     def get_all(
         self,
@@ -118,7 +129,9 @@ class CollectionRepository(IdEntityRepository):
             self.from_row(row)
             for row in (
                 self._items.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(*Collection.ordering_criteria(ordering, self.custom_column_mapping))
+                .order_by(
+                    *Collection.ordering_criteria(ordering, self.custom_column_mapping)
+                )
                 .offset(skip)
                 .limit(limit)
                 .all()
@@ -138,7 +151,9 @@ class CollectionRepository(IdEntityRepository):
             self.from_stats_row(row)
             for row in (
                 self._items_with_stats.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(*Collection.ordering_criteria(ordering, self.custom_column_mapping))
+                .order_by(
+                    *Collection.ordering_criteria(ordering, self.custom_column_mapping)
+                )
                 .offset(skip)
                 .limit(limit)
                 .all()

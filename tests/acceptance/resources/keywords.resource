@@ -62,7 +62,7 @@ Verify URL Is Reachable
     [Arguments]    ${URL}    ${PORT}=8000
     [Documentation]    Fail if the given URL doesn't return a status code of 200.
     Create Session    tmp    http://localhost:${PORT}
-    ${response}    Get Request    tmp    ${url}
+    ${response}    GET On Session    tmp    ${url}
     Should Be Equal As Integers    ${response.status_code}    200
 
 ${endpoint} Endpoint Should Have ${n} Items
@@ -72,14 +72,14 @@ ${endpoint} Endpoint Should Have ${n} Items
 Get Request For Endpoint
     [Arguments]    ${endpoint}    ${params}=None
     Create Session    tmp    http://localhost:8000/api/v1
-    ${response}    Get Request    tmp    ${endpoint}/    params=${params}
+    ${response}    GET On Session    tmp    ${endpoint}/    params=${params}
     Should Be Equal As Integers    ${response.status_code}    200
     [Return]    ${response.json()}
 
 Delete All Statistics
     ${auth}    Create List    rfhub    rfhub
     Create Session    tmp    http://localhost:8000/api/v1    auth=${auth}
-    ${response}    Delete Request    tmp    statistics/keywords/all/
+    ${response}    DELETE On Session    tmp    statistics/keywords/all/
     Should Be Equal As Integers    ${response.status_code}    204
 
 Run Cli Package Without Installed Keywords

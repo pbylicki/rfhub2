@@ -86,10 +86,18 @@ Run Cli Package Without Installed Keywords
     Run Cli Package With Options    --no-installed-keywords ${INITIAL_FIXTURES}
 
 Backup And Switch Initial With Updated Fixtures
-    Move Directory      ${INITIAL_FIXTURES}    ${BACKUP_FIXTURES}
-    Copy Directory      ${UPDATED_FIXTURES}    ${INITIAL_FIXTURES}
+    Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
+    Copy Directory      ${UPDATED_FIXTURES}     ${INITIAL_FIXTURES}
+
+Backup And Switch Initial With Merged Fixtures
+    Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
+    Copy Directory      ${MERGED_FIXTURES}      ${INITIAL_FIXTURES}
+
+Switch Merged With Merged_2 Fixtures
+    Remove Directory    ${INITIAL_FIXTURES}     recursive=True
+    Copy Directory      ${MERGED_2_FIXTURES}    ${INITIAL_FIXTURES}
 
 Restore Initial Fixtures
-    Remove Directory    ${INITIAL_FIXTURES}    recursive=True
-    Copy Directory      ${BACKUP_FIXTURES}     ${INITIAL_FIXTURES}
-    Remove Directory    ${BACKUP_FIXTURES}     recursive=True
+    Remove Directory    ${INITIAL_FIXTURES}     recursive=True
+    Copy Directory      ${BACKUP_FIXTURES}      ${INITIAL_FIXTURES}
+    Remove Directory    ${BACKUP_FIXTURES}      recursive=True

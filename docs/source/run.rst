@@ -63,6 +63,8 @@ Rfhub2-cli for keywords documentation can be run in three load-modes:
 -  | ``update``, which will compare existing collections with newly found
    | ones, and update existing, remove obsolete and add new ones
    | ``rfhub2-cli --load-mode=update ../your_repo ../your_other_repo``
+-  | ``merge``, adds new and updates only matched collections, does nothing with not matched ones.
+   | ``rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo``
 
 Populating application with keywords execution statistics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -111,7 +113,7 @@ Full list of rfhub2-cli options:
                               - `statistics` - application is working with
                               data about keywords execution.
 
-  -l, --load-mode [insert|append|update]
+  -l, --load-mode [insert|append|update|merge]
                               Choice parameter specifying in what load
                               mode package should run:
 
@@ -125,3 +127,7 @@ Full list of rfhub2-cli options:
                               - `update` - removes collections not found
                               in paths, adds new ones and updates existing
                               ones.
+
+                              - `merge`, adds new and updates only matched
+                              collections, does nothing with not matched ones.
+

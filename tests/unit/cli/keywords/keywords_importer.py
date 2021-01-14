@@ -163,6 +163,47 @@ class KeywordsImporterTests(unittest.TestCase):
             result = rfhub_importer.import_libraries()
             self.assertCountEqual(result, (1, 4), msg=f"{result}")
 
+    def test_import_libraries_merge_mode(self):
+        with responses.RequestsMock() as rsps:
+            rfhub_importer = KeywordsImporter(
+                self.client,
+                (self.fixture_path / "LibWithInit",),
+                True,
+                load_mode="merge",
+            )
+            rsps.add(
+                responses.GET,
+                f"{self.client.api_url}/collections/",
+                json=[],
+                status=200,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/collections/",
+                json={"name": "LibWithInit", "id": 2},
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            rsps.add(
+                responses.POST,
+                f"{self.client.api_url}/keywords/",
+                json=KEYWORDS_2,
+                status=201,
+                adding_headers={
+                    "Content-Type": "application/json",
+                    "accept": "application/json",
+                },
+            )
+            result = rfhub_importer.import_libraries()
+            self.assertCountEqual(result, (1, 4), msg=f"{result}")
+
     def test_delete_all_collections(self):
         with responses.RequestsMock() as rsps:
             for i in [2, 2, 66, 66]:
@@ -378,6 +419,39 @@ class KeywordsImporterTests(unittest.TestCase):
                 )
             result = self.rfhub_importer.delete_outdated_collections(
                 existing_collections, new_collections
+            )
+            self.assertSetEqual({1, 2, 3}, result)
+
+    def test_delete_outdated_collections_should_delete_outdated_collections_obsolete_false(
+        self
+    ):
+        existing_collections = [
+            Collection(id=1, path=1, type="library", version=1, name="a", keywords=[]),
+            Collection(id=2, path=2, type="library", version=2, name="b", keywords=[]),
+            Collection(id=3, path=3, type="library", version=3, name="c", keywords=[]),
+            Collection(id=4, path=4, type="library2", version=3, name="d", keywords=[]),
+        ]
+        new_collections = [
+            CollectionUpdateWithKeywords(
+                CollectionUpdate(path=1, type="library", version=2, name="a"), []
+            ),
+            CollectionUpdateWithKeywords(
+                CollectionUpdate(path=2, type="library", version=3, name="b"), []
+            ),
+            CollectionUpdateWithKeywords(
+                CollectionUpdate(path=3, type="library", version=4, name="c"), []
+            ),
+        ]
+        with responses.RequestsMock() as rsps:
+            for i in range(1, 4):
+                rsps.add(
+                    responses.DELETE,
+                    f"{self.client.api_url}/collections/{i}/",
+                    status=204,
+                    adding_headers={"accept": "application/json"},
+                )
+            result = self.rfhub_importer.delete_outdated_collections(
+                existing_collections, new_collections, False
             )
             self.assertSetEqual({1, 2, 3}, result)
 

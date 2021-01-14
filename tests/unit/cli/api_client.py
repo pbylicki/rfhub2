@@ -4,20 +4,6 @@ import unittest
 from rfhub2.cli.api_client import Client
 from rfhub2.model import CollectionUpdate, KeywordUpdate
 
-COLLECTION = [
-    {
-        "name": "Third",
-        "type": "Library",
-        "version": None,
-        "scope": None,
-        "named_args": None,
-        "path": None,
-        "doc": None,
-        "doc_format": None,
-        "id": 3,
-        "keywords": [],
-    }
-]
 COLLECTION = CollectionUpdate(
     name="Third",
     type="Library",

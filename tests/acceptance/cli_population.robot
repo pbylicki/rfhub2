@@ -103,6 +103,42 @@ Running Cli Update Load Mode Second Time Should Leave Collections Untouched
     ...    Run Cli Package With Options
     ...    --mode=insert --no-installed-keywords
 
+Cli Merge Load Mode Should Update Existing Libraries And Do Not Remove Not Provided Paths
+    [Documentation]     Cli Merge Load Mode Should Leave Application
+    ...    With Matched Collections Updated Without Not Matched Collection Removal
+    [Tags]    rfhub2-64    merge
+    [Setup]    Run Keywords
+    ...    Run Cli Package Without Installed Keywords
+    ...    Backup And Switch Initial With Merged Fixtures
+    Run Cli Package With Options
+    ...    --load-mode=merge --no-installed-keywords ${INITIAL_FIXTURES}
+    Api Should Have With 9 Collections And 22 Keywords
+
+Cli Merge Load Mode Should Update Existing Resources And Do Not Remove Not Provided Paths
+    [Documentation]     Cli Merge Load Mode Should Leave Application
+    ...    With Matched Collections Updated Without Not Matched Collection Removal
+    ...    This test bases on
+    ...    'Cli Merge Load Mode Should Update Existing Libraries And Do Not Remove Not Provided Paths'
+    ...    to speed up execution
+    [Tags]    rfhub2-64    merge
+    [Setup]    Switch Merged With Merged_2 Fixtures
+    Run Cli Package With Options
+    ...    --load-mode=merge --no-installed-keywords ${INITIAL_FIXTURES}
+    Api Should Have With 9 Collections And 21 Keywords
+
+Running Cli Merge Load Mode Second Time Should Leave Collections Untouched
+    [Documentation]    Running Cli Update Load Mode Second Time
+    ...    Should Leave Collections Untouched. This test bases on
+    ...    'Cli Merge Load Mode Should Update Existing Resources And Do Not Remove Not Provided Paths'
+    ...    to speed up execution
+    [Tags]    rfhub2-64    merge
+    Run Cli Package With Options
+    ...    --load-mode=merge --no-installed-keywords ${INITIAL_FIXTURES}
+    Output Should Contain    Successfully loaded 0 collections with 0 keywords.
+    [Teardown]    Run Keywords    Restore Initial Fixtures    AND
+    ...    Run Cli Package With Options
+    ...    --mode=insert --no-installed-keywords
+
 Running Cli In Statistics Mode Should Populate App With Execution Data
     [Documentation]    Running Cli In Statistics Mode 
     ...    Should Populate App With Execution Data

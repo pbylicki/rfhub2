@@ -77,7 +77,12 @@ class KeywordsImporter:
             loaded_collections = self.update_collections(
                 existing_collections, collections
             )
-            self.delete_outdated_collections(existing_collections, collections)
+            if self.load_mode == "merge":
+                self.delete_outdated_collections(
+                    existing_collections, collections, remove_not_matched=False
+                )
+            else:
+                self.delete_outdated_collections(existing_collections, collections)
         return len(loaded_collections), sum(d["keywords"] for d in loaded_collections)
 
     def update_collections(
@@ -103,11 +108,21 @@ class KeywordsImporter:
         self,
         existing_collections: List[Collection],
         new_collections: List[CollectionUpdateWithKeywords],
+        remove_not_matched: bool = True,
     ) -> Set[int]:
-        """Deletes outdated collections"""
+        """Deletes outdated collections
+        :param existing_collections: List of existing collections
+        :param new_collections: List of new collections
+        :param remove_not_matched: removes not_matched collection paths as well
+        :return Set of deleted collections_id
+        """
         collections_to_delete = self._get_outdated_collections_ids(
             existing_collections, new_collections
-        ) | self._get_obsolete_collections_ids(existing_collections, new_collections)
+        )
+        if remove_not_matched:
+            collections_to_delete |= self._get_obsolete_collections_ids(
+                existing_collections, new_collections
+            )
         for collection in collections_to_delete:
             self.client.delete_collection(collection)
         return collections_to_delete

@@ -75,6 +75,8 @@ rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ``` rfhub2-cli --load-mode=append ../your_repo ../your_other_repo```
 - `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones  
 ``` rfhub2-cli --load-mode=update ../your_repo ../your_other_repo```
+- `merge`, updates only matched collections, does nothing with not matched ones.
+``` rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo```
 
 #### Populate application with keywords execution statistics
 ##### To gather keywords execution statistics:

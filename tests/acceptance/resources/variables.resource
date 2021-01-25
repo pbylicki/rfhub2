@@ -35,6 +35,8 @@ ${FIXTURES_PATH}                   ${CURDIR}${/}..${/}..${/}fixtures
 ${INITIAL_FIXTURES}                ${FIXTURES_PATH}/initial/
 ${BACKUP_FIXTURES}                 ${FIXTURES_PATH}/initial_bkp/
 ${UPDATED_FIXTURES}                ${FIXTURES_PATH}/updated/
+${MERGED_FIXTURES}                 ${FIXTURES_PATH}/merged/
+${MERGED_2_FIXTURES}               ${FIXTURES_PATH}/merged_2/
 ${STATISTICS_PATH}                 ${FIXTURES_PATH}${/}statistics
 ${SUBDIR_PATH}                     ${STATISTICS_PATH}${/}subdir
 ${DB_PATH}                         ${CURDIR}/../../../test.db

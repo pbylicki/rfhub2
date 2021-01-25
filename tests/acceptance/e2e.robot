@@ -140,8 +140,8 @@ App Should Display Libraries With Times Used Statistics
     [Documentation]    App Should Display Libraries With Times Used Statistics
     [Setup]    Test Setup For Collections Statistics
     [Template]    Table Should Contain Library Data  
-    e2e_keywords       RESOURCE	   ${EMPTY}    12	  ${EMPTY}
-    keywords	       RESOURCE	   ${EMPTY}    12	  66
+    e2e_keywords       RESOURCE	   ${EMPTY}    17	  114
+    keywords	       RESOURCE	   ${EMPTY}    14	  67
 
 App Should Display Keywords Statistics For Single Libary
     [Documentation]    App Should Display Keywords Statistics For Single Libary

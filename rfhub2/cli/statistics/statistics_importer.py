@@ -3,7 +3,7 @@ from progress.bar import IncrementalBar
 from typing import List, Set, Tuple
 
 from rfhub2.cli.api_client import Client
-from .statistics_extractor import StatisticsExtractor
+from .statistics_extractor import compute_statistics
 from rfhub2.model import KeywordStatistics, KeywordStatisticsList
 
 
@@ -33,7 +33,7 @@ class StatisticsImporter:
             suffix="%(percent).1f%% - %(eta)ds, elapsed: %(elapsed)ds",
         )
         for execution_file in execution_files:
-            statistics = StatisticsExtractor(execution_file).compute_statistics()
+            statistics = compute_statistics(str(execution_file))
             loaded_statistics.append(self.add_statistics(statistics, execution_file))
             progress_bar.next()
         return (

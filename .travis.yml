@@ -8,7 +8,6 @@ services:
   - xvfb
   - postgresql
 cache:
-  pip: true
   yarn: true
   directories:
 install:

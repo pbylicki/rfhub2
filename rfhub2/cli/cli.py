@@ -1,6 +1,6 @@
 import click
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Union
 
 from rfhub2.cli.api_client import Client
 from rfhub2.cli.keywords.keywords_importer import KeywordsImporter
@@ -57,12 +57,12 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
              - `update` - removes collections not found in paths, adds new ones and updates existing ones\n
              - `merge`  - adds new and updates only matched collections, does nothing with not matched ones.""",
 )
-@click.argument("paths", nargs=-1, type=click.Path(exists=True))
+@click.argument("paths", nargs=-1)
 def main(
     app_url: str,
     user: str,
     password: str,
-    paths: Tuple[Path, ...],
+    paths: Tuple[Union[Path, str], ...],
     load_mode: str,
     mode: str,
     no_installed_keywords: bool,

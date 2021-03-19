@@ -1,3 +1,4 @@
+from importlib.util import find_spec
 from robot.libdocpkg import LibraryDocumentation
 import unittest
 
@@ -23,6 +24,11 @@ class KeywordsExtractorTests(unittest.TestCase):
     def test_get_libraries_paths_should_return_set_of_paths(self):
         result = self.rfhub_extractor.get_libraries_paths()
         self.assertEqual(result, EXPECTED_GET_LIBRARIES)
+
+    def test_get_library_path_from_name_should_return_path(self):
+        requests_path = find_spec('RequestsLibrary').submodule_search_locations[0]
+        results = [self.rfhub_extractor.get_library_path_from_name(path) for path in (self.fixture_path, 'RequestsLibrary', 'Noffin')]
+        self.assertListEqual(results, [str(self.fixture_path), requests_path, None])
 
     def test_get_libraries_paths_should_return_set_of_paths_on_installed_keywords(self):
         self.rfhub_extractor = KeywordsExtractor(tuple(), False)

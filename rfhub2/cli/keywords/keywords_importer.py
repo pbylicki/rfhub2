@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple, Union
 
 from rfhub2.cli.api_client import Client
 from rfhub2.cli.keywords.keywords_extractor import (
@@ -19,7 +19,7 @@ class KeywordsImporter:
     def __init__(
         self,
         client: Client,
-        paths: Tuple[Path, ...],
+        paths: Tuple[Union[Path, str], ...],
         no_installed_keywords: bool,
         load_mode: str,
     ) -> None:

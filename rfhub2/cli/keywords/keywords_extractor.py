@@ -34,7 +34,9 @@ class CollectionUpdateWithKeywords:
 
 
 class KeywordsExtractor:
-    def __init__(self, paths: Tuple[Union[Path, str], ...], no_installed_keywords: bool) -> None:
+    def __init__(
+        self, paths: Tuple[Union[Path, str], ...], no_installed_keywords: bool
+    ) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
 
@@ -65,7 +67,9 @@ class KeywordsExtractor:
             try:
                 return find_spec(path).submodule_search_locations[0]
             except AttributeError as e:
-                print(f"Collection {path} was neither valid path nor valid module name.")
+                print(
+                    f"Collection {path} was neither valid path nor valid module name."
+                )
                 return None
 
     def _traverse_paths(self, path: Path) -> Set[Path]:

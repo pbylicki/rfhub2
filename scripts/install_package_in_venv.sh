@@ -5,3 +5,4 @@ set -e
 /opt/python/3.6.7/bin/python -m venv atests-venv
 source atests-venv/bin/activate
 pip3 install $(find dist -type f -iname "rfhub2-*.whl")[postgresql]
+pip3 install -r ../requirements-dev.txt

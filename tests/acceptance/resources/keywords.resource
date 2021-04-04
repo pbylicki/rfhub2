@@ -53,7 +53,7 @@ Output Should Contain
     ${clean_output}    Evaluate    " ".join(l.strip() for l in output.splitlines())    namespace=${ns}
     FOR    ${pattern}    IN    @{patterns}
         Run keyword if    '''${pattern}''' not in '''${clean_output}'''
-        ...    Fail    Output did not contain '${pattern}'
+        ...    Fail    Output did not contain '${pattern}'. \n${clean_output}
     END
 
 Verify URL Is Reachable

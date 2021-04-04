@@ -17,7 +17,7 @@ Cli Should Populate App With Keywords From Provided Paths Only
     ...    test_robot library with 4 keywords loaded.
     ...    test_res_lib_dir library with 2 keywords loaded.
     ...    Successfully loaded 8 collections with 20 keywords.
-    Api Should Have With 8 Collections And 20 Keywords
+    Api Should Have 8 Collections And 20 Keywords
 
 Cli Should Populate App With Installed Keywords
     [Documentation]    Cli Should Populate App With Installed Keywords
@@ -34,7 +34,7 @@ Cli Should Populate App With Installed Keywords
     ...    BuiltIn library with 105 keywords loaded.
     ...    Telnet library with 20 keywords loaded.
     ...    Successfully loaded 10 collections with 320 keywords.
-    Api Should Have With 10 Collections And 100 Keywords
+    Api Should Have 10 Collections And 100 Keywords
 
 Cli Should Preserve All Keywords When Paths And Append Set
     [Documentation]    Cli Should Preserve All Keywords When Paths And Append Set
@@ -43,14 +43,14 @@ Cli Should Preserve All Keywords When Paths And Append Set
     Run Cli Package With Options    --load-mode=append --no-installed-keywords
     Output Should Contain
     ...    Successfully loaded 0 collections with 0 keywords.
-    Api Should Have With 10 Collections And 100 Keywords
+    Api Should Have 10 Collections And 100 Keywords
 
 Cli Should Delete All Keywords When Paths And No Installed Keywords Set
     [Documentation]    Cli Should Delete All Keywords When Paths And No Installed Keywords Set
     Run Cli Package With Options    --no-installed-keywords
     Output Should Contain
     ...    Successfully loaded 0 collections with 0 keywords.
-    Api Should Have With 0 Collections And 0 Keywords
+    Api Should Have 0 Collections And 0 Keywords
 
 Cli Should Return Unauthorised When Wrong User Given
     [Documentation]    Cli Should Return Unauthorised When Wrong User Given
@@ -88,7 +88,7 @@ Cli Update Load Mode Should Leave Application With New Set Of Collections
     ...    'Cli Should Update Existing Collections, Delete Obsolete And Add New' 
     ...    to speed up execution
     [Tags]    rfhub2-64    update
-    Api Should Have With 7 Collections And 16 Keywords
+    Api Should Have 7 Collections And 16 Keywords
     
 Running Cli Update Load Mode Second Time Should Leave Collections Untouched
     [Documentation]    Running Cli Update Load Mode Second Time 
@@ -112,7 +112,7 @@ Cli Merge Load Mode Should Update Existing Libraries And Do Not Remove Not Provi
     ...    Backup And Switch Initial With Merged Fixtures
     Run Cli Package With Options
     ...    --load-mode=merge --no-installed-keywords ${INITIAL_FIXTURES}
-    Api Should Have With 9 Collections And 22 Keywords
+    Api Should Have 9 Collections And 22 Keywords
 
 Cli Merge Load Mode Should Update Existing Resources And Do Not Remove Not Provided Paths
     [Documentation]     Cli Merge Load Mode Should Leave Application
@@ -124,7 +124,7 @@ Cli Merge Load Mode Should Update Existing Resources And Do Not Remove Not Provi
     [Setup]    Switch Merged With Merged_2 Fixtures
     Run Cli Package With Options
     ...    --load-mode=merge --no-installed-keywords ${INITIAL_FIXTURES}
-    Api Should Have With 9 Collections And 21 Keywords
+    Api Should Have 9 Collections And 21 Keywords
 
 Running Cli Merge Load Mode Second Time Should Leave Collections Untouched
     [Documentation]    Running Cli Update Load Mode Second Time
@@ -138,6 +138,24 @@ Running Cli Merge Load Mode Second Time Should Leave Collections Untouched
     [Teardown]    Run Keywords    Restore Initial Fixtures    AND
     ...    Run Cli Package With Options
     ...    --mode=insert --no-installed-keywords
+
+Running Cli With Library Names Instead Of Paths Should Populate App
+    [Documentation]    Tests loading installed library using given name, 
+    ...    instead of full path.
+    [Tags]    rfhub2-342    installed_libs
+    Run Cli Package With Options
+    ...    --no-installed-keywords RequestsLibrary
+    Output Should Contain    Successfully loaded 1 collections with 26 keywords.
+    Api Should Have 1 Collections And 26 Keywords
+
+Running Cli With Non Existing Library Names Should Load Only Found Libraries
+    [Documentation]    Tests loading installed library using given name, 
+    ...    instead of full path.
+    [Tags]    rfhub2-342    installed_libs
+    Run Cli Package With Options
+    ...    --no-installed-keywords NonExistingLibrary
+    Output Should Contain    Successfully loaded 0 collections with 0 keywords.
+    Api Should Have 0 Collections And 0 Keywords
 
 Running Cli In Statistics Mode Should Populate App With Execution Data
     [Documentation]    Running Cli In Statistics Mode 
@@ -156,6 +174,6 @@ Running Cli In Statistics Mode Should Populate App With New Execution Data
     [Teardown]    Delete All Statistics
 
 *** Keywords ***
-Api Should Have With ${n} Collections And ${m} Keywords
+Api Should Have ${n} Collections And ${m} Keywords
     collections Endpoint Should Have ${n} Items
     keywords Endpoint Should Have ${m} Items

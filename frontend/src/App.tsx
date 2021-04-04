@@ -50,6 +50,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-end',
     padding: '0 8px',
     ...theme.mixins.toolbar,
+    backgroundColor: '#3f51b5'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -65,6 +66,11 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+  },
+  appBarTitle: {
+    flexGrow: 1,
+    marginBottom: 0,
+    color: 'white'
   },
   menuButton: {
     marginRight: 36,
@@ -190,8 +196,9 @@ export const App: React.FC<RouteComponentProps<any>> = ({ history }) => {
         }}
       >
         <div className={classes.toolbarIcon}>
+          <Typography component="h1" variant="h6" gutterBottom className={classes.appBarTitle}>Collections</Typography>
           <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
+            <ChevronLeftIcon className={classes.appBarTitle} />
           </IconButton>
         </div>
         <Divider />

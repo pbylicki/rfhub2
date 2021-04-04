@@ -37,7 +37,7 @@ To populate application running on localhost:
 
 ::
 
-    rfhub2-cli ../your_repo ../your_other_repo
+    rfhub2-cli ../your_repo ../your_other_repo name_of_installed_library
 
 To populate app running on another host, with non-default credentials:
 
@@ -52,19 +52,19 @@ To populate app but to skip loading RFWK installed libraries:
 
     rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 
-Rfhub2-cli for keywords documentation can be run in three load-modes:
+Rfhub2-cli for keywords documentation can be run in four load-modes:
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 -  | ``insert``, default mode, that will clean up existing collections app
    | and load all collections found in provided paths
-   | ``rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo``
+   | ``rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo name_of_installed_library``
 -  | ``append``, which will only add collections form provided paths
-   | ``rfhub2-cli --load-mode=append ../your_repo ../your_other_repo``
+   | ``rfhub2-cli --load-mode=append ../your_repo ../your_other_repo name_of_installed_library``
 -  | ``update``, which will compare existing collections with newly found
    | ones, and update existing, remove obsolete and add new ones
-   | ``rfhub2-cli --load-mode=update ../your_repo ../your_other_repo``
+   | ``rfhub2-cli --load-mode=update ../your_repo ../your_other_repo name_of_installed_library``
 -  | ``merge``, adds new and updates only matched collections, does nothing with not matched ones.
-   | ``rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo``
+   | ``rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo name_of_installed_library``
 
 Populating application with keywords execution statistics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

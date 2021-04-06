@@ -35,11 +35,12 @@ class CollectionUpdateWithKeywords:
 
 
 class KeywordsExtractor:
-    def __init__(self, paths: Tuple[Path, ...], no_installed_keywords: bool, name: str = None, version: str = None) -> None:
+    def __init__(self, paths: Tuple[Path, ...], no_installed_keywords: bool, name: str = None, version: str = None, doc_format: str = None) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.name = name
         self.version = version
+        self.doc_format = doc_format
 
     def get_libraries_paths(self) -> Set[Path]:
         """
@@ -128,7 +129,8 @@ class KeywordsExtractor:
         :param path: Path
         :return: CollectionUpdateWithKeywords object
         """
-        libdoc = LibraryDocumentation(str(path))
+        libdoc = LibraryDocumentation(
+            str(path), self.name, self.version, self.doc_format)
         return CollectionUpdateWithKeywords(
             self._serialise_libdoc(libdoc, str(
                 path)), self._serialise_keywords(libdoc)
@@ -142,9 +144,9 @@ class KeywordsExtractor:
         :return: CollectionUpdate object
         """
         return CollectionUpdate(
-            name=self.name or libdoc.name,
+            name=libdoc.name,
             type=libdoc.type,
-            version=self.version or libdoc.version,
+            version=libdoc.version,
             scope=libdoc.scope,
             # named_args=libdoc.named_args, # we have not used this one, yet
             path=path,

@@ -44,6 +44,13 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
     help="Specifies name of the library you are pushing the collection",
 )
 @click.option(
+    "-d",
+    "--doc-format",
+    type=click.STRING,
+    default=None,
+    help="Specifies format of the documentation libdoc will analyse",
+)
+@click.option(
     "--no-installed-keywords",
     type=click.BOOL,
     default=False,
@@ -83,13 +90,15 @@ def main(
     no_installed_keywords: bool,
     version: str,
     name: str,
+    doc_format: str
+
 ) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
     if mode == "keywords":
         rfhub_importer = KeywordsImporter(
-            client, paths, no_installed_keywords, load_mode, name, version
+            client, paths, no_installed_keywords, load_mode, name, version, doc_format
         )
         loaded_collections, loaded_keywords = rfhub_importer.import_data()
         print(

@@ -23,7 +23,8 @@ class KeywordsImporter:
         no_installed_keywords: bool,
         load_mode: str,
         name: str = None,
-        version: str = None
+        version: str = None,
+        doc_format: str = None
     ) -> None:
         self.client = client
         self.paths = paths
@@ -31,6 +32,7 @@ class KeywordsImporter:
         self.load_mode = load_mode
         self.name = name
         self.version = version
+        self.doc_format = doc_format
 
     def delete_all_collections(self) -> Set[int]:
         """
@@ -69,7 +71,7 @@ class KeywordsImporter:
         :return: Number of libraries and keywords loaded
         """
         keywords_extractor = KeywordsExtractor(
-            self.paths, self.no_installed_keywords, self.name, self.version)
+            self.paths, self.no_installed_keywords, self.name, self.version, self.doc_format)
         libraries_paths = keywords_extractor.get_libraries_paths()
         collections = keywords_extractor.create_collections(libraries_paths)
         if self.load_mode == "append":

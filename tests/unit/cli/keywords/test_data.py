@@ -36,6 +36,7 @@ EXPECTED_KEYWORDS = [
         tags=["first_tag", "second_tag"],
     ),
 ]
+
 EXPECTED_TRAVERSE_PATHS_INIT = {FIXTURE_PATH / "LibWithInit"}
 EXPECTED_TRAVERSE_PATHS_NO_INIT = {
     FIXTURE_PATH / "LibsWithEmptyInit" / "LibWithEmptyInit1.py",
@@ -99,7 +100,8 @@ EXISTING_COLLECTION = Collection(
         **EXPECTED_COLLECTION.dict(),
         "id": 1,
         "keywords": [
-            NestedKeyword(**{**EXPECTED_COLLECTION_KEYWORDS_1_3.dict(), "id": 1})
+            NestedKeyword(
+                **{**EXPECTED_COLLECTION_KEYWORDS_1_3.dict(), "id": 1})
         ],
     }
 )
@@ -112,6 +114,15 @@ EXPECTED_COLLECTION_2 = CollectionUpdate(
     type="LIBRARY",
     version="3.2.0",
 )
+EXPECTED_COLLECTION_2_OVERRIDES = CollectionUpdate(
+    doc="File with .resource extension with two test keywords",
+    doc_format="ROBOT",
+    name="Test",
+    path=str(FIXTURE_PATH / "test_resource.resource"),
+    scope="GLOBAL",
+    type="RESOURCE",
+    version="1.0.1",
+)
 EXPECTED_COLLECTION_KEYWORDS_2_1 = KeywordUpdate(
     args='["who"]', doc="", name="Someone Shall Pass", tags=[]
 )
@@ -121,7 +132,8 @@ EXISTING_COLLECTION_2 = Collection(
         **EXPECTED_COLLECTION_2.dict(),
         "id": 1,
         "keywords": [
-            NestedKeyword(**{**EXPECTED_COLLECTION_KEYWORDS_2_1.dict(), "id": 1})
+            NestedKeyword(
+                **{**EXPECTED_COLLECTION_KEYWORDS_2_1.dict(), "id": 1})
         ],
     }
 )

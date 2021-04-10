@@ -11,7 +11,7 @@ FROM python:3.6-alpine
 
 COPY requirements*.txt /tmp/
 
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev make && \
+RUN apk add --no-cache --virtual .build-deps g++ musl-dev make && \
     pip install --disable-pip-version-check --no-cache-dir -r /tmp/requirements.txt && \
     apk del .build-deps && \
     rm /tmp/requirements*.txt && \

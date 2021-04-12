@@ -22,11 +22,17 @@ class KeywordsImporter:
         paths: Tuple[Union[Path, str], ...],
         no_installed_keywords: bool,
         load_mode: str,
+        name: str = None,
+        version: str = None,
+        doc_format: str = None
     ) -> None:
         self.client = client
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.load_mode = load_mode
+        self.name = name
+        self.version = version
+        self.doc_format = doc_format
 
     def delete_all_collections(self) -> Set[int]:
         """
@@ -64,7 +70,8 @@ class KeywordsImporter:
         Import libraries to application from paths specified when invoking client.
         :return: Number of libraries and keywords loaded
         """
-        keywords_extractor = KeywordsExtractor(self.paths, self.no_installed_keywords)
+        keywords_extractor = KeywordsExtractor(
+            self.paths, self.no_installed_keywords, self.name, self.version, self.doc_format)
         libraries_paths = keywords_extractor.get_libraries_paths()
         collections = keywords_extractor.create_collections(libraries_paths)
         if self.load_mode == "append":
@@ -82,7 +89,8 @@ class KeywordsImporter:
                     existing_collections, collections, remove_not_matched=False
                 )
             else:
-                self.delete_outdated_collections(existing_collections, collections)
+                self.delete_outdated_collections(
+                    existing_collections, collections)
         return len(loaded_collections), sum(d["keywords"] for d in loaded_collections)
 
     def update_collections(

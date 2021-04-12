@@ -30,6 +30,27 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
     help="Specifies rfhub2 password to authenticate on endpoints that requires that. Default value is rfhub.",
 )
 @click.option(
+    "-v",
+    "--version",
+    type=click.STRING,
+    default=None,
+    help="Specifies version of the library you are pushing the collection",
+)
+@click.option(
+    "-n",
+    "--name",
+    type=click.STRING,
+    default=None,
+    help="Specifies name of the library you are pushing the collection",
+)
+@click.option(
+    "-d",
+    "--doc-format",
+    type=click.STRING,
+    default=None,
+    help="Specifies format of the documentation libdoc will analyse",
+)
+@click.option(
     "--no-installed-keywords",
     type=click.BOOL,
     default=False,
@@ -49,7 +70,8 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 @click.option(
     "--load-mode",
     "-l",
-    type=click.Choice(["insert", "append", "update", "merge"], case_sensitive=False),
+    type=click.Choice(["insert", "append", "update",
+                      "merge"], case_sensitive=False),
     default="insert",
     help="""Choice parameter specifying in what load mode package should run:\n
              - `insert` - default value, removes all existing collections from app and add ones found in paths\n
@@ -66,13 +88,17 @@ def main(
     load_mode: str,
     mode: str,
     no_installed_keywords: bool,
+    version: str,
+    name: str,
+    doc_format: str
+
 ) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
     if mode == "keywords":
         rfhub_importer = KeywordsImporter(
-            client, paths, no_installed_keywords, load_mode
+            client, paths, no_installed_keywords, load_mode, name, version, doc_format
         )
         loaded_collections, loaded_keywords = rfhub_importer.import_data()
         print(

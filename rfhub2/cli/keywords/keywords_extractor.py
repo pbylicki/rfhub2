@@ -14,7 +14,8 @@ from rfhub2.model import CollectionUpdate, KeywordUpdate
 RESOURCE_PATTERNS = {".robot", ".txt", ".tsv", ".resource"}
 ALL_PATTERNS = RESOURCE_PATTERNS | {".xml", ".py"}
 
-INIT_FILES = {"__init__.txt", "__init__.robot", "__init__.html", "__init__.tsv"}
+INIT_FILES = {"__init__.txt", "__init__.robot",
+              "__init__.html", "__init__.tsv"}
 
 EXCLUDED_LIBRARIES = {
     "remote.py",
@@ -34,11 +35,12 @@ class CollectionUpdateWithKeywords:
 
 
 class KeywordsExtractor:
-    def __init__(
-        self, paths: Tuple[Union[Path, str], ...], no_installed_keywords: bool
-    ) -> None:
+    def __init__(self, paths: Tuple[Path, ...], no_installed_keywords: bool, name: str = None, version: str = None, doc_format: str = None) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
+        self.name = name
+        self.version = version
+        self.doc_format = doc_format
 
     def get_libraries_paths(self) -> Set[Path]:
         """
@@ -78,23 +80,27 @@ class KeywordsExtractor:
         Helper function for get_library_paths.
         """
         valid_lib_paths = set()
-        if self._is_library_with_init(path):
+        if path.is_file():
             valid_lib_paths.add(path)
         else:
-            for item in path.iterdir():
-                if item.is_dir():
-                    if self._is_library_with_init(item):
+            if self._is_library_with_init(path):
+                valid_lib_paths.add(path)
+            else:
+                for item in path.iterdir():
+                    if item.is_dir():
+                        if self._is_library_with_init(item):
+                            valid_lib_paths.add(item)
+                            if self._robot_files_candidates(item):
+                                valid_lib_paths.update(
+                                    self._get_valid_robot_files(path))
+                        else:
+                            valid_lib_paths.update(self._traverse_paths(item))
+                    elif (
+                        item.is_file()
+                        and self._is_robot_keyword_file(item)
+                        and not self._should_ignore(item)
+                    ):
                         valid_lib_paths.add(item)
-                        if self._robot_files_candidates(item):
-                            valid_lib_paths.update(self._get_valid_robot_files(path))
-                    else:
-                        valid_lib_paths.update(self._traverse_paths(item))
-                elif (
-                    item.is_file()
-                    and self._is_robot_keyword_file(item)
-                    and not self._should_ignore(item)
-                ):
-                    valid_lib_paths.add(item)
         return valid_lib_paths
 
     def create_collections(
@@ -123,9 +129,11 @@ class KeywordsExtractor:
         :param path: Path
         :return: CollectionUpdateWithKeywords object
         """
-        libdoc = LibraryDocumentation(str(path))
+        libdoc = LibraryDocumentation(
+            str(path), self.name, self.version, self.doc_format)
         return CollectionUpdateWithKeywords(
-            self._serialise_libdoc(libdoc, str(path)), self._serialise_keywords(libdoc)
+            self._serialise_libdoc(libdoc, str(
+                path)), self._serialise_keywords(libdoc)
         )
 
     def _serialise_libdoc(self, libdoc: LibraryDoc, path: str) -> CollectionUpdate:
@@ -180,7 +188,8 @@ class KeywordsExtractor:
     def _robot_files_candidates(self, path: Path) -> bool:
         return (
             len(
-                [file for file in path.glob("**/*") if file.suffix in RESOURCE_PATTERNS]
+                [file for file in path.glob(
+                    "**/*") if file.suffix in RESOURCE_PATTERNS]
             )
             > 0
         )
@@ -267,6 +276,7 @@ class KeywordsExtractor:
     def _has_test_case_table(data: str) -> bool:
         """Returns true if file has keyword or user keyword table"""
         return (
-            re.search(r"^\*+\s*(Test Cases?)", data, re.MULTILINE | re.IGNORECASE)
+            re.search(r"^\*+\s*(Test Cases?)", data,
+                      re.MULTILINE | re.IGNORECASE)
             is not None
         )

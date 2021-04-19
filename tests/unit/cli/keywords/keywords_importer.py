@@ -206,44 +206,6 @@ class KeywordsImporterTests(unittest.TestCase):
 
     def test_delete_all_collections(self):
         with responses.RequestsMock() as rsps:
-            for i in [2, 2, 66, 66]:
-                rsps.add(
-                    responses.GET,
-                    f"{self.client.api_url}/collections/",
-                    json=[{"id": i}],
-                    status=200,
-                    adding_headers={"Content-Type": "application/json"},
-                )
-            rsps.add(
-                responses.DELETE,
-                f"{self.client.api_url}/collections/2/",
-                status=204,
-                adding_headers={
-                    "Content-Type": "application/json",
-                    "accept": "application/json",
-                },
-            )
-            rsps.add(
-                responses.DELETE,
-                f"{self.client.api_url}/collections/66/",
-                status=204,
-                adding_headers={
-                    "Content-Type": "application/json",
-                    "accept": "application/json",
-                },
-            )
-            rsps.add(
-                responses.GET,
-                f"{self.client.api_url}/collections/",
-                json=[],
-                status=200,
-                adding_headers={"Content-Type": "application/json"},
-            )
-            result = self.rfhub_importer.delete_all_collections()
-            self.assertEqual({2, 66}, result)
-
-    def test_delete_collections(self):
-        with responses.RequestsMock() as rsps:
             rsps.add(
                 responses.GET,
                 f"{self.client.api_url}/collections/",
@@ -253,23 +215,14 @@ class KeywordsImporterTests(unittest.TestCase):
             )
             rsps.add(
                 responses.DELETE,
-                f"{self.client.api_url}/collections/2/",
+                f"{self.client.api_url}/collections/",
                 status=204,
                 adding_headers={
                     "Content-Type": "application/json",
                     "accept": "application/json",
                 },
             )
-            rsps.add(
-                responses.DELETE,
-                f"{self.client.api_url}/collections/66/",
-                status=204,
-                adding_headers={
-                    "Content-Type": "application/json",
-                    "accept": "application/json",
-                },
-            )
-            result = self.rfhub_importer._delete_collections()
+            result = self.rfhub_importer.delete_all_collections()
             self.assertEqual({2, 66}, result)
 
     def test_get_all_collections_should_return_all_collections(self):

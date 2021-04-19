@@ -79,3 +79,14 @@ class ApiClientTests(unittest.TestCase):
             )
             response = self.client.add_keyword(data=KEYWORD)
             self.assertEqual(response, (201, KEYWORD.json()))
+
+    def test_delete_all_collection(self):
+        with responses.RequestsMock() as rsps:
+            rsps.add(
+                responses.DELETE,
+                f"{self.collection_endpoint}",
+                status=204,
+                adding_headers={"accept": "application/json"},
+            )
+            response = self.client.delete_all_collections()
+            self.assertEqual(response.status_code, 204)

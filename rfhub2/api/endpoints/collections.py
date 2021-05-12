@@ -108,4 +108,4 @@ def delete_all_collections(
     if deleted:
         return Response(status_code=204)
     else:
-        raise HTTPException(status_code=404)
+        return Response(status_code=404)

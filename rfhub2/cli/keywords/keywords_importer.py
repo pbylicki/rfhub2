@@ -28,16 +28,6 @@ class KeywordsImporter:
         self.no_installed_keywords = no_installed_keywords
         self.load_mode = load_mode
 
-    def delete_all_collections(self) -> Set[int]:
-        """
-        Deletes all existing collections.
-        """
-        collections = self.client.get_collections()
-        collections_id = {collection["id"] for collection in collections}
-        if len(collections_id) > 0:
-            self.client.delete_all_collections()
-        return collections_id
-
     def get_all_collections(self) -> List[Collection]:
         """Gets all collections from application"""
         collections = self.client.get_collections(0, 999999)
@@ -61,7 +51,7 @@ class KeywordsImporter:
         if self.load_mode == "append":
             loaded_collections = self.add_collections(collections)
         elif self.load_mode == "insert":
-            self.delete_all_collections()
+            self.client.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:
             existing_collections = self.get_all_collections()

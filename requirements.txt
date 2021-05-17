@@ -11,6 +11,6 @@ robotframework==3.2.2
 SQLAlchemy==1.4.5
 uvicorn==0.13.4
 uvloop==0.14.0
-websockets==8.1
+websockets==9.0.2
 requests==2.25.1
 progress==1.5

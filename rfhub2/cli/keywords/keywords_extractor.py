@@ -1,3 +1,4 @@
+from click import echo
 from dataclasses import dataclass
 from importlib.util import find_spec
 from pathlib import Path
@@ -67,9 +68,7 @@ class KeywordsExtractor:
             try:
                 return find_spec(path).submodule_search_locations[0]
             except AttributeError as e:
-                print(
-                    f"Collection {path} was neither valid path nor valid module name."
-                )
+                echo(f"Collection {path} was neither valid path nor valid module name.")
                 return None
 
     def _traverse_paths(self, path: Path) -> Set[Path]:
@@ -111,7 +110,7 @@ class KeywordsExtractor:
                 collection_with_keywords = self.create_collection(path)
                 collections.append(collection_with_keywords)
             except (DataError, SystemExit) as ex:
-                print(
+                echo(
                     f"Failed to create collection from path {path}\n"
                     f"{type(ex).__name__}, {ex.args}"
                 )

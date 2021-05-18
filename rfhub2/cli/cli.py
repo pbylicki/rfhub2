@@ -75,12 +75,12 @@ def main(
             client, paths, no_installed_keywords, load_mode
         )
         loaded_collections, loaded_keywords = rfhub_importer.import_data()
-        print(
+        click.echo(
             f"\nSuccessfully loaded {loaded_collections} collections with {loaded_keywords} keywords."
         )
     elif mode == "statistics":
         rfhub_importer = StatisticsImporter(client, paths)
         loaded_files, loaded_statistics = rfhub_importer.import_data()
-        print(
+        click.echo(
             f"\nSuccessfully loaded {loaded_files} files with {loaded_statistics} statistics."
         )

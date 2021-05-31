@@ -8,7 +8,7 @@ httptools==0.1.1
 jinja2==2.11.3
 MarkupSafe==1.1.1
 robotframework==3.2.2
-SQLAlchemy==1.4.5
+SQLAlchemy==1.4.17
 uvicorn==0.13.4
 uvloop==0.14.0
 websockets==8.1

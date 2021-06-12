@@ -74,16 +74,16 @@ To populate app but to skip loading RFWK installed libraries:
 ```
 rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ```
-##### Rfhub2-cli for keywords documentation can be run in three load-modes:
+##### Rfhub2-cli for keywords documentation can be run in four load-modes:
 
-- `insert`, default mode, that will clean up existing collections app and load all collections found in provided paths  
-``` rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo```
-- `append`, which will only add collections form provided paths  
-``` rfhub2-cli --load-mode=append ../your_repo ../your_other_repo```
-- `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones  
-``` rfhub2-cli --load-mode=update ../your_repo ../your_other_repo```
-- `merge`, updates only matched collections, does nothing with not matched ones.
+- `merge`, default mode, updates only matched collections, does nothing with not matched ones
 ``` rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo```
+- `insert`, that will clean up existing collections app and load all collections found in provided paths
+``` rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo```
+- `append`, which will only add collections form provided paths
+``` rfhub2-cli --load-mode=append ../your_repo ../your_other_repo```
+- `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones
+``` rfhub2-cli --load-mode=update ../your_repo ../your_other_repo```
 
 #### Populate application with keywords execution statistics
 ##### To gather keywords execution statistics:

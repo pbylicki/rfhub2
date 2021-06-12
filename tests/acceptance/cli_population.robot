@@ -21,7 +21,7 @@ Cli Should Populate App With Keywords From Provided Paths Only
 
 Cli Should Populate App With Installed Keywords
     [Documentation]    Cli Should Populate App With Installed Keywords
-    Run Cli Package
+    Run Cli Package With Options    --load-mode=insert
     Output Should Contain
     ...    Collections library with 43 keywords loaded.
     ...    XML library with 37 keywords loaded.
@@ -47,7 +47,7 @@ Cli Should Preserve All Keywords When Paths And Append Set
 
 Cli Should Delete All Keywords When Paths And No Installed Keywords Set
     [Documentation]    Cli Should Delete All Keywords When Paths And No Installed Keywords Set
-    Run Cli Package With Options    --no-installed-keywords
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords
     Output Should Contain
     ...    Successfully loaded 0 collections with 0 keywords.
     Api Should Have 0 Collections And 0 Keywords
@@ -101,7 +101,7 @@ Running Cli Update Load Mode Second Time Should Leave Collections Untouched
     Output Should Contain    Successfully loaded 0 collections with 0 keywords.
     [Teardown]    Run Keywords    Restore Initial Fixtures    AND
     ...    Run Cli Package With Options
-    ...    --mode=insert --no-installed-keywords
+    ...    --load-mode=insert --no-installed-keywords
 
 Cli Merge Load Mode Should Update Existing Libraries And Do Not Remove Not Provided Paths
     [Documentation]     Cli Merge Load Mode Should Leave Application
@@ -137,14 +137,14 @@ Running Cli Merge Load Mode Second Time Should Leave Collections Untouched
     Output Should Contain    Successfully loaded 0 collections with 0 keywords.
     [Teardown]    Run Keywords    Restore Initial Fixtures    AND
     ...    Run Cli Package With Options
-    ...    --mode=insert --no-installed-keywords
+    ...    --load-mode=insert --no-installed-keywords
 
 Running Cli With Library Names Instead Of Paths Should Populate App
     [Documentation]    Tests loading installed library using given name, 
     ...    instead of full path.
     [Tags]    rfhub2-342    installed_libs
     Run Cli Package With Options
-    ...    --no-installed-keywords RequestsLibrary
+    ...    --load-mode=insert --no-installed-keywords RequestsLibrary
     Output Should Contain    Successfully loaded 1 collections with 26 keywords.
     Api Should Have 1 Collections And 26 Keywords
 
@@ -153,7 +153,7 @@ Running Cli With Non Existing Library Names Should Load Only Found Libraries
     ...    instead of full path.
     [Tags]    rfhub2-342    installed_libs
     Run Cli Package With Options
-    ...    --no-installed-keywords NonExistingLibrary
+    ...    --load-mode=insert --no-installed-keywords NonExistingLibrary
     Output Should Contain    Successfully loaded 0 collections with 0 keywords.
     Api Should Have 0 Collections And 0 Keywords
 
@@ -161,14 +161,14 @@ Running Cli In Statistics Mode Should Populate App With Execution Data
     [Documentation]    Running Cli In Statistics Mode 
     ...    Should Populate App With Execution Data
     [Tags]    rfhub2-67    statistics
-    Run Cli Package With Options    --mode=statistics ${SUBDIR_PATH}
+    Run Cli Package With Options    --load-mode=insert --mode=statistics ${SUBDIR_PATH}
     Output Should Contain    Successfully loaded 1 files with 3 statistics.
     
 Running Cli In Statistics Mode Should Populate App With New Execution Data
     [Documentation]    Running Cli In Statistics Mode 
     ...    Should Populate App With New Execution Data
     [Tags]    rfhub2-67    statistics
-    Run Cli Package With Options    --mode=statistics ${STATISTICS_PATH}
+    Run Cli Package With Options    --load-mode=insert --mode=statistics ${STATISTICS_PATH}
     Output Should Contain    Successfully loaded 1 files with 87 statistics
     Output Should Contain    Records already exist for file from ${SUBDIR_PATH}${/}output.xml
     [Teardown]    Delete All Statistics

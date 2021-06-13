@@ -49,13 +49,13 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 @click.option(
     "--load-mode",
     "-l",
-    type=click.Choice(["insert", "append", "update", "merge"], case_sensitive=False),
-    default="insert",
+    type=click.Choice(["merge", "insert", "append", "update"], case_sensitive=False),
+    default="merge",
     help="""Choice parameter specifying in what load mode package should run:\n
-             - `insert` - default value, removes all existing collections from app and add ones found in paths\n
+             - `merge`  - default value, adds new and updates only matched collections, does nothing with not matched ones\n
+             - `insert` - removes all existing collections from app and add ones found in paths\n
              - `append` - adds collections found in paths without removal of existing ones\n
-             - `update` - removes collections not found in paths, adds new ones and updates existing ones\n
-             - `merge`  - adds new and updates only matched collections, does nothing with not matched ones.""",
+             - `update` - removes collections not found in paths, adds new ones and updates existing ones""",
 )
 @click.argument("paths", nargs=-1)
 def main(

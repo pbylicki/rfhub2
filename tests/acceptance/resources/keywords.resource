@@ -83,7 +83,7 @@ Delete All Statistics
     Should Be Equal As Integers    ${response.status_code}    204
 
 Run Cli Package Without Installed Keywords
-    Run Cli Package With Options    --no-installed-keywords ${INITIAL_FIXTURES}
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${INITIAL_FIXTURES}
 
 Backup And Switch Initial With Updated Fixtures
     Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}

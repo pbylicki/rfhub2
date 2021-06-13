@@ -61,22 +61,20 @@ Documentation For Load Mode Should Be Displayed Properly
     [Documentation]    Documentation For Load Mode Should Be Displayed Properly
     [Tags]    rfhub2-64    rfhub2-330    update
     Output Should Contain
-    ...    -l, --load-mode [insert|append|update|merge]
+    ...    -l, --load-mode [merge|insert|append|update]
     ...    Choice parameter specifying in what load
     ...    mode package should run:
-    ...    - `insert` - 
-    ...    default value, removes all existing
+    ...    - `merge`  - default value, adds new and
+    ...    updates only matched collections, does
+    ...    nothing with not matched ones
+    ...    - `insert` - removes all existing
     ...    collections from app and add ones found in
     ...    paths
-    ...    - `append`
-    ...    - adds collections found 
-    ...    in paths without removal of existing ones
-    ...    - `update` - removes collections not found in
-    ...    paths, adds new ones and updates existing
-    ...    ones.
-    ...    - `merge`
-    ...    - adds new and updates only matched collections,
-    ...    does nothing with not matched ones.
+    ...    - `append` - adds collections found in paths
+    ...    without removal of existing ones
+    ...    - `update` - removes collections not found
+    ...    in paths, adds new ones and updates existing
+    ...    ones
 
 Documentation For Help Should Be Displayed Properly
     [Documentation]    Documentation For Help Should Be Displayed Properly

@@ -55,7 +55,9 @@ To populate app but to skip loading RFWK installed libraries:
 Rfhub2-cli for keywords documentation can be run in four load-modes:
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
--  | ``insert``, default mode, that will clean up existing collections app
+-  | ``merge``, default mode, adds new and updates only matched collections, does nothing with not matched ones
+   | ``rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo name_of_installed_library``
+-  | ``insert``, that will clean up existing collections app
    | and load all collections found in provided paths
    | ``rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo name_of_installed_library``
 -  | ``append``, which will only add collections form provided paths
@@ -63,8 +65,6 @@ Rfhub2-cli for keywords documentation can be run in four load-modes:
 -  | ``update``, which will compare existing collections with newly found
    | ones, and update existing, remove obsolete and add new ones
    | ``rfhub2-cli --load-mode=update ../your_repo ../your_other_repo name_of_installed_library``
--  | ``merge``, adds new and updates only matched collections, does nothing with not matched ones.
-   | ``rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo name_of_installed_library``
 
 Populating application with keywords execution statistics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -113,11 +113,15 @@ Full list of rfhub2-cli options:
                               - `statistics` - application is working with
                               data about keywords execution.
 
-  -l, --load-mode [insert|append|update|merge]
+  -l, --load-mode [merge|insert|append|update]
                               Choice parameter specifying in what load
                               mode package should run:
 
-                              - `insert` - default value, removes all
+                              - `merge`  - default value, adds new and
+                              updates only matched collections, does
+                              nothing with not matched ones
+
+                              - `insert` - removes all
                               existing collections from app and add ones
                               found in paths
 
@@ -126,8 +130,5 @@ Full list of rfhub2-cli options:
 
                               - `update` - removes collections not found
                               in paths, adds new ones and updates existing
-                              ones.
-
-                              - `merge`, adds new and updates only matched
-                              collections, does nothing with not matched ones.
+                              ones
 

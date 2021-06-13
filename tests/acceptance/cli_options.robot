@@ -76,6 +76,24 @@ Documentation For Load Mode Should Be Displayed Properly
     ...    in paths, adds new ones and updates existing
     ...    ones
 
+Documentation For Include Exclude Should Be Displayed Properly
+    [Documentation]    Documentation For Include Exclude options Should Be Displayed Properly
+    [Tags]    include-exclude
+    Output Should Contain
+    ...    --include TEXT
+    ...    Include all the keywords containing tags
+    ...    matching this pattern. This option has the
+    ...    same behavior as the --include option of the
+    ...    RobotFramework CLI (with the same format).
+    ...    By default, all the keywords found are
+    ...    included.
+    ...    --exclude TEXT
+    ...    Exclude all the keywords containing tags
+    ...    matching this pattern. This option has the
+    ...    same behavior as the --exclude option of the
+    ...    RobotFramework CLI (with the same format).
+    ...    By default, no keyword is excluded.
+
 Documentation For Help Should Be Displayed Properly
     [Documentation]    Documentation For Help Should Be Displayed Properly
     Output Should Contain

@@ -1,4 +1,4 @@
-alembic==1.5.8
+alembic==1.6.5
 aiofiles==0.6.0
 Click==7.1.2
 dataclasses==0.6

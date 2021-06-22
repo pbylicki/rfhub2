@@ -146,14 +146,14 @@ Full list of rfhub2-cli options:
                               in paths, adds new ones and updates existing
                               ones
 
---include TEXT                Include all the keywords containing tags
+-i, --include TEXT            Include all the keywords containing tags
                               matching this pattern. This option has the
                               same behavior as the --include option of the
                               RobotFramework CLI (with the same format).
                               By default, all the keywords found are
                               included.
 
---exclude TEXT                Exclude all the keywords containing tags
+-e, --exclude TEXT            Exclude all the keywords containing tags
                               matching this pattern. This option has the
                               same behavior as the --exclude option of the
                               RobotFramework CLI (with the same format).

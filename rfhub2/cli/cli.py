@@ -59,6 +59,7 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 )
 @click.option(
     "--include",
+    "-i",
     type=click.STRING,
     default="",
     help="Include all the keywords containing tags matching this pattern. "
@@ -67,6 +68,7 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 )
 @click.option(
     "--exclude",
+    "-e",
     type=click.STRING,
     default="",
     help="Exclude all the keywords containing tags matching this pattern. "

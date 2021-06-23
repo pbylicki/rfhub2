@@ -52,6 +52,20 @@ To populate app but to skip loading RFWK installed libraries:
 
     rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 
+To populate app only including or excluding keywords with tags matching custom patterns
+(more information on the include/exclude feature `here <https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#tag-patterns>`_):
+
+::
+
+    # Including keywords containing tag "your-tag" and not containing tag "your-other-tag":
+    rfhub2-cli --include your-tag --exclude your-other-tag ../your_repo ../your_other_repo
+
+    # To populate app only with keywords containing either tag "💡" or tag "🔧", and tag "🤖":
+    rfhub2-cli --include 💡OR🔧AND🤖 ../your_repo ../your_other_repo
+
+    # To populate app only with keywords containing tags starting by "important-tag-":
+    rfhub2-cli --include important-tag-* ../your_repo ../your_other_repo
+
 Rfhub2-cli for keywords documentation can be run in four load-modes:
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -60,7 +74,7 @@ Rfhub2-cli for keywords documentation can be run in four load-modes:
 -  | ``insert``, that will clean up existing collections app
    | and load all collections found in provided paths
    | ``rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo name_of_installed_library``
--  | ``append``, which will only add collections form provided paths
+-  | ``append``, which will only add collections from provided paths
    | ``rfhub2-cli --load-mode=append ../your_repo ../your_other_repo name_of_installed_library``
 -  | ``update``, which will compare existing collections with newly found
    | ones, and update existing, remove obsolete and add new ones
@@ -132,3 +146,17 @@ Full list of rfhub2-cli options:
                               in paths, adds new ones and updates existing
                               ones
 
+-i, --include TEXT            Include all the keywords containing tags
+                              matching this pattern. This option has the
+                              same behavior as the --include option of the
+                              RobotFramework CLI (with the same format).
+                              By default, all the keywords found are
+                              included.
+
+-e, --exclude TEXT            Exclude all the keywords containing tags
+                              matching this pattern. This option has the
+                              same behavior as the --exclude option of the
+                              RobotFramework CLI (with the same format).
+                              By default, no keyword is excluded.
+
+--help                        Show this message and exit.

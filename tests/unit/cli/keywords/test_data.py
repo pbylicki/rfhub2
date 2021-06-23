@@ -1,5 +1,6 @@
 from pathlib import Path
 import robot.libraries
+from robot.libdocpkg.model import KeywordDoc
 
 from rfhub2.cli.keywords.keywords_importer import CollectionUpdateWithKeywords
 from rfhub2.model import Collection, CollectionUpdate, KeywordUpdate, NestedKeyword
@@ -199,3 +200,10 @@ EXPECTED_COLLECTION_WITH_KW_1 = CollectionUpdateWithKeywords(
 EXPECTED_COLLECTION_WITH_KW_2 = CollectionUpdateWithKeywords(
     EXPECTED_COLLECTION_2, EXPECTED_COLLECTION_KEYWORDS_2
 )
+KEYWORDDOC_WITH_TAGS = [
+    KeywordDoc(name="kw1", tags=("tag1")),  # tag1
+    KeywordDoc(name="kw2", tags=("tag1", "tag2")),  # tag1|tag2 and tag1&tag2
+    KeywordDoc(name="kw3", tags=("tag1", "tag3")),  # tag1|tag2
+    KeywordDoc(name="kw4", tags=("tag2", "tag3")),  # tag2
+    KeywordDoc(name="kw5", tags=()),
+]

@@ -57,6 +57,24 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
              - `append` - adds collections found in paths without removal of existing ones\n
              - `update` - removes collections not found in paths, adds new ones and updates existing ones""",
 )
+@click.option(
+    "--include",
+    "-i",
+    type=click.STRING,
+    default="",
+    help="Include all the keywords containing tags matching this pattern. "
+    "This option has the same behavior as the --include option of the RobotFramework CLI (with the same format). "
+    "By default, all the keywords found are included.",
+)
+@click.option(
+    "--exclude",
+    "-e",
+    type=click.STRING,
+    default="",
+    help="Exclude all the keywords containing tags matching this pattern. "
+    "This option has the same behavior as the --exclude option of the RobotFramework CLI (with the same format). "
+    "By default, no keyword is excluded.",
+)
 @click.argument("paths", nargs=-1)
 def main(
     app_url: str,
@@ -66,13 +84,15 @@ def main(
     load_mode: str,
     mode: str,
     no_installed_keywords: bool,
+    include: str,
+    exclude: str,
 ) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
     if mode == "keywords":
         rfhub_importer = KeywordsImporter(
-            client, paths, no_installed_keywords, load_mode
+            client, paths, no_installed_keywords, load_mode, include, exclude
         )
         loaded_collections, loaded_keywords = rfhub_importer.import_data()
         print(

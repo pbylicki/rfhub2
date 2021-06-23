@@ -93,6 +93,10 @@ Backup And Switch Initial With Merged Fixtures
     Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
     Copy Directory      ${MERGED_FIXTURES}      ${INITIAL_FIXTURES}
 
+Backup And Switch Initial With Include_Exclude Fixtures
+    Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
+    Copy Directory      ${INCLUDE_EXCLUDE_FIXTURES}    ${INITIAL_FIXTURES}
+
 Switch Merged With Merged_2 Fixtures
     Remove Directory    ${INITIAL_FIXTURES}     recursive=True
     Copy Directory      ${MERGED_2_FIXTURES}    ${INITIAL_FIXTURES}

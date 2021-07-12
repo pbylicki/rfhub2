@@ -1,6 +1,6 @@
 alembic==1.6.5
 aiofiles==0.6.0
-Click==7.1.2
+Click==8.0.1
 dataclasses==0.6
 fastapi==0.65.2
 h11==0.12.0

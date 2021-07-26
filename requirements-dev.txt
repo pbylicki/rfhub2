@@ -2,7 +2,7 @@ black==19.3b0
 coverage==5.5
 codecov==2.1.11
 responses==0.13.2
-twine==1.14.0
+twine==3.4.2
 wheel==0.36.2
 robotframework-requests==0.8.2
 robotframework-seleniumlibrary==5.1.3

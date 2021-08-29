@@ -83,7 +83,7 @@ Delete All Statistics
     Should Be Equal As Integers    ${response.status_code}    204
 
 Run Cli Package Without Installed Keywords
-    Run Cli Package With Options    --no-installed-keywords ${INITIAL_FIXTURES}
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${INITIAL_FIXTURES}
 
 Backup And Switch Initial With Updated Fixtures
     Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
@@ -92,6 +92,10 @@ Backup And Switch Initial With Updated Fixtures
 Backup And Switch Initial With Merged Fixtures
     Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
     Copy Directory      ${MERGED_FIXTURES}      ${INITIAL_FIXTURES}
+
+Backup And Switch Initial With Include_Exclude Fixtures
+    Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
+    Copy Directory      ${INCLUDE_EXCLUDE_FIXTURES}    ${INITIAL_FIXTURES}
 
 Switch Merged With Merged_2 Fixtures
     Remove Directory    ${INITIAL_FIXTURES}     recursive=True

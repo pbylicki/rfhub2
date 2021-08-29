@@ -1,5 +1,5 @@
 ## Install dependencies
-####Python
+#### Python
 ```
 pip install -r requirements.txt -r requirements-dev.txt
 ```
@@ -73,9 +73,9 @@ To populate app but to skip loading RFWK installed libraries:
 ```
 rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ```
-To preserve previously loaded collections and add new ones:
+To flush the database and to populate app with collections from provided paths:
 ```
-rfhub2-cli --no-db-flush ../your_repo ../your_other_repo
+rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo
 ```
 
 ### Run unit tests

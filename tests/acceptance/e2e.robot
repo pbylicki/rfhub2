@@ -15,7 +15,7 @@ Force Tags        e2e
 
 *** Test Cases ***
 Populated App Should Show Number Of Collections
-    Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures/initial
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${CURDIR}/../fixtures/initial
     Collections Count On Main Page Should Be 8
 
 First Page Table Should Contain Proper Libraries Data
@@ -29,7 +29,7 @@ First Page Table Should Contain Proper Libraries Data
     SingleClassLib          LIBRARY     1.2.3       3
     Test Libdoc File        LIBRARY     3.2.0       1
     test_res_lib_dir        RESOURCE    ${EMPTY}    2
-    test_resource           RESOURCE    ${EMPTY}    2    
+    test_resource           RESOURCE    ${EMPTY}    2
     test_robot              RESOURCE    ${EMPTY}    4
 
 Left Panel Should Contain Expected Libraries
@@ -141,7 +141,7 @@ App Should Display Libraries With Times Used Statistics
     [Setup]    Test Setup For Collections Statistics
     [Template]    Table Should Contain Library Data  
     e2e_keywords       RESOURCE	   ${EMPTY}    17	  114
-    keywords	       RESOURCE	   ${EMPTY}    14	  67
+    keywords	       RESOURCE	   ${EMPTY}    15	  67
 
 App Should Display Keywords Statistics For Single Libary
     [Documentation]    App Should Display Keywords Statistics For Single Libary
@@ -164,8 +164,8 @@ Test Setup For Collections Update
     Collections Count On Main Page Should Be 7
 
 Test Setup For Collections Statistics
-    Run Cli Package With Options    --no-installed-keywords ${STATISTICS_PATH} ${CURDIR}/resources
-    Run Cli Package With Options    -m statistics ${STATISTICS_PATH}
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${STATISTICS_PATH} ${CURDIR}/resources
+    Run Cli Package With Options    --load-mode=insert -m statistics ${STATISTICS_PATH}
     Navigate To Main Page
     Sleep    1s
     Collections Count On Main Page Should Be 2

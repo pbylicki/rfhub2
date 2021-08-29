@@ -145,8 +145,8 @@ Running Cli With Library Names Instead Of Paths Should Populate App
     [Tags]    rfhub2-342    installed_libs
     Run Cli Package With Options
     ...    --load-mode=insert --no-installed-keywords RequestsLibrary
-    Output Should Contain    Successfully loaded 1 collections with 26 keywords.
-    Api Should Have 1 Collections And 26 Keywords
+    Output Should Contain    Successfully loaded 1 collections with 33 keywords.
+    Api Should Have 1 Collections And 33 Keywords
 
 Running Cli With Non Existing Library Names Should Load Only Found Libraries
     [Documentation]    Tests loading installed library using given name, 

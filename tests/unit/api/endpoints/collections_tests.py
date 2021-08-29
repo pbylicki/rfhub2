@@ -148,3 +148,13 @@ class CollectionsApiTest(BaseApiEndpointTest):
     def test_get_404_when_deleting_nonexistent_collection(self):
         response = self.auth_client.delete("api/v1/collections/999/")
         self.assertEqual(response.status_code, 404)
+
+    def test_delete_all_collections(self):
+        response = self.auth_client.delete("api/v1/collections/")
+        self.assertEqual(response.status_code, 204)
+        response = self.auth_client.get("api/v1/collections/")
+        self.assertEqual(len(response.json()), 0)
+
+    def test_should_not_delete_all_without_auth(self):
+        response = self.client.delete("api/v1/collections/")
+        self.assertEqual(response.status_code, 401)

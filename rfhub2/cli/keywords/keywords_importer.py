@@ -32,29 +32,10 @@ class KeywordsImporter:
         self.include = include
         self.exclude = exclude
 
-    def delete_all_collections(self) -> Set[int]:
-        """
-        Deletes all existing collections.
-        """
-        collections_id = set()
-        while len(self.client.get_collections()) > 0:
-            collections_id.update(self._delete_collections())
-        return collections_id
-
     def get_all_collections(self) -> List[Collection]:
         """Gets all collections from application"""
         collections = self.client.get_collections(0, 999999)
         return self._convert_json_to_collection(collections)
-
-    def _delete_collections(self) -> Set[int]:
-        """
-        Helper method to delete all existing callections.
-        """
-        collections = self.client.get_collections()
-        collections_id = {collection["id"] for collection in collections}
-        for id in collections_id:
-            self.client.delete_collection(id)
-        return collections_id
 
     def import_data(self) -> Tuple[int, int]:
         """
@@ -76,7 +57,7 @@ class KeywordsImporter:
         if self.load_mode == "append":
             loaded_collections = self.add_collections(collections)
         elif self.load_mode == "insert":
-            self.delete_all_collections()
+            self.client.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:
             existing_collections = self.get_all_collections()

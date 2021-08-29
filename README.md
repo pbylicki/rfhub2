@@ -1,6 +1,6 @@
 # rfhub2
 
-[![Build Status](https://travis-ci.org/pbylicki/rfhub2.svg?branch=master)](https://travis-ci.org/pbylicki/rfhub2)
+[![Build Status](https://travis-ci.com/pbylicki/rfhub2.svg?branch=master)](https://travis-ci.com/pbylicki/rfhub2)
 [![codecov](https://codecov.io/gh/pbylicki/rfhub2/branch/master/graph/badge.svg)](https://codecov.io/gh/pbylicki/rfhub2)
 [![image](https://img.shields.io/pypi/v/rfhub2.svg)](https://pypi.org/project/rfhub2/)
 [![image](https://img.shields.io/pypi/pyversions/rfhub2.svg)](https://pypi.org/project/rfhub2/)
@@ -74,16 +74,27 @@ To populate app but to skip loading RFWK installed libraries:
 ```
 rfhub2-cli --no-installed-keywords ../your_repo ../your_other_repo
 ```
-##### Rfhub2-cli for keywords documentation can be run in three load-modes:
+To populate app only including or excluding keywords with tags matching custom patterns (more information on the include/exclude feature [here](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#tag-patterns)):
+```bash
+# Including keywords containing tag "your-tag" and not containing tag "your-other-tag":
+rfhub2-cli --include your-tag --exclude your-other-tag ../your_repo ../your_other_repo
 
-- `insert`, default mode, that will clean up existing collections app and load all collections found in provided paths  
-``` rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo```
-- `append`, which will only add collections form provided paths  
-``` rfhub2-cli --load-mode=append ../your_repo ../your_other_repo```
-- `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones  
-``` rfhub2-cli --load-mode=update ../your_repo ../your_other_repo```
-- `merge`, updates only matched collections, does nothing with not matched ones.
+# To populate app only with keywords containing either tag "💡" or "🔧", and tag "🤖":
+rfhub2-cli --include 💡OR🔧AND🤖 ../your_repo ../your_other_repo
+
+# To populate app only with keywords containing tags starting by "important-tag-":
+rfhub2-cli --include important-tag-* ../your_repo ../your_other_repo
+```
+
+##### Rfhub2-cli for keywords documentation can be run in three load-modes:
+- `merge`, default mode, updates only matched collections, does nothing with not matched ones
 ``` rfhub2-cli --load-mode=merge ../your_repo ../your_other_repo```
+- `insert`, that will clean up existing collections app and load all collections found in provided paths
+``` rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo```
+- `append`, which will only add collections from provided paths
+``` rfhub2-cli --load-mode=append ../your_repo ../your_other_repo```
+- `update`, which will compare existing collections with newly found ones, and update existing, remove obsolete and add new ones
+``` rfhub2-cli --load-mode=update ../your_repo ../your_other_repo```
 
 #### Populate application with keywords execution statistics
 ##### To gather keywords execution statistics:

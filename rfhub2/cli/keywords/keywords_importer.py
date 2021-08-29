@@ -22,11 +22,15 @@ class KeywordsImporter:
         paths: Tuple[Union[Path, str], ...],
         no_installed_keywords: bool,
         load_mode: str,
+        include: str,
+        exclude: str,
     ) -> None:
         self.client = client
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.load_mode = load_mode
+        self.include = include
+        self.exclude = exclude
 
     def get_all_collections(self) -> List[Collection]:
         """Gets all collections from application"""
@@ -45,7 +49,9 @@ class KeywordsImporter:
         Import libraries to application from paths specified when invoking client.
         :return: Number of libraries and keywords loaded
         """
-        keywords_extractor = KeywordsExtractor(self.paths, self.no_installed_keywords)
+        keywords_extractor = KeywordsExtractor(
+            self.paths, self.no_installed_keywords, self.include, self.exclude
+        )
         libraries_paths = keywords_extractor.get_libraries_paths()
         collections = keywords_extractor.create_collections(libraries_paths)
         if self.load_mode == "append":

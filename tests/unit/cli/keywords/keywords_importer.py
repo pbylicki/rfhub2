@@ -12,7 +12,12 @@ class KeywordsImporterTests(unittest.TestCase):
         self.fixture_path = FIXTURE_PATH
         self.client = Client("http://localhost:8000", "rfhub", "rfhub")
         self.rfhub_importer = KeywordsImporter(
-            self.client, (self.fixture_path,), True, load_mode="insert"
+            self.client,
+            (self.fixture_path,),
+            True,
+            load_mode="insert",
+            include="",
+            exclude="",
         )
 
     def test_import_data(self):
@@ -22,6 +27,8 @@ class KeywordsImporterTests(unittest.TestCase):
                 (self.fixture_path / "LibWithInit",),
                 True,
                 load_mode="insert",
+                include="",
+                exclude="",
             )
             rsps.add(
                 responses.DELETE, f"{self.client.api_url}/collections/", status=204
@@ -56,6 +63,8 @@ class KeywordsImporterTests(unittest.TestCase):
                 (self.fixture_path / "LibWithInit",),
                 True,
                 load_mode="insert",
+                include="",
+                exclude="",
             )
             rsps.add(
                 responses.DELETE, f"{self.client.api_url}/collections/", status=204
@@ -90,6 +99,8 @@ class KeywordsImporterTests(unittest.TestCase):
                 (self.fixture_path / "LibWithInit",),
                 True,
                 load_mode="append",
+                include="",
+                exclude="",
             )
             rsps.add(
                 responses.POST,
@@ -121,6 +132,8 @@ class KeywordsImporterTests(unittest.TestCase):
                 (self.fixture_path / "LibWithInit",),
                 True,
                 load_mode="update",
+                include="",
+                exclude="",
             )
             rsps.add(
                 responses.GET,
@@ -162,6 +175,8 @@ class KeywordsImporterTests(unittest.TestCase):
                 (self.fixture_path / "LibWithInit",),
                 True,
                 load_mode="merge",
+                include="",
+                exclude="",
             )
             rsps.add(
                 responses.GET,

@@ -11,15 +11,17 @@ SMALL_OUTPUT_XML = SUBDIR / "output.xml"
 KEYWORD_1 = XmlKeyword("BuiltIn", "Log", 1)
 KEYWORD_2 = XmlKeyword("BuiltIn", "Comment", 1)
 KEYWORD_3 = XmlKeyword("BuiltIn", "Should Be True", 1)
-KEYWORD = [KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_1, KEYWORD_2, KEYWORD_3]
+KEYWORD = [KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_1, KEYWORD_2, KEYWORD_3]
+
+EXECUTION_TIME = "2021-08-30 18:51:43.337000"
 
 STATISTICS_1 = KeywordStatistics(
     **{
         "collection": "BuiltIn",
         "keyword": "Log",
-        "execution_time": "2021-08-30 18:51:43.337000",
-        "times_used": 2,
-        "total_elapsed": 2,
+        "execution_time": EXECUTION_TIME,
+        "times_used": 3,
+        "total_elapsed": 3,
         "min_elapsed": 1,
         "max_elapsed": 1,
     }
@@ -39,8 +41,9 @@ class StatisticsExtractorTests(unittest.TestCase):
 
     def test_parse_xml_keywords_should_return_expected_statistics(self):
         result = self.statistics_extractor.parse_xml_keywords()
+        self.maxDiff = None
         self.assertListEqual(result, KEYWORD)
 
     def test_get_execution_time_should_return_correct_time(self):
         result = self.statistics_extractor.get_execution_time()
-        self.assertEqual(result, "2021-08-30 18:51:43.337000")
+        self.assertEqual(result, EXECUTION_TIME)

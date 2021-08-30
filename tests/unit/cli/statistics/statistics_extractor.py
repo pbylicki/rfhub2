@@ -17,7 +17,7 @@ STATISTICS_1 = KeywordStatistics(
     **{
         "collection": "BuiltIn",
         "keyword": "Log",
-        "execution_time": "2019-12-25 11:38:08.868000",
+        "execution_time": "2021-08-30 18:51:43.337000",
         "times_used": 2,
         "total_elapsed": 2,
         "min_elapsed": 1,
@@ -43,4 +43,4 @@ class StatisticsExtractorTests(unittest.TestCase):
 
     def test_get_execution_time_should_return_correct_time(self):
         result = self.statistics_extractor.get_execution_time()
-        self.assertEqual(result, "2019-12-25 11:38:08.868000")
+        self.assertEqual(result, "2021-08-30 18:51:43.337000")

@@ -154,7 +154,7 @@ App Should Display Keywords Statistics For Single Libary
     Sleep    2s
     Row 2 In Column 1 Of Table ${detail_view_library_table} Should Contain Check If Tags Are Displayed Correctly
     Row 2 In Column 5 Of Table ${detail_view_library_table} Should Contain 4
-    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 106 ms
+    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 124 ms
 
 *** Keywords ***
 Test Setup For Collections Update

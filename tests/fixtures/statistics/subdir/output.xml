@@ -5,50 +5,87 @@
             <kw name="Log" library="BuiltIn">
                 <arg>This is dummy message</arg>
                 <doc>Logs the given message with the given level.</doc>
-                <msg timestamp="20210830 18:51:43.383" level="INFO">This is dummy message</msg>
-                <status status="PASS" starttime="20210830 18:51:43.383" endtime="20210830 18:51:43.384"/>
+                <msg timestamp="20210830 19:22:58.650" level="INFO">This is dummy message</msg>
+                <status status="PASS" starttime="20210830 19:22:58.650" endtime="20210830 19:22:58.651"/>
             </kw>
             <kw name="Comment" library="BuiltIn">
                 <arg>This is Dummy Comment</arg>
                 <doc>Displays the given messages in the log file as keyword arguments.</doc>
-                <status status="PASS" starttime="20210830 18:51:43.383" endtime="20210830 18:51:43.384"/>
+                <status status="PASS" starttime="20210830 19:22:58.650" endtime="20210830 19:22:58.651"/>
             </kw>
             <kw name="Should Be True" library="BuiltIn">
                 <arg>2+2==4</arg>
                 <doc>Fails if the given condition is not true.</doc>
-                <status status="PASS" starttime="20210830 18:51:43.384" endtime="20210830 18:51:43.385"/>
+                <status status="PASS" starttime="20210830 19:22:58.651" endtime="20210830 19:22:58.652"/>
             </kw>
-            <status status="PASS" starttime="20210830 18:51:43.382" endtime="20210830 18:51:43.384"/>
+            <status status="PASS" starttime="20210830 19:22:58.649" endtime="20210830 19:22:58.651"/>
         </test>
         <test id="s1-t2" name="Test 2">
             <kw name="Log" library="BuiltIn">
                 <arg>This is dummy message</arg>
                 <doc>Logs the given message with the given level.</doc>
-                <msg timestamp="20210830 18:51:43.386" level="INFO">This is dummy message</msg>
-                <status status="PASS" starttime="20210830 18:51:43.386" endtime="20210830 18:51:43.387"/>
+                <msg timestamp="20210830 19:22:58.653" level="INFO">This is dummy message</msg>
+                <status status="PASS" starttime="20210830 19:22:58.652" endtime="20210830 19:22:58.653"/>
             </kw>
             <kw name="Comment" library="BuiltIn">
                 <arg>This is Dummy Comment</arg>
                 <doc>Displays the given messages in the log file as keyword arguments.</doc>
-                <status status="PASS" starttime="20210830 18:51:43.386" endtime="20210830 18:51:43.387"/>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
             </kw>
             <kw name="Should Be True" library="BuiltIn">
                 <arg>2+2==4</arg>
                 <doc>Fails if the given condition is not true.</doc>
-                <status status="PASS" starttime="20210830 18:51:43.386" endtime="20210830 18:51:43.387"/>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
             </kw>
-            <status status="PASS" starttime="20210830 18:51:43.385" endtime="20210830 18:51:43.387"/>
+            <status status="PASS" starttime="20210830 19:22:58.652" endtime="20210830 19:22:58.654"/>
         </test>
-        <status status="PASS" starttime="20210830 18:51:43.340" endtime="20210830 18:51:43.388"/>
+        <test id="s1-t3" name="Test 3">
+            <kw name="Log" library="BuiltIn">
+                <arg>This is dummy message</arg>
+                <doc>Logs the given message with the given level.</doc>
+                <msg timestamp="20210830 19:22:58.653" level="INFO">This is dummy message</msg>
+                <status status="PASS" starttime="20210830 19:22:58.652" endtime="20210830 19:22:58.653"/>
+            </kw>
+            <kw name="Comment" library="BuiltIn">
+                <arg>This is Dummy Comment</arg>
+                <doc>Displays the given messages in the log file as keyword arguments.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
+            </kw>
+            <kw name="Should Be True" library="BuiltIn">
+                <arg>2+2==4</arg>
+                <doc>Fails if the given condition is not true.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
+            </kw>
+            <kw name="Should Be True" library="BuiltIn">
+                <arg>123+123==4444</arg>
+                <doc>Fails if the given condition is not true.</doc>
+                <msg timestamp="20210830 19:22:58.657" level="FAIL">'123+123==4444' should be true.</msg>
+                <status status="FAIL" starttime="20210830 19:22:58.655" endtime="20210830 19:22:58.657"/>
+            </kw>
+            <kw name="Log" library="BuiltIn">
+                <arg>This is message with skip status</arg>
+                <doc>Logs the given message with the given level.</doc>
+                <status status="NOT RUN" starttime="20210830 19:22:58.657" endtime="20210830 19:22:58.657"/>
+            </kw>
+            <tag>skiiip</tag>
+            <status status="SKIP" starttime="20210830 19:22:58.654" endtime="20210830 19:22:58.658">Test failed but its
+                tags matched '--SkipOnFailure' and it was marked skipped.
+
+                Original failure:
+                '123+123==4444' should be true.
+            </status>
+        </test>
+        <status status="PASS" starttime="20210830 19:22:58.608" endtime="20210830 19:22:58.659"/>
     </suite>
     <statistics>
         <total>
-            <stat pass="2" fail="0" skip="0">All Tests</stat>
+            <stat pass="2" fail="0" skip="1">All Tests</stat>
         </total>
         <tag>
+            <stat pass="0" fail="0" skip="1">skiiip</stat>
         </tag>
         <suite>
-            <stat pass="2" fail="0" skip="0" id="s1" name="Aaa">Aaa</stat>
+            <stat pass="2" fail="0" skip="1" id="s1" name="Aaa">Aaa</stat>
         </suite>
     </statistics>
     <errors>

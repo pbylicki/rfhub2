@@ -103,7 +103,7 @@ class StatisticsExtractor:
         """
         Checks is keyword has a ``PASS`` status in output.xml file
         """
-        return xml_keyword.find('status').attrib['status'].upper() == "PASS"
+        return xml_keyword.find("status").attrib["status"].upper() == "PASS"
 
     def datetime_from_attribute_agg(
         self, element: Element, attr: str, agg_func: Callable[[Iterable[str]], str]

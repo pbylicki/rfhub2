@@ -11,7 +11,17 @@ SMALL_OUTPUT_XML = SUBDIR / "output.xml"
 KEYWORD_1 = XmlKeyword("BuiltIn", "Log", 1)
 KEYWORD_2 = XmlKeyword("BuiltIn", "Comment", 1)
 KEYWORD_3 = XmlKeyword("BuiltIn", "Should Be True", 1)
-KEYWORD = [KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_1, KEYWORD_2, KEYWORD_3, KEYWORD_1, KEYWORD_2, KEYWORD_3]
+KEYWORD = [
+    KEYWORD_1,
+    KEYWORD_2,
+    KEYWORD_3,
+    KEYWORD_1,
+    KEYWORD_2,
+    KEYWORD_3,
+    KEYWORD_1,
+    KEYWORD_2,
+    KEYWORD_3,
+]
 
 EXECUTION_TIME = "2021-08-30 18:51:43.337000"
 

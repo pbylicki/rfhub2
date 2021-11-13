@@ -164,9 +164,9 @@ App Should Display Embedded Keywords Statistics For Single Libary
     Click Element When Visible    ${e2e_keywords_file}
     Wait Until Element Is Visible    ${detail_view_library_version}
     Sleep    2s
-    Row 3 In Column 1 Of Table ${detail_view_library_table} Should Contain Click \${keyword} In Left Panel
-    Row 3 In Column 5 Of Table ${detail_view_library_table} Should Contain 4
-    Row 3 In Column 6 Of Table ${detail_view_library_table} Should Contain 394 ms
+    Row 15 In Column 1 Of Table ${detail_view_library_table} Should Contain Search Results Count Should Be \${n}
+    Row 15 In Column 5 Of Table ${detail_view_library_table} Should Contain 7
+    Row 15 In Column 6 Of Table ${detail_view_library_table} Should Contain 25 ms
 
 *** Keywords ***
 Test Setup For Collections Update

@@ -1,4 +1,6 @@
 from collections import Counter
+from pathlib import Path
+
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import groupby
@@ -30,8 +32,8 @@ def stats_key(keyword: XmlKeyword) -> StatsKey:
 
 
 class StatisticsExtractor:
-    def __init__(self, path: str):
-        self.path: str = path
+    def __init__(self, path: Path):
+        self.path: Path = path
         self.source_time_format: str = "%Y%m%d %H:%M:%S.%f"
         self.destination_time_format: str = "%Y-%m-%d %H:%M:%S.%f"
 
@@ -90,7 +92,7 @@ class StatisticsExtractor:
         return [
             XmlKeyword(
                 xml_keyword.attrib.get("library"),
-                xml_keyword.attrib.get("name"),
+                xml_keyword.attrib.get("sourcename", xml_keyword.attrib.get("name")),
                 self.calc_elapsed(xml_keyword),
             )
             for xml_keyword in xml_keywords

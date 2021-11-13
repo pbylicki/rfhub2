@@ -101,7 +101,8 @@ class StatisticsExtractor:
     @staticmethod
     def has_keyword_passed(xml_keyword: XmlKeyword) -> bool:
         """
-        Checks is keyword has a ``PASS`` status in output.xml file
+        Checks if keyword has a ``PASS`` status in output.xml file
+        Added to skip failed keywords, so statistics will not be biased.
         """
         return xml_keyword.find("status").attrib["status"].upper() == "PASS"
 

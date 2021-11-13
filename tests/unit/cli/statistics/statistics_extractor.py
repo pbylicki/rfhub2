@@ -51,7 +51,6 @@ class StatisticsExtractorTests(unittest.TestCase):
 
     def test_parse_xml_keywords_should_return_expected_statistics(self):
         result = self.statistics_extractor.parse_xml_keywords()
-        self.maxDiff = None
         self.assertListEqual(result, KEYWORD)
 
     def test_get_execution_time_should_return_correct_time(self):

@@ -95,7 +95,16 @@ class StatisticsExtractor:
             )
             for xml_keyword in xml_keywords
             if xml_keyword.attrib.get("library") is not None
+            and self.has_keyword_passed(xml_keyword)
         ]
+
+    @staticmethod
+    def has_keyword_passed(xml_keyword: XmlKeyword) -> bool:
+        """
+        Checks if keyword has a ``PASS`` status in output.xml file
+        Added to skip failed keywords, so statistics will not be biased.
+        """
+        return xml_keyword.find("status").attrib["status"].upper() == "PASS"
 
     def datetime_from_attribute_agg(
         self, element: Element, attr: str, agg_func: Callable[[Iterable[str]], str]

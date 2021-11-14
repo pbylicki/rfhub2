@@ -2,3 +2,4 @@
 # this file.
 -C ansi
 --variable ACTIVATE_VENV:. atests-venv/bin/activate &&
+--variable HOST:localhost

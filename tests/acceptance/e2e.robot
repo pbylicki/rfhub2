@@ -140,19 +140,21 @@ App Should Display Libraries With Times Used Statistics
     [Documentation]    App Should Display Libraries With Times Used Statistics
     [Setup]    Test Setup For Collections Statistics
     [Template]    Table Should Contain Library Data  
+    [Tags]    rfhub2-67    statistics
     e2e_keywords       RESOURCE	   ${EMPTY}    17	  114
     keywords	       RESOURCE	   ${EMPTY}    15	  67
 
 App Should Display Keywords Statistics For Single Libary
     [Documentation]    App Should Display Keywords Statistics For Single Libary
-    ...    this tests is dependant on 'App Should Display Libraries 
+    ...    this tests is dependant on 'App Should Display Libraries
     ...    With Times Used Statistics' to shorter execution time
+    [Tags]    rfhub2-67    statistics
     Click Element When Visible    ${e2e_keywords_file}
     Wait Until Element Is Visible    ${detail_view_library_version}
     Sleep    2s
     Row 2 In Column 1 Of Table ${detail_view_library_table} Should Contain Check If Tags Are Displayed Correctly
     Row 2 In Column 5 Of Table ${detail_view_library_table} Should Contain 4
-    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 106 ms
+    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 124 ms
 
 *** Keywords ***
 Test Setup For Collections Update

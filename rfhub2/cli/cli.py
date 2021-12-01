@@ -49,13 +49,31 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 @click.option(
     "--load-mode",
     "-l",
-    type=click.Choice(["insert", "append", "update", "merge"], case_sensitive=False),
-    default="insert",
+    type=click.Choice(["merge", "insert", "append", "update"], case_sensitive=False),
+    default="merge",
     help="""Choice parameter specifying in what load mode package should run:\n
-             - `insert` - default value, removes all existing collections from app and add ones found in paths\n
+             - `merge`  - default value, adds new and updates only matched collections, does nothing with not matched ones\n
+             - `insert` - removes all existing collections from app and add ones found in paths\n
              - `append` - adds collections found in paths without removal of existing ones\n
-             - `update` - removes collections not found in paths, adds new ones and updates existing ones\n
-             - `merge`  - adds new and updates only matched collections, does nothing with not matched ones.""",
+             - `update` - removes collections not found in paths, adds new ones and updates existing ones""",
+)
+@click.option(
+    "--include",
+    "-i",
+    type=click.STRING,
+    default="",
+    help="Include all the keywords containing tags matching this pattern. "
+    "This option has the same behavior as the --include option of the RobotFramework CLI (with the same format). "
+    "By default, all the keywords found are included.",
+)
+@click.option(
+    "--exclude",
+    "-e",
+    type=click.STRING,
+    default="",
+    help="Exclude all the keywords containing tags matching this pattern. "
+    "This option has the same behavior as the --exclude option of the RobotFramework CLI (with the same format). "
+    "By default, no keyword is excluded.",
 )
 @click.argument("paths", nargs=-1)
 def main(
@@ -66,13 +84,15 @@ def main(
     load_mode: str,
     mode: str,
     no_installed_keywords: bool,
+    include: str,
+    exclude: str,
 ) -> None:
     """Package to populate rfhub2 with robot framework keywords
        from libraries and resource files."""
     client = Client(app_url, user, password)
     if mode == "keywords":
         rfhub_importer = KeywordsImporter(
-            client, paths, no_installed_keywords, load_mode
+            client, paths, no_installed_keywords, load_mode, include, exclude
         )
         loaded_collections, loaded_keywords = rfhub_importer.import_data()
         click.echo(

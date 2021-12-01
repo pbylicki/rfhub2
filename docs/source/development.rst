@@ -71,6 +71,11 @@ Preserving already loaded collections and adding new ones:
 
     rfhub2-cli -l append ../your_repo ../your_other_repo
 
+Flushing the database and populating app with collections from provided paths:
+::
+
+    rfhub2-cli --load-mode=insert ../your_repo ../your_other_repo
+
 Frontend
 """"""""
 To run frontend development server execute:

@@ -15,7 +15,7 @@ Force Tags        e2e
 
 *** Test Cases ***
 Populated App Should Show Number Of Collections
-    Run Cli Package With Options    --no-installed-keywords ${CURDIR}/../fixtures/initial
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${CURDIR}/../fixtures/initial
     Collections Count On Main Page Should Be 8
 
 First Page Table Should Contain Proper Libraries Data
@@ -29,7 +29,7 @@ First Page Table Should Contain Proper Libraries Data
     SingleClassLib          LIBRARY     1.2.3       3
     Test Libdoc File        LIBRARY     3.2.0       1
     test_res_lib_dir        RESOURCE    ${EMPTY}    2
-    test_resource           RESOURCE    ${EMPTY}    2    
+    test_resource           RESOURCE    ${EMPTY}    2
     test_robot              RESOURCE    ${EMPTY}    4
 
 Left Panel Should Contain Expected Libraries
@@ -140,19 +140,33 @@ App Should Display Libraries With Times Used Statistics
     [Documentation]    App Should Display Libraries With Times Used Statistics
     [Setup]    Test Setup For Collections Statistics
     [Template]    Table Should Contain Library Data  
+    [Tags]    rfhub2-67    statistics
     e2e_keywords       RESOURCE	   ${EMPTY}    17	  114
-    keywords	       RESOURCE	   ${EMPTY}    14	  67
+    keywords	       RESOURCE	   ${EMPTY}    15	  67
 
 App Should Display Keywords Statistics For Single Libary
     [Documentation]    App Should Display Keywords Statistics For Single Libary
-    ...    this tests is dependant on 'App Should Display Libraries 
+    ...    this tests is dependant on 'App Should Display Libraries
     ...    With Times Used Statistics' to shorter execution time
+    [Tags]    rfhub2-67    statistics
     Click Element When Visible    ${e2e_keywords_file}
     Wait Until Element Is Visible    ${detail_view_library_version}
     Sleep    2s
     Row 2 In Column 1 Of Table ${detail_view_library_table} Should Contain Check If Tags Are Displayed Correctly
     Row 2 In Column 5 Of Table ${detail_view_library_table} Should Contain 4
-    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 106 ms
+    Row 2 In Column 6 Of Table ${detail_view_library_table} Should Contain 124 ms
+
+App Should Display Embedded Keywords Statistics For Single Libary
+    [Documentation]    App Should Display Embedded Keywords Statistics For Single Libary
+    ...    this tests is dependant on 'App Should Display Libraries
+    ...    With Times Used Statistics' to shorter execution time
+    [Tags]    rfhub2-291    statistics    embedded
+    Click Element When Visible    ${e2e_keywords_file}
+    Wait Until Element Is Visible    ${detail_view_library_version}
+    Sleep    2s
+    Row 15 In Column 1 Of Table ${detail_view_library_table} Should Contain Search Results Count Should Be \${n}
+    Row 15 In Column 5 Of Table ${detail_view_library_table} Should Contain 7
+    Row 15 In Column 6 Of Table ${detail_view_library_table} Should Contain 25 ms
 
 *** Keywords ***
 Test Setup For Collections Update
@@ -164,8 +178,8 @@ Test Setup For Collections Update
     Collections Count On Main Page Should Be 7
 
 Test Setup For Collections Statistics
-    Run Cli Package With Options    --no-installed-keywords ${STATISTICS_PATH} ${CURDIR}/resources
-    Run Cli Package With Options    -m statistics ${STATISTICS_PATH}
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${STATISTICS_PATH} ${CURDIR}/resources
+    Run Cli Package With Options    --load-mode=insert -m statistics ${STATISTICS_PATH}
     Navigate To Main Page
     Sleep    1s
     Collections Count On Main Page Should Be 2

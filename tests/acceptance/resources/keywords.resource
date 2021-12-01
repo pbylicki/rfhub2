@@ -32,7 +32,7 @@ Run Cli Package With Options
     ...    Attempt to run the rfhub2-cli package with the given options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli ${options}
+    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli -a http://${HOST}:8000 ${options}
     Set Suite Variable    ${output}
 
 Run Cli Package
@@ -40,7 +40,7 @@ Run Cli Package
     ...    Attempt to run the rfhub2-cli package with the default options
     ...    The stdout of the process will be in a test suite
     ...    variable named \${output}
-    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli
+    ${output}    Run    ${ACTIVATE_VENV} rfhub2-cli -a http://${HOST}:8000
     Set Suite Variable    ${output}
 
 Output Should Contain
@@ -61,7 +61,7 @@ Verify URL Is Reachable
     # Maybe it should be moved to a different file...
     [Arguments]    ${URL}    ${PORT}=8000
     [Documentation]    Fail if the given URL doesn't return a status code of 200.
-    Create Session    tmp    http://localhost:${PORT}
+    Create Session    tmp    http://${HOST}:${PORT}
     ${response}    GET On Session    tmp    ${url}
     Should Be Equal As Integers    ${response.status_code}    200
 
@@ -71,19 +71,19 @@ ${endpoint} Endpoint Should Have ${n} Items
 
 Get Request For Endpoint
     [Arguments]    ${endpoint}    ${params}=None
-    Create Session    tmp    http://localhost:8000/api/v1
+    Create Session    tmp    http://${HOST}:8000/api/v1
     ${response}    GET On Session    tmp    ${endpoint}/    params=${params}
     Should Be Equal As Integers    ${response.status_code}    200
     [Return]    ${response.json()}
 
 Delete All Statistics
     ${auth}    Create List    rfhub    rfhub
-    Create Session    tmp    http://localhost:8000/api/v1    auth=${auth}
+    Create Session    tmp    http://${HOST}:8000/api/v1    auth=${auth}
     ${response}    DELETE On Session    tmp    statistics/keywords/all/
     Should Be Equal As Integers    ${response.status_code}    204
 
 Run Cli Package Without Installed Keywords
-    Run Cli Package With Options    --no-installed-keywords ${INITIAL_FIXTURES}
+    Run Cli Package With Options    --load-mode=insert --no-installed-keywords ${INITIAL_FIXTURES}
 
 Backup And Switch Initial With Updated Fixtures
     Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
@@ -92,6 +92,10 @@ Backup And Switch Initial With Updated Fixtures
 Backup And Switch Initial With Merged Fixtures
     Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
     Copy Directory      ${MERGED_FIXTURES}      ${INITIAL_FIXTURES}
+
+Backup And Switch Initial With Include_Exclude Fixtures
+    Move Directory      ${INITIAL_FIXTURES}     ${BACKUP_FIXTURES}
+    Copy Directory      ${INCLUDE_EXCLUDE_FIXTURES}    ${INITIAL_FIXTURES}
 
 Switch Merged With Merged_2 Fixtures
     Remove Directory    ${INITIAL_FIXTURES}     recursive=True

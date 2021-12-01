@@ -1,4 +1,6 @@
 from collections import Counter
+from pathlib import Path
+
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import groupby
@@ -30,8 +32,8 @@ def stats_key(keyword: XmlKeyword) -> StatsKey:
 
 
 class StatisticsExtractor:
-    def __init__(self, path: str):
-        self.path: str = path
+    def __init__(self, path: Path):
+        self.path: Path = path
         self.source_time_format: str = "%Y%m%d %H:%M:%S.%f"
         self.destination_time_format: str = "%Y-%m-%d %H:%M:%S.%f"
 
@@ -90,12 +92,21 @@ class StatisticsExtractor:
         return [
             XmlKeyword(
                 xml_keyword.attrib.get("library"),
-                xml_keyword.attrib.get("name"),
+                xml_keyword.attrib.get("sourcename", xml_keyword.attrib.get("name")),
                 self.calc_elapsed(xml_keyword),
             )
             for xml_keyword in xml_keywords
             if xml_keyword.attrib.get("library") is not None
+            and self.has_keyword_passed(xml_keyword)
         ]
+
+    @staticmethod
+    def has_keyword_passed(xml_keyword: XmlKeyword) -> bool:
+        """
+        Checks if keyword has a ``PASS`` status in output.xml file
+        Added to skip failed keywords, so statistics will not be biased.
+        """
+        return xml_keyword.find("status").attrib["status"].upper() == "PASS"
 
     def datetime_from_attribute_agg(
         self, element: Element, attr: str, agg_func: Callable[[Iterable[str]], str]

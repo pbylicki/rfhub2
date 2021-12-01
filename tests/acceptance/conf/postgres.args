@@ -3,3 +3,4 @@
 -C ansi
 --variable ACTIVATE_VENV:. atests-venv/bin/activate &&
 --variable DB_URI:RFHUB_DB_URI=postgresql://postgres:postgres@localhost:5432/postgres
+--variable HOST:localhost

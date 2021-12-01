@@ -31,9 +31,9 @@ Cli Should Populate App With Installed Keywords
     ...    DateTime library with 8 keywords loaded.
     ...    OperatingSystem library with 56 keywords loaded.
     ...    Screenshot library with 3 keywords loaded.
-    ...    BuiltIn library with 105 keywords loaded.
+    ...    BuiltIn library with 108 keywords loaded.
     ...    Telnet library with 20 keywords loaded.
-    ...    Successfully loaded 10 collections with 320 keywords.
+    ...    Successfully loaded 10 collections with 323 keywords.
     Api Should Have 10 Collections And 100 Keywords
 
 Cli Should Preserve All Keywords When Paths And Append Set
@@ -267,7 +267,7 @@ Running Cli In Statistics Mode Should Populate App With New Execution Data
     ...    Should Populate App With New Execution Data
     [Tags]    rfhub2-67    statistics
     Run Cli Package With Options    --load-mode=insert --mode=statistics ${STATISTICS_PATH}
-    Output Should Contain    Successfully loaded 1 files with 87 statistics
+    Output Should Contain    Successfully loaded 1 files with 71 statistics
     Output Should Contain    Records already exist for file from ${SUBDIR_PATH}${/}output.xml
     [Teardown]    Delete All Statistics
 

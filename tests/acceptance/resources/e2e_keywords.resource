@@ -3,11 +3,11 @@ Library    SeleniumLibrary
 
 *** Keywords ***   
 Open Browser With App On Mainpage
-    Open Browser    url=http://localhost:8000    browser=gc
+    Open Browser    url=http://${HOST}:8000    browser=gc
     Maximize Browser Window
 
 Navigate To Main Page
-    Go To    http://localhost:8000
+    Go To    http://${HOST}:8000
 
 Collections Count On Main Page Should Be ${n}
     Reload Page

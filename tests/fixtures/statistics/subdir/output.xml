@@ -1,89 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 3.2a1 (Python 3.6.5 on win32)" generated="20191225 11:38:08.868" rpa="false">
-<suite id="s1" name="Rfhub2" source="F:\Docs\Desktop\rfhub2">
-<suite id="s1-s1" name="Tests" source="F:\Docs\Desktop\rfhub2\tests">
-<suite id="s1-s1-s1" name="Aaa" source="F:\Docs\Desktop\rfhub2\tests\aaa.robot">
-<test id="s1-s1-s1-t1" name="Test 1">
-<kw name="Log" library="BuiltIn">
-<doc>Logs the given message with the given level.</doc>
-<arguments>
-<arg>This is dummy message</arg>
-</arguments>
-<msg timestamp="20191225 11:38:09.492" level="TRACE">Arguments: [ 'This is dummy message' ]</msg>
-<msg timestamp="20191225 11:38:09.492" level="INFO">This is dummy message</msg>
-<msg timestamp="20191225 11:38:09.492" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.491" endtime="20191225 11:38:09.492"></status>
-</kw>
-<kw name="Comment" library="BuiltIn">
-<doc>Displays the given messages in the log file as keyword arguments.</doc>
-<arguments>
-<arg>This is Dummy Comment</arg>
-</arguments>
-<msg timestamp="20191225 11:38:09.493" level="TRACE">Arguments: [ 'This is Dummy Comment' ]</msg>
-<msg timestamp="20191225 11:38:09.494" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.493" endtime="20191225 11:38:09.494"></status>
-</kw>
-<kw name="Should Be True" library="BuiltIn">
-<doc>Fails if the given condition is not true.</doc>
-<arguments>
-<arg>2+2==4</arg>
-</arguments>
-<msg timestamp="20191225 11:38:09.495" level="TRACE">Arguments: [ '2+2==4' ]</msg>
-<msg timestamp="20191225 11:38:09.495" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.494" endtime="20191225 11:38:09.495"></status>
-</kw>
-<status status="PASS" starttime="20191225 11:38:09.490" endtime="20191225 11:38:09.495" critical="yes"></status>
-</test>
-<test id="s1-s1-s1-t2" name="Test 2">
-<kw name="Log" library="BuiltIn">
-<doc>Logs the given message with the given level.</doc>
-<arguments>
-<arg>This is dummy message</arg>
-</arguments>
-<msg timestamp="20191225 11:38:09.497" level="TRACE">Arguments: [ 'This is dummy message' ]</msg>
-<msg timestamp="20191225 11:38:09.497" level="INFO">This is dummy message</msg>
-<msg timestamp="20191225 11:38:09.498" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.497" endtime="20191225 11:38:09.498"></status>
-</kw>
-<kw name="Comment" library="BuiltIn">
-<doc>Displays the given messages in the log file as keyword arguments.</doc>
-<arguments>
-<arg>This is Dummy Comment</arg>
-</arguments>
-<msg timestamp="20191225 11:38:09.499" level="TRACE">Arguments: [ 'This is Dummy Comment' ]</msg>
-<msg timestamp="20191225 11:38:09.499" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.498" endtime="20191225 11:38:09.499"></status>
-</kw>
-<kw name="Should Be True" library="BuiltIn">
-<doc>Fails if the given condition is not true.</doc>
-<arguments>
-<arg>2+2==4</arg>
-</arguments>
-<msg timestamp="20191225 11:38:09.501" level="TRACE">Arguments: [ '2+2==4' ]</msg>
-<msg timestamp="20191225 11:38:09.501" level="TRACE">Return: None</msg>
-<status status="PASS" starttime="20191225 11:38:09.500" endtime="20191225 11:38:09.501"></status>
-</kw>
-<status status="PASS" starttime="20191225 11:38:09.496" endtime="20191225 11:38:09.501" critical="yes"></status>
-</test>
-<status status="PASS" starttime="20191225 11:38:09.487" endtime="20191225 11:38:09.502"></status>
-</suite>
-<status status="PASS" starttime="20191225 11:38:09.483" endtime="20191225 11:38:09.504"></status>
-</suite>
-<status status="PASS" starttime="20191225 11:38:09.447" endtime="20191225 11:38:09.506"></status>
-</suite>
-<statistics>
-<total>
-<stat pass="2" fail="0">Critical Tests</stat>
-<stat pass="2" fail="0">All Tests</stat>
-</total>
-<tag>
-</tag>
-<suite>
-<stat pass="2" fail="0" id="s1" name="Rfhub2">Rfhub2</stat>
-<stat pass="2" fail="0" id="s1-s1" name="Tests">Rfhub2.Tests</stat>
-<stat pass="2" fail="0" id="s1-s1-s1" name="Aaa">Rfhub2.Tests.Aaa</stat>
-</suite>
-</statistics>
-<errors>
-</errors>
+<robot generator="Robot 4.1 (Python 3.6.5 on win32)" generated="20210830 18:51:43.337" rpa="false" schemaversion="2">
+    <suite id="s1" name="Aaa" source="C:\repo\rfhub2\tests\Aaa.robot">
+        <test id="s1-t1" name="Test 1">
+            <kw name="Log" library="BuiltIn">
+                <arg>This is dummy message</arg>
+                <doc>Logs the given message with the given level.</doc>
+                <msg timestamp="20210830 19:22:58.650" level="INFO">This is dummy message</msg>
+                <status status="PASS" starttime="20210830 19:22:58.650" endtime="20210830 19:22:58.651"/>
+            </kw>
+            <kw name="Comment" library="BuiltIn">
+                <arg>This is Dummy Comment</arg>
+                <doc>Displays the given messages in the log file as keyword arguments.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.650" endtime="20210830 19:22:58.651"/>
+            </kw>
+            <kw name="Should Be True" library="BuiltIn">
+                <arg>2+2==4</arg>
+                <doc>Fails if the given condition is not true.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.651" endtime="20210830 19:22:58.652"/>
+            </kw>
+            <status status="PASS" starttime="20210830 19:22:58.649" endtime="20210830 19:22:58.651"/>
+        </test>
+        <test id="s1-t2" name="Test 2">
+            <kw name="Log" library="BuiltIn">
+                <arg>This is dummy message</arg>
+                <doc>Logs the given message with the given level.</doc>
+                <msg timestamp="20210830 19:22:58.653" level="INFO">This is dummy message</msg>
+                <status status="PASS" starttime="20210830 19:22:58.652" endtime="20210830 19:22:58.653"/>
+            </kw>
+            <kw name="Comment" library="BuiltIn">
+                <arg>This is Dummy Comment</arg>
+                <doc>Displays the given messages in the log file as keyword arguments.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
+            </kw>
+            <kw name="Should Be True" library="BuiltIn">
+                <arg>2+2==4</arg>
+                <doc>Fails if the given condition is not true.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
+            </kw>
+            <status status="PASS" starttime="20210830 19:22:58.652" endtime="20210830 19:22:58.654"/>
+        </test>
+        <test id="s1-t3" name="Test 3">
+            <kw name="Log" library="BuiltIn">
+                <arg>This is dummy message</arg>
+                <doc>Logs the given message with the given level.</doc>
+                <msg timestamp="20210830 19:22:58.653" level="INFO">This is dummy message</msg>
+                <status status="PASS" starttime="20210830 19:22:58.652" endtime="20210830 19:22:58.653"/>
+            </kw>
+            <kw name="Comment" library="BuiltIn">
+                <arg>This is Dummy Comment</arg>
+                <doc>Displays the given messages in the log file as keyword arguments.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
+            </kw>
+            <kw name="Should Be True" library="BuiltIn">
+                <arg>2+2==4</arg>
+                <doc>Fails if the given condition is not true.</doc>
+                <status status="PASS" starttime="20210830 19:22:58.653" endtime="20210830 19:22:58.654"/>
+            </kw>
+            <kw name="Should Be True" library="BuiltIn">
+                <arg>123+123==4444</arg>
+                <doc>Fails if the given condition is not true.</doc>
+                <msg timestamp="20210830 19:22:58.657" level="FAIL">'123+123==4444' should be true.</msg>
+                <status status="FAIL" starttime="20210830 19:22:58.655" endtime="20210830 19:22:58.657"/>
+            </kw>
+            <kw name="Log" library="BuiltIn">
+                <arg>This is message with skip status</arg>
+                <doc>Logs the given message with the given level.</doc>
+                <status status="NOT RUN" starttime="20210830 19:22:58.657" endtime="20210830 19:22:58.657"/>
+            </kw>
+            <tag>skiiip</tag>
+            <status status="SKIP" starttime="20210830 19:22:58.654" endtime="20210830 19:22:58.658">Test failed but its
+                tags matched '--SkipOnFailure' and it was marked skipped.
+
+                Original failure:
+                '123+123==4444' should be true.
+            </status>
+        </test>
+        <status status="PASS" starttime="20210830 19:22:58.608" endtime="20210830 19:22:58.659"/>
+    </suite>
+    <statistics>
+        <total>
+            <stat pass="2" fail="0" skip="1">All Tests</stat>
+        </total>
+        <tag>
+            <stat pass="0" fail="0" skip="1">skiiip</stat>
+        </tag>
+        <suite>
+            <stat pass="2" fail="0" skip="1" id="s1" name="Aaa">Aaa</stat>
+        </suite>
+    </statistics>
+    <errors>
+    </errors>
 </robot>

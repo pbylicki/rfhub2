@@ -5,6 +5,7 @@ from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.keyword_statistics_repository import (
     KeywordStatisticsRepository,
 )
+from rfhub2.db.repository.suite_repository import SuiteRepository
 
 
 def get_collection_repository(request: Request) -> CollectionRepository:
@@ -17,6 +18,10 @@ def get_keyword_repository(request: Request) -> KeywordRepository:
 
 def get_keyword_statistics_repository(request: Request) -> KeywordStatisticsRepository:
     return KeywordStatisticsRepository(request.state.db)
+
+
+def get_suite_repository(request: Request) -> SuiteRepository:
+    return SuiteRepository(request.state.db)
 
 
 def db_healthcheck(request: Request) -> bool:

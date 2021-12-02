@@ -36,6 +36,7 @@ Open ${library} In Left Panel
     Wait Until Element Is Visible    ${library}
     Click Element    ${library}
     Wait Until Element Is Visible    //*[contains(text(),'Overview')]
+    Sleep    0.5s
 
 Left Panel For Single Library Should Contain Expected Keywords
     [Arguments]    @{keywords}

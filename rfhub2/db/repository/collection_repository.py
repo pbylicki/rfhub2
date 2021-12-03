@@ -180,13 +180,6 @@ class CollectionRepository(IdEntityRepository):
         return deleted
 
     def delete_all(self) -> int:
-        deleted = (
-            self.session.query(Collection).delete(synchronize_session=False)
-        )
+        deleted = self.session.query(Collection).delete(synchronize_session=False)
         self.session.commit()
         return deleted
-
-    # def update(self, item: Collection, update_data: dict) -> Collection:
-        # if "tags" in update_data:
-        #     update_data["tags"] = Keyword.from_json_list(update_data["tags"])
-        # return super().update(item, update_data)

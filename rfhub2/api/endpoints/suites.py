@@ -39,6 +39,14 @@ def get_suites(
     )
 
 
+@router.get("/{id}/", response_model=Suite)
+def get_suite(
+    *, repository: SuiteRepository = Depends(get_suite_repository), id: int
+):
+    suite: Optional[DBSuite] = repository.get(id)
+    return or_404(suite)
+
+
 @router.post("/", response_model=Suite, status_code=201)
 def create_suite(
     *,
@@ -46,7 +54,11 @@ def create_suite(
     repository: SuiteRepository = Depends(get_suite_repository),
     suite: Suite,
 ):
-    hierarchy: SuiteHierarchy = SuiteHierarchy(name=suite.name, doc=suite.doc, source=suite.source, keywords=suite.keywords, suites=suite)
+    hierarchy: SuiteHierarchy = SuiteHierarchy(name=suite.name,
+                                               doc=suite.doc,
+                                               source=suite.source,
+                                               keywords=suite.keywords,
+                                               suites=suite)
     # suite = Suite()
     db_suite: DBSuite = repository.add(DBSuite.create(suite))
     db_suite

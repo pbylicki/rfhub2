@@ -185,3 +185,8 @@ class CollectionRepository(IdEntityRepository):
         )
         self.session.commit()
         return deleted
+
+    # def update(self, item: Collection, update_data: dict) -> Collection:
+        # if "tags" in update_data:
+        #     update_data["tags"] = Keyword.from_json_list(update_data["tags"])
+        # return super().update(item, update_data)

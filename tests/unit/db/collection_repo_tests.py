@@ -35,12 +35,12 @@ class CollectionRepositoryTest(BaseRepositoryTest):
 
     def test_should_get_collection_by_id(self) -> None:
         result: Optional[Collection] = self.collection_repo.get(self.collections[-1].id)
-        self.assertEqual(result, self.collections[-1])
+        self.assertEqual(result, self.model_collections[-1])
 
     def test_should_get_collection_by_id_with_keywords(self) -> None:
         result: Optional[Collection] = self.collection_repo.get(self.collections[0].id)
-        self.assertEqual(result, self.collections[0])
-        self.assertEqual(result.keywords, self.collections[0].keywords)
+        self.assertEqual(result, self.model_collections[0])
+        self.assertEqual(result.keywords, self.model_collections[0].keywords)
 
     def test_should_get_all_collections(self) -> None:
         result: List[Collection] = self.collection_repo.get_all()

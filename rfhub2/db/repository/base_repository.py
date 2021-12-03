@@ -33,6 +33,9 @@ class BaseRepository(Generic[T], ABC):
 
 
 class IdEntityRepository(BaseRepository, ABC):
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+
     def _id_filter(self, item_id: int) -> BinaryExpression:  # pragma: no cover
         raise NotImplementedError
 

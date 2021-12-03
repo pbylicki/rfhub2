@@ -1,11 +1,13 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 
-from sqlalchemy import func
+from sqlalchemy import func, Column
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.query import Query
+from sqlalchemy.orm.session import Session
 from sqlalchemy.sql.elements import BinaryExpression
 
-from rfhub2.db.base import Collection, KeywordStatistics
+
+from rfhub2.db.base import Collection, Keyword, KeywordStatistics
 from rfhub2.model import CollectionWithStats, Collection as ModelCollection
 from rfhub2.db.repository.base_repository import IdEntityRepository
 from rfhub2.db.repository.ordering import OrderingItem
@@ -13,13 +15,16 @@ from rfhub2.db.repository.query_utils import glob_to_sql
 
 
 class CollectionRepository(IdEntityRepository):
-    @property
-    def _items(self) -> Query:
-        return self.session.query(Collection).options(selectinload(Collection.keywords))
-
-    @property
-    def _items_with_stats(self) -> Query:
-        collection_statistics = (
+    def __init__(self, db_session: Session):
+        super().__init__(db_session)
+        self.keyword_count = (
+            self.session.query(
+                (func.count(Keyword.id)).label("keyword_count"), Keyword.collection_id
+            )
+            .group_by(Keyword.collection_id)
+            .subquery()
+        )
+        self.collection_statistics = (
             self.session.query(
                 (func.sum(KeywordStatistics.times_used)).label("times_used"),
                 KeywordStatistics.collection,
@@ -27,11 +32,48 @@ class CollectionRepository(IdEntityRepository):
             .group_by(KeywordStatistics.collection)
             .subquery()
         )
+
+    @property
+    def custom_column_mapping(self) -> Dict[str, Column]:
+        return {
+            "keyword_count": self.keyword_count_column,
+            "times_used": self.times_used_column,
+        }
+
+    @property
+    def keyword_count_column(self) -> Column:
+        return func.coalesce(self.keyword_count.c.keyword_count, 0)
+
+    @property
+    def times_used_column(self) -> Column:
+        return func.coalesce(self.collection_statistics.c.times_used, 0)
+
+    @property
+    def _items(self) -> Query:
         return (
-            self.session.query(Collection, collection_statistics.c.times_used)
+            self.session.query(
+                Collection, func.coalesce(self.keyword_count.c.keyword_count, 0)
+            )
             .outerjoin(
-                collection_statistics,
-                Collection.name == collection_statistics.c.collection,
+                self.keyword_count, Collection.id == self.keyword_count.c.collection_id
+            )
+            .options(selectinload(Collection.keywords))
+        )
+
+    @property
+    def _items_with_stats(self) -> Query:
+        return (
+            self.session.query(
+                Collection,
+                func.coalesce(self.keyword_count.c.keyword_count, 0),
+                self.collection_statistics.c.times_used,
+            )
+            .outerjoin(
+                self.collection_statistics,
+                Collection.name == self.collection_statistics.c.collection,
+            )
+            .outerjoin(
+                self.keyword_count, Collection.id == self.keyword_count.c.collection_id
             )
             .options(selectinload(Collection.keywords))
         )
@@ -49,10 +91,10 @@ class CollectionRepository(IdEntityRepository):
         return filter_criteria
 
     @staticmethod
-    def from_stats_row(row: Tuple[Collection, int]) -> CollectionWithStats:
+    def from_row(row: Tuple[Collection, int]) -> ModelCollection:
         collection = row[0]
         keywords = [kw.to_nested_model() for kw in collection.keywords]
-        return CollectionWithStats(
+        return ModelCollection(
             id=collection.id,
             name=collection.name,
             type=collection.type,
@@ -65,7 +107,13 @@ class CollectionRepository(IdEntityRepository):
             html_doc=collection.html_doc,
             synopsis=collection.synopsis,
             keywords=keywords,
-            times_used=row[1],
+            keyword_count=row[1],
+        )
+
+    @staticmethod
+    def from_stats_row(row: Tuple[Collection, int]) -> CollectionWithStats:
+        return CollectionWithStats(
+            **{**CollectionRepository.from_row(row).dict(), "times_used": row[2]}
         )
 
     def get_all(
@@ -78,10 +126,12 @@ class CollectionRepository(IdEntityRepository):
         ordering: List[OrderingItem] = None,
     ) -> List[ModelCollection]:
         return [
-            collection.to_model()
-            for collection in (
+            self.from_row(row)
+            for row in (
                 self._items.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(*Collection.ordering_criteria(ordering))
+                .order_by(
+                    *Collection.ordering_criteria(ordering, self.custom_column_mapping)
+                )
                 .offset(skip)
                 .limit(limit)
                 .all()
@@ -101,7 +151,9 @@ class CollectionRepository(IdEntityRepository):
             self.from_stats_row(row)
             for row in (
                 self._items_with_stats.filter(*self.filter_criteria(pattern, libtype))
-                .order_by(*Collection.ordering_criteria(ordering))
+                .order_by(
+                    *Collection.ordering_criteria(ordering, self.custom_column_mapping)
+                )
                 .offset(skip)
                 .limit(limit)
                 .all()
@@ -112,3 +164,22 @@ class CollectionRepository(IdEntityRepository):
         result = self._items_with_stats.filter(self._id_filter(item_id)).first()
         if result:
             return self.from_stats_row(result)
+
+    def get(self, item_id: int) -> Optional[ModelCollection]:
+        result = self._items.filter(self._id_filter(item_id)).first()
+        if result:
+            return self.from_row(result)
+
+    def delete(self, item_id: int) -> int:
+        deleted = (
+            self.session.query(Collection)
+            .filter(Collection.id == item_id)
+            .delete(synchronize_session=False)
+        )
+        self.session.commit()
+        return deleted
+
+    def delete_all(self) -> int:
+        deleted = self.session.query(Collection).delete(synchronize_session=False)
+        self.session.commit()
+        return deleted

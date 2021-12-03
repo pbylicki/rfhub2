@@ -52,14 +52,30 @@ export const CollectionList: React.FC<StoreProps> = observer(({ store }) => {
       <TableHead>
         <TableRow>
           <TableCell>
-            <Button href="#text-buttons" color="primary" onClick={() => handleSort("name")}>
+            <Button style={{textTransform: 'none'}} href="#text-buttons" color="primary" onClick={() => handleSort("name")}>
               Name
             </Button>
           </TableCell>
-          <TableCell>Type</TableCell>
-          <TableCell>Version</TableCell>
-          <TableCell align="right">Keywords</TableCell>
-          <TableCell align="right">Times used</TableCell>
+          <TableCell>
+            <Button style={{textTransform: 'none'}} href="#text-buttons" color="primary" onClick={() => handleSort("type")}>
+              Type
+            </Button>
+          </TableCell>
+          <TableCell>
+            <Button style={{textTransform: 'none'}} href="#text-buttons" color="primary" onClick={() => handleSort("version")}>
+              Version
+            </Button>
+          </TableCell>
+          <TableCell align="right">
+            <Button style={{textTransform: 'none'}} href="#text-buttons" color="primary" onClick={() => handleSort("keyword_count")}>
+              Keywords
+            </Button>
+          </TableCell>
+          <TableCell align="right">
+            <Button style={{textTransform: 'none'}} href="#text-buttons" color="primary" onClick={() => handleSort("times_used")}>
+              Times used
+            </Button>
+          </TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

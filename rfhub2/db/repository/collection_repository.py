@@ -178,3 +178,10 @@ class CollectionRepository(IdEntityRepository):
         )
         self.session.commit()
         return deleted
+
+    def delete_all(self) -> int:
+        deleted = (
+            self.session.query(Collection).delete(synchronize_session=False)
+        )
+        self.session.commit()
+        return deleted

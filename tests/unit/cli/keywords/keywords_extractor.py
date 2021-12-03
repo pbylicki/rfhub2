@@ -1,3 +1,4 @@
+from importlib.util import find_spec
 from robot.libdocpkg import LibraryDocumentation
 import unittest
 
@@ -8,7 +9,7 @@ from .test_data import *
 class KeywordsExtractorTests(unittest.TestCase):
     def setUp(self) -> None:
         self.fixture_path = FIXTURE_PATH
-        self.rfhub_extractor = KeywordsExtractor((self.fixture_path,), True)
+        self.rfhub_extractor = KeywordsExtractor((self.fixture_path,), True, "", "")
 
     def test_traverse_paths_should_return_set_of_path_on_lib_with_init(self):
         result = self.rfhub_extractor._traverse_paths(self.fixture_path / "LibWithInit")
@@ -24,8 +25,16 @@ class KeywordsExtractorTests(unittest.TestCase):
         result = self.rfhub_extractor.get_libraries_paths()
         self.assertEqual(result, EXPECTED_GET_LIBRARIES)
 
+    def test_get_library_path_from_name_should_return_path(self):
+        requests_path = find_spec("RequestsLibrary").submodule_search_locations[0]
+        results = [
+            self.rfhub_extractor.get_library_path_from_name(path)
+            for path in (self.fixture_path, "RequestsLibrary", "Noffin")
+        ]
+        self.assertListEqual(results, [str(self.fixture_path), requests_path, None])
+
     def test_get_libraries_paths_should_return_set_of_paths_on_installed_keywords(self):
-        self.rfhub_extractor = KeywordsExtractor(tuple(), False)
+        self.rfhub_extractor = KeywordsExtractor(tuple(), False, "", "")
         result = self.rfhub_extractor.get_libraries_paths()
         self.assertEqual(result, EXPECTED_BUILT_IN_LIBS)
 
@@ -36,6 +45,8 @@ class KeywordsExtractorTests(unittest.TestCase):
                 self.fixture_path / "LibsWithEmptyInit",
             ),
             True,
+            "",
+            "",
         )
         result = self.rfhub_extractor.get_libraries_paths()
         self.assertEqual(
@@ -235,3 +246,121 @@ class KeywordsExtractorTests(unittest.TestCase):
                 self.fixture_path / "LibWithEmptyInit"
             )
         )
+
+    def test_filter_keywords_no_include_no_exclude_should_return_all(self):
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude=""
+        )
+        self.assertEqual(filtered_kws_list, KEYWORDDOC_WITH_TAGS)
+
+    def test_filter_keywords_only_include_should_filter_keywords(self):
+        tag1_kws = set(kw for kw in KEYWORDDOC_WITH_TAGS if "tag1" in list(kw.tags))
+        tag2_kws = set(kw for kw in KEYWORDDOC_WITH_TAGS if "tag2" in list(kw.tags))
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1", exclude=""
+        )
+        self.assertCountEqual(filtered_kws_list, tag1_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag2", exclude=""
+        )
+        self.assertCountEqual(filtered_kws_list, tag2_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1ORnot_at_tag", exclude=""
+        )
+        self.assertCountEqual(filtered_kws_list, tag1_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1ORtag2", exclude=""
+        )
+        self.assertCountEqual(filtered_kws_list, tag1_kws | tag2_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1ANDtag2", exclude=""
+        )
+        self.assertCountEqual(filtered_kws_list, tag1_kws & tag2_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="not_a_tag", exclude=""
+        )
+        self.assertCountEqual(filtered_kws_list, set())
+
+    def test_filter_keywords_only_exclude_should_filter_keywords(self):
+        all_kws = set(KEYWORDDOC_WITH_TAGS)
+        tag1_kws = set(kw for kw in KEYWORDDOC_WITH_TAGS if "tag1" in list(kw.tags))
+        tag2_kws = set(kw for kw in KEYWORDDOC_WITH_TAGS if "tag2" in list(kw.tags))
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude="tag1"
+        )
+        self.assertCountEqual(filtered_kws_list, all_kws - tag1_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude="tag2"
+        )
+        self.assertCountEqual(filtered_kws_list, all_kws - tag2_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude="tag1ORnot_at_tag"
+        )
+        self.assertCountEqual(filtered_kws_list, all_kws - tag1_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude="tag1ORtag2"
+        )
+        self.assertCountEqual(filtered_kws_list, all_kws - (tag1_kws | tag2_kws))
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude="tag1ANDtag2"
+        )
+        self.assertCountEqual(filtered_kws_list, all_kws - (tag1_kws & tag2_kws))
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude="not_a_tag"
+        )
+        self.assertCountEqual(filtered_kws_list, all_kws)
+
+    def test_filter_keywords_include_exclude_should_filter_keywords(self):
+        tag1_kws = set(kw for kw in KEYWORDDOC_WITH_TAGS if "tag1" in list(kw.tags))
+        tag2_kws = set(kw for kw in KEYWORDDOC_WITH_TAGS if "tag2" in list(kw.tags))
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1", exclude="tag1"
+        )
+        self.assertCountEqual(filtered_kws_list, tag1_kws - tag1_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1", exclude="tag2"
+        )
+        self.assertCountEqual(filtered_kws_list, tag1_kws - tag2_kws)
+
+        filtered_kws_list = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1ORtag2", exclude="tag1ANDtag2"
+        )
+        self.assertCountEqual(
+            filtered_kws_list, (tag1_kws | tag2_kws) - (tag1_kws & tag2_kws)
+        )
+
+    def test_filter_keywords_should_be_indempotent(self):
+        """
+        Feeding _filter_keywords with its own output (same args) should return the same output.
+        """
+        filtered_kws_list1 = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="", exclude=""
+        )
+        filtered_kws_list2 = KeywordsExtractor._filter_keywords(
+            filtered_kws_list1, include="", exclude=""
+        )
+
+        self.assertEqual(filtered_kws_list1, filtered_kws_list2)
+
+        filtered_kws_list1 = KeywordsExtractor._filter_keywords(
+            KEYWORDDOC_WITH_TAGS, include="tag1", exclude="tag2"
+        )
+        filtered_kws_list2 = KeywordsExtractor._filter_keywords(
+            filtered_kws_list1, include="tag1", exclude="tag2"
+        )
+
+        self.assertEqual(filtered_kws_list1, filtered_kws_list2)

@@ -1,0 +1,95 @@
+# Default values for rfhub2.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+revisionHistoryLimit: 2
+
+image:
+  repository: pbylicki/rfhub2
+  tag: postgres   # tag = postgres when you would like to use postgres database,
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart version.
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+envSecret: ""  # add environment variables as a secret
+env:
+  # Additional env variables in pod
+  # - name: variable_name
+  #   value: variable_value
+  - name: RFHUB_APP_TITLE
+    value: rfhub2-demo
+  - name: RFHUB_APP_INTERFACE
+    value: "0.0.0.0"
+  - name: RFHUB_APP_LOG_LEVEL
+    value: info
+  - name: RFHUB_BASIC_AUTH_USER
+    value: rfhub
+  - name: RFHUB_BASIC_AUTH_PASSWORD
+    value: rfhub
+  - name: RFHUB_DB_URI
+    value: postgresql://postgres:postgres@localhost:5432/postgres  #sqlite:///test.db
+
+service:
+  type: NodePort
+  port: 8000
+  targetPort: 8000
+  nodePort: 32770
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik-esp-test
+
+  hosts:
+    - host: rfhub2.example.com
+      paths: ["/"]
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+
+resources:
+  limits:
+    cpu: "500m"
+    memory: "500Mi"
+  requests:
+    cpu: "100m"
+    memory: "100Mi"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

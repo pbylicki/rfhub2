@@ -15,7 +15,10 @@ install:
   - pip install -r requirements.txt -r requirements-dev.txt -r requirements-postgres.txt
   - pushd frontend; yarn install; popd
 before_script:
-  - wget "https://chromedriver.storage.googleapis.com/87.0.4280.20/chromedriver_linux64.zip"
+  - export CHROME_VERSION=`google-chrome-stable --version | cut -d' ' -f3 | sed 's/\.[[:digit:]]*$//'`
+  - wget --no-verbose -O /tmp/chromeversion.txt https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}
+  - export CHROME_DRIVER_VERSION=`cat /tmp/chromeversion.txt`
+  - wget --no-verbose -O chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip
   - sudo mv chromedriver /usr/local/bin
   - "export DISPLAY=:99.0"

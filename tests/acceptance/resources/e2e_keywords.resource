@@ -3,11 +3,11 @@ Library    SeleniumLibrary
 
 *** Keywords ***   
 Open Browser With App On Mainpage
-    Open Browser    url=localhost:8000    browser=gc
+    Open Browser    url=http://${HOST}:8000    browser=gc
     Maximize Browser Window
 
 Navigate To Main Page
-    Go To    localhost:8000
+    Go To    http://${HOST}:8000
 
 Collections Count On Main Page Should Be ${n}
     Reload Page
@@ -36,6 +36,7 @@ Open ${library} In Left Panel
     Wait Until Element Is Visible    ${library}
     Click Element    ${library}
     Wait Until Element Is Visible    //*[contains(text(),'Overview')]
+    Sleep    0.5s
 
 Left Panel For Single Library Should Contain Expected Keywords
     [Arguments]    @{keywords}

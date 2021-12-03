@@ -96,3 +96,16 @@ def delete_collection(
         return Response(status_code=204)
     else:
         raise HTTPException(status_code=404)
+
+
+@router.delete("/")
+def delete_all_collections(
+    *,
+    _: bool = Depends(is_authenticated),
+    repository: CollectionRepository = Depends(get_collection_repository),
+):
+    deleted: int = repository.delete_all()
+    if deleted:
+        return Response(status_code=204)
+    else:
+        return Response(status_code=404)

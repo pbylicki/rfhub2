@@ -44,5 +44,10 @@ class IdEntityRepository(BaseRepository, ABC):
         self.session.commit()
         return row_count
 
+    def delete_all(self) -> int:
+        row_count = self._items.delete()
+        self.session.commit()
+        return row_count
+
     def get(self, item_id: int) -> Optional[T]:
         return self._items.get(item_id)

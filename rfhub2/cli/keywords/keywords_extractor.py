@@ -1,12 +1,13 @@
 from dataclasses import dataclass
+from importlib.util import find_spec
 from pathlib import Path
 import re
 from robot.errors import DataError
 from robot.libdocpkg import LibraryDocumentation
-from robot.libdocpkg.model import LibraryDoc
+from robot.libdocpkg.model import LibraryDoc, KeywordDoc
 import robot.libraries
-from robot.model import Tags
-from typing import List, Set, Tuple
+from robot.model import Tags, TagPatterns
+from typing import List, Optional, Set, Tuple, Union
 
 from rfhub2.model import CollectionUpdate, KeywordUpdate
 
@@ -33,9 +34,17 @@ class CollectionUpdateWithKeywords:
 
 
 class KeywordsExtractor:
-    def __init__(self, paths: Tuple[Path, ...], no_installed_keywords: bool) -> None:
+    def __init__(
+        self,
+        paths: Tuple[Union[Path, str], ...],
+        no_installed_keywords: bool,
+        include: str,
+        exclude: str,
+    ) -> None:
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
+        self.include = include
+        self.exclude = exclude
 
     def get_libraries_paths(self) -> Set[Path]:
         """
@@ -45,11 +54,29 @@ class KeywordsExtractor:
         """
         libraries_paths = set()
         for path in self.paths:
-            libraries_paths.update(self._traverse_paths(Path(path)))
+            path = self.get_library_path_from_name(path)
+            if path:
+                libraries_paths.update(self._traverse_paths(Path(path)))
         if not self.no_installed_keywords:
             libdir = Path(robot.libraries.__file__).parent
             libraries_paths.update(self._traverse_paths(Path(libdir)))
         return libraries_paths
+
+    def get_library_path_from_name(self, path: Union[Path, str]) -> Optional[str]:
+        """
+        Helper function to recognize if given value is path or name.
+        Name needs to be converted to full path and passed to Libdoc.
+        """
+        if Path(path).exists():
+            return str(path)
+        elif isinstance(path, str):
+            try:
+                return find_spec(path).submodule_search_locations[0]
+            except AttributeError as e:
+                print(
+                    f"Collection {path} was neither valid path nor valid module name."
+                )
+                return None
 
     def _traverse_paths(self, path: Path) -> Set[Path]:
         """
@@ -138,7 +165,9 @@ class KeywordsExtractor:
                 tags=self._serialise_tags(keyword.tags),
                 doc=keyword.doc,
             )
-            for keyword in libdoc.keywords
+            for keyword in self._filter_keywords(
+                libdoc.keywords, include=self.include, exclude=self.exclude
+            )
         ]
 
     def _serialise_args(self, args: List[str]) -> str:
@@ -152,6 +181,29 @@ class KeywordsExtractor:
 
     def _serialise_tags(self, tags: Tags) -> List[str]:
         return list(tags._tags)
+
+    @staticmethod
+    def _filter_keywords(
+        keywords: List[KeywordDoc], include: str, exclude: str
+    ) -> List[KeywordDoc]:
+        """
+        Filters out keywords based on their tags.
+        :param keywords: list of KeywordDoc objects
+        :param include: include pattern
+        :param exclude: exclude pattern
+        :return: list of filtered KeywordDoc objects
+        """
+        included_keywords = (
+            [kw for kw in keywords if TagPatterns(include).match(kw.tags)]
+            if include != ""
+            else [kw for kw in keywords]
+        )
+        filtered_keywords = (
+            [kw for kw in included_keywords if not TagPatterns(exclude).match(kw.tags)]
+            if exclude != ""
+            else [kw for kw in included_keywords]
+        )
+        return filtered_keywords
 
     def _extract_doc_from_libdoc_inits(self, inits: List) -> str:
         return "\n" + "\n" + "\n".join([d.doc for d in inits]) if len(inits) > 0 else ""

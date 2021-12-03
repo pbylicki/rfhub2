@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple, Union
 
 from rfhub2.cli.api_client import Client
 from rfhub2.cli.keywords.keywords_extractor import (
@@ -19,38 +19,23 @@ class KeywordsImporter:
     def __init__(
         self,
         client: Client,
-        paths: Tuple[Path, ...],
+        paths: Tuple[Union[Path, str], ...],
         no_installed_keywords: bool,
         load_mode: str,
+        include: str,
+        exclude: str,
     ) -> None:
         self.client = client
         self.paths = paths
         self.no_installed_keywords = no_installed_keywords
         self.load_mode = load_mode
-
-    def delete_all_collections(self) -> Set[int]:
-        """
-        Deletes all existing collections.
-        """
-        collections_id = set()
-        while len(self.client.get_collections()) > 0:
-            collections_id.update(self._delete_collections())
-        return collections_id
+        self.include = include
+        self.exclude = exclude
 
     def get_all_collections(self) -> List[Collection]:
         """Gets all collections from application"""
         collections = self.client.get_collections(0, 999999)
         return self._convert_json_to_collection(collections)
-
-    def _delete_collections(self) -> Set[int]:
-        """
-        Helper method to delete all existing callections.
-        """
-        collections = self.client.get_collections()
-        collections_id = {collection["id"] for collection in collections}
-        for id in collections_id:
-            self.client.delete_collection(id)
-        return collections_id
 
     def import_data(self) -> Tuple[int, int]:
         """
@@ -64,20 +49,27 @@ class KeywordsImporter:
         Import libraries to application from paths specified when invoking client.
         :return: Number of libraries and keywords loaded
         """
-        keywords_extractor = KeywordsExtractor(self.paths, self.no_installed_keywords)
+        keywords_extractor = KeywordsExtractor(
+            self.paths, self.no_installed_keywords, self.include, self.exclude
+        )
         libraries_paths = keywords_extractor.get_libraries_paths()
         collections = keywords_extractor.create_collections(libraries_paths)
         if self.load_mode == "append":
             loaded_collections = self.add_collections(collections)
         elif self.load_mode == "insert":
-            self.delete_all_collections()
+            self.client.delete_all_collections()
             loaded_collections = self.add_collections(collections)
         else:
             existing_collections = self.get_all_collections()
             loaded_collections = self.update_collections(
                 existing_collections, collections
             )
-            self.delete_outdated_collections(existing_collections, collections)
+            if self.load_mode == "merge":
+                self.delete_outdated_collections(
+                    existing_collections, collections, remove_not_matched=False
+                )
+            else:
+                self.delete_outdated_collections(existing_collections, collections)
         return len(loaded_collections), sum(d["keywords"] for d in loaded_collections)
 
     def update_collections(
@@ -103,11 +95,21 @@ class KeywordsImporter:
         self,
         existing_collections: List[Collection],
         new_collections: List[CollectionUpdateWithKeywords],
+        remove_not_matched: bool = True,
     ) -> Set[int]:
-        """Deletes outdated collections"""
+        """Deletes outdated collections
+        :param existing_collections: List of existing collections
+        :param new_collections: List of new collections
+        :param remove_not_matched: removes not_matched collection paths as well
+        :return Set of deleted collections_id
+        """
         collections_to_delete = self._get_outdated_collections_ids(
             existing_collections, new_collections
-        ) | self._get_obsolete_collections_ids(existing_collections, new_collections)
+        )
+        if remove_not_matched:
+            collections_to_delete |= self._get_obsolete_collections_ids(
+                existing_collections, new_collections
+            )
         for collection in collections_to_delete:
             self.client.delete_collection(collection)
         return collections_to_delete

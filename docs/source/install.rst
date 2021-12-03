@@ -30,3 +30,15 @@ or PostgreSQL:
 ::
 
     docker pull pbylicki/rfhub2:postgres
+
+With helm chart
+^^^^^^^^^^^^^^^
+
+create app on kubernetes cluster
+
+::
+
+    helm upgrade --install rfhub2 helm/rfhub2 -n [NAMESPACE]
+
+
+will create all needed resources with configuration from [values.yaml](helm/rfhub2/values.yaml)

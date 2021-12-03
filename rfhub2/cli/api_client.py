@@ -1,5 +1,5 @@
 from requests import session, Response
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 from rfhub2.model import CollectionUpdate, KeywordCreate, KeywordStatisticsList
 
@@ -52,6 +52,12 @@ class Client(object):
         """
         return self._delete_request(endpoint="collections", id=id)
 
+    def delete_all_collections(self) -> Response:
+        """
+        Deletes all collections.
+        """
+        return self._delete_request(endpoint="collections")
+
     def add_keyword(self, data: KeywordCreate) -> Tuple[int, Dict]:
         """
         Adds keyword using request post method.
@@ -78,8 +84,12 @@ class Client(object):
         request = self.session.post(url=f"{self.api_url}/{endpoint}/", data=data)
         return request.status_code, request.json()
 
-    def _delete_request(self, endpoint: str, id: int) -> Response:
+    def _delete_request(self, endpoint: str, id: Optional[int] = None) -> Response:
         """
         Sends delete request to collections or keywords endpoint with item id.
+        If no id provided then deletes all collections.
         """
-        return self.session.delete(url=f"{self.api_url}/{endpoint}/{id}/")
+        if id:
+            return self.session.delete(url=f"{self.api_url}/{endpoint}/{id}/")
+        else:
+            return self.session.delete(url=f"{self.api_url}/{endpoint}/")

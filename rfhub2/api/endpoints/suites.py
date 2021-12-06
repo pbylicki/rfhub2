@@ -60,24 +60,11 @@ def create_suite(
 def delete_suite(
     *,
     _: bool = Depends(is_authenticated),
-    repository: CollectionRepository = Depends(get_suite_repository),
+    repository: SuiteRepository = Depends(get_suite_repository),
     id: int,
 ):
-    deleted: int = repository.delete(id)
+    deleted: int = repository.delete_hierarchy(id)
     if deleted:
         return Response(status_code=204)
     else:
         raise HTTPException(status_code=404)
-
-
-@router.delete("/")
-def delete_all_suites(
-    *,
-    _: bool = Depends(is_authenticated),
-    repository: CollectionRepository = Depends(get_suite_repository),
-):
-    deleted: int = repository.delete_all()
-    if deleted:
-        return Response(status_code=204)
-    else:
-        return Response(status_code=404)

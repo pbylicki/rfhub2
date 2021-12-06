@@ -7,10 +7,9 @@ from rfhub2.api.utils.db import get_suite_repository
 from rfhub2.api.utils.http import or_404
 from rfhub2.api.utils.order import get_ordering
 from rfhub2.db.base import Suite as DBSuite
-from rfhub2.db.repository.collection_repository import CollectionRepository
 from rfhub2.db.repository.ordering import OrderingItem
 from rfhub2.db.repository.suite_repository import SuiteRepository
-from rfhub2.model import Suite, SuiteHierarchy
+from rfhub2.model import Suite, SuiteHierarchy, SuiteHierarchyWithId
 
 router = APIRouter()
 
@@ -45,7 +44,7 @@ def get_suite(*, repository: SuiteRepository = Depends(get_suite_repository), id
     return or_404(suite)
 
 
-@router.post("/", response_model=Suite, status_code=201)
+@router.post("/", response_model=SuiteHierarchyWithId, status_code=201)
 def create_suite(
     *,
     _: bool = Depends(is_authenticated),

@@ -5,6 +5,7 @@ from typing import Tuple, Union
 from rfhub2.cli.api_client import Client
 from rfhub2.cli.keywords.keywords_importer import KeywordsImporter
 from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
+from rfhub2.cli.test_cases.test_case_importer import TestCaseImporter
 
 
 @click.command()
@@ -40,11 +41,12 @@ from rfhub2.cli.statistics.statistics_importer import StatisticsImporter
 @click.option(
     "--mode",
     "-m",
-    type=click.Choice(["keywords", "statistics"], case_sensitive=False),
+    type=click.Choice(["keywords", "statistics", "testcases"], case_sensitive=False),
     default="keywords",
     help="""Choice parameter specifying what kind of data package should add:\n
              - `keywords` - default value, application is working with keywords documentation\n
-             - `statistics` - application is working with data about keywords execution.""",
+             - `statistics` - application is working with data about keywords execution\n
+             - `testcases` - application is working with testcases documentation.""",
 )
 @click.option(
     "--load-mode",
@@ -103,4 +105,10 @@ def main(
         loaded_files, loaded_statistics = rfhub_importer.import_data()
         print(
             f"\nSuccessfully loaded {loaded_files} files with {loaded_statistics} statistics."
+        )
+    elif mode == "testcases":
+        rfhub_importer = TestCaseImporter(client, paths)
+        loaded_suites, loaded_testcases = rfhub_importer.import_data()
+        print(
+            f"\nSuccessfully loaded {loaded_suites} test suites with {loaded_testcases} test cases."
         )

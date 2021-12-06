@@ -40,9 +40,7 @@ def get_suites(
 
 
 @router.get("/{id}/", response_model=Suite)
-def get_suite(
-    *, repository: SuiteRepository = Depends(get_suite_repository), id: int
-):
+def get_suite(*, repository: SuiteRepository = Depends(get_suite_repository), id: int):
     suite: Optional[DBSuite] = repository.get(id)
     return or_404(suite)
 
@@ -52,13 +50,34 @@ def create_suite(
     *,
     _: bool = Depends(is_authenticated),
     repository: SuiteRepository = Depends(get_suite_repository),
-    suite: Suite,
+    suite_hierarchy: SuiteHierarchy,
 ):
-    hierarchy: SuiteHierarchy = SuiteHierarchy(name=suite.name,
-                                               doc=suite.doc,
-                                               source=suite.source,
-                                               keywords=suite.keywords,
-                                               suites=suite)
-    # suite = Suite()
-    db_suite: DBSuite = repository.add(DBSuite.create(suite))
-    db_suite
+    db_suite: DBSuite = repository.add(DBSuite.create(suite_hierarchy))
+    return db_suite.to_hierarchy()
+
+
+@router.delete("/{id}/")
+def delete_suite(
+    *,
+    _: bool = Depends(is_authenticated),
+    repository: CollectionRepository = Depends(get_suite_repository),
+    id: int,
+):
+    deleted: int = repository.delete(id)
+    if deleted:
+        return Response(status_code=204)
+    else:
+        raise HTTPException(status_code=404)
+
+
+@router.delete("/")
+def delete_all_suites(
+    *,
+    _: bool = Depends(is_authenticated),
+    repository: CollectionRepository = Depends(get_suite_repository),
+):
+    deleted: int = repository.delete_all()
+    if deleted:
+        return Response(status_code=204)
+    else:
+        return Response(status_code=404)

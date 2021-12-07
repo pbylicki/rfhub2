@@ -1,8 +1,7 @@
 from requests import session, Response
 from typing import Dict, Tuple, Optional
 
-from rfhub2.model import CollectionUpdate, KeywordCreate, KeywordStatisticsList
-
+from rfhub2.model import CollectionUpdate, KeywordCreate, KeywordStatisticsList, SuiteHierarchy
 
 API_V1 = "api/v1"
 TEST_COLLECTION = {
@@ -69,6 +68,12 @@ class Client(object):
         Adds statistics using requests post method.
         """
         return self._post_request(endpoint="statistics/keywords", data=data.json())
+
+    def add_test_suites(self, data: SuiteHierarchy) -> Tuple[int, Dict]:
+        """
+        Adds test suites using requests post method.
+        """
+        return self._post_request(endpoint="suites", data=data.json())
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """

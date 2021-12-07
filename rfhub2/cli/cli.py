@@ -107,7 +107,7 @@ def main(
             f"\nSuccessfully loaded {loaded_files} files with {loaded_statistics} statistics."
         )
     elif mode == "testcases":
-        rfhub_importer = TestCaseImporter(client, paths)
+        rfhub_importer = TestCaseImporter(client, paths, load_mode)
         loaded_suites, loaded_testcases = rfhub_importer.import_data()
         print(
             f"\nSuccessfully loaded {loaded_suites} test suites with {loaded_testcases} test cases."

@@ -4,6 +4,5 @@ from pathlib import Path
 # dir = Path.cwd() / ".." / ".." / ".." / "tests" / "fixtures" / "testcases"
 dir = Path.cwd() / ".." / ".." / ".." / "tests" / "acceptance"
 
-suite = TestSuiteFactory(str(dir))  #.suites
+suite = TestSuiteFactory(str(dir))  # .suites
 a = 1
-

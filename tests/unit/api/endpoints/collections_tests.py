@@ -93,6 +93,22 @@ class CollectionsApiTest(BaseApiEndpointTest):
             ],
         )
 
+    def test_get_all_collections_with_statistics_ordered_by_calculated_fields(self):
+        for order in ["keyword_count", "times_used"]:
+            with self.subTest(order=order):
+                response = self.client.get(f"api/v1/collections/stats?order={order}")
+                self.assertEqual(response.status_code, 200)
+                body = response.json()
+                self.assertEqual(len(body), 3)
+                self.assertEqual(
+                    body,
+                    [
+                        self.COLLECTION_3_WITH_STATS,
+                        self.COLLECTION_2_WITH_STATS,
+                        self.COLLECTION_1_WITH_STATS,
+                    ],
+                )
+
     def test_create_new_collection(self):
         response = self.auth_client.post(
             "api/v1/collections/", json=self.COLLECTION_TO_CREATE

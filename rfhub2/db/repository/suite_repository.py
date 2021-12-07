@@ -1,7 +1,7 @@
 from itertools import zip_longest
 from typing import Dict, List, Optional, Tuple
 
-from sqlalchemy import or_, Column
+from sqlalchemy import or_, Column, select
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import func
 from sqlalchemy.orm.session import Session
@@ -99,7 +99,7 @@ class SuiteRepository(BaseRepository):
         )
         deleted = (
             self.session.query(Suite)
-            .filter(Suite.id.in_(suite_ids))
+            .filter(Suite.id.in_(select(suite_ids)))
             .delete(synchronize_session=False)
         )
         self.session.commit()

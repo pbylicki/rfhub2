@@ -105,6 +105,11 @@ class SuiteRepository(BaseRepository):
         self.session.commit()
         return deleted
 
+    def delete_all_hierarchies(self) -> int:
+        deleted = self.session.query(Suite).delete(synchronize_session=False)
+        self.session.commit()
+        return deleted
+
     def get(self, item_id: int) -> Optional[ModelSuite]:
         result = self._items.filter(Suite.id == item_id).first()
         if result:

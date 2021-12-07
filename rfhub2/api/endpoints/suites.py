@@ -51,8 +51,7 @@ def create_suite(
     repository: SuiteRepository = Depends(get_suite_repository),
     suite_hierarchy: SuiteHierarchy,
 ):
-    db_suite: DBSuite = repository.add(DBSuite.create(suite_hierarchy))
-    return db_suite.to_hierarchy()
+    return repository.add_hierarchy(suite_hierarchy)
 
 
 @router.delete("/{id}/")
@@ -63,6 +62,19 @@ def delete_suite(
     id: int,
 ):
     deleted: int = repository.delete_hierarchy(id)
+    if deleted:
+        return Response(status_code=204)
+    else:
+        raise HTTPException(status_code=404)
+
+
+@router.delete("/")
+def delete_all_suites(
+    *,
+    _: bool = Depends(is_authenticated),
+    repository: SuiteRepository = Depends(get_suite_repository),
+):
+    deleted: int = repository.delete_all_hierarchies()
     if deleted:
         return Response(status_code=204)
     else:

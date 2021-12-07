@@ -4,11 +4,14 @@ from robot.running.model import TestSuite
 from robot.testdoc import TestSuiteFactory
 from typing import List, Tuple
 
+from rfhub2.model import KeywordType, MetadataItem
+
 
 @dataclass
 class Keyword:
     name: str
     args: List[str]
+    kw_type: KeywordType
 
 
 @dataclass
@@ -23,22 +26,26 @@ class Test:
     template: str
     timeout: str
     keywords: List[Keyword]
-    setup: List[Keyword]
-    teardown: List[Keyword]
+    # setup: List[Keyword]
+    # teardown: List[Keyword]
 
 
 @dataclass
 class Suite:
-    doc: str
-    id: str
-    longname: str
     name: str
-    parent: str
+    doc: str
+    # id: str
+    # longname: str
+    # parent: str
     source: str
-    test_count: int
+    # test_count: int
     tests: List[Test]
-    setup: List[Keyword]
-    teardown: List[Keyword]
+    keywords: List[Keyword]
+    suites: List["Suite"]
+    metadata: List[MetadataItem]
+    rpa: bool = False
+    # setup: List[Keyword]
+    # teardown: List[Keyword]
 
 
 class TestCasesExtractor:
@@ -49,7 +56,11 @@ class TestCasesExtractor:
         """
         Creates TestDoc objects based on robot.testdoc.TestSuiteFactory method.
         """
-        return [suite for path in self.paths for suite in self.create_testdoc_from_path(path)]
+        return [
+            suite
+            for path in self.paths
+            for suite in self.create_testdoc_from_path(path)
+        ]
 
     def create_testdoc_from_path(self, path: Path):
         """
@@ -71,21 +82,40 @@ class TestCasesExtractor:
         """
         Serializes testdoc object into Suite dataclass object.
         """
-        return Suite(doc=testdoc.doc, id=testdoc.id, longname=testdoc.longname, name=testdoc.name,
-                     parent=testdoc.parent._name if hasattr(testdoc.parent, '_name') else None,
-                     source=testdoc.source, test_count=testdoc.test_count, tests=self.get_tests(testdoc),
-                     setup=self.get_abnormal_keywords(testdoc, kw_type='setup'),
-                     teardown=self.get_abnormal_keywords(testdoc, kw_type='teardown'))
+        return Suite(
+            doc=testdoc.doc,
+            id=testdoc.id,
+            longname=testdoc.longname,
+            name=testdoc.name,
+            parent=testdoc.parent._name if hasattr(testdoc.parent, "_name") else None,
+            source=testdoc.source,
+            test_count=testdoc.test_count,
+            tests=self.get_tests(testdoc),
+            setup=self.get_abnormal_keywords(testdoc, kw_type="setup"),
+            teardown=self.get_abnormal_keywords(testdoc, kw_type="teardown"),
+        )
 
     def get_tests(self, testdoc: TestSuite) -> List[Test]:
         """
         Returns list of tests.
         """
-        return [Test(doc=test.doc, id=test.id, longname=test.longname, name=test.name, parent=test.parent.name,
-                     source=test.source if hasattr(test, 'source') else None,
-                     tags=list(test.tags), template=test.template, timeout=test.timeout,
-                     keywords=self.get_normal_keywords(test), setup=self.get_abnormal_keywords(test, kw_type='setup'),
-                     teardown=self.get_abnormal_keywords(test, kw_type='teardown')) for test in testdoc.tests]
+        return [
+            Test(
+                doc=test.doc,
+                id=test.id,
+                longname=test.longname,
+                name=test.name,
+                parent=test.parent.name,
+                source=test.source if hasattr(test, "source") else None,
+                tags=list(test.tags),
+                template=test.template,
+                timeout=test.timeout,
+                keywords=self.get_normal_keywords(test),
+                setup=self.get_abnormal_keywords(test, kw_type="setup"),
+                teardown=self.get_abnormal_keywords(test, kw_type="teardown"),
+            )
+            for test in testdoc.tests
+        ]
 
     def get_abnormal_keywords(self, testdoc: TestSuite, kw_type) -> List[Keyword]:
         """
@@ -93,9 +123,20 @@ class TestCasesExtractor:
         """
         if getattr(testdoc.keywords, kw_type):
             if isinstance(getattr(testdoc.keywords, kw_type), list):
-                return [Keyword(name=keyword.name, args=list(getattr(testdoc.keywords, kw_type).args)) for keyword in getattr(testdoc.keywords, kw_type)]
+                return [
+                    Keyword(
+                        name=keyword.name,
+                        args=list(getattr(testdoc.keywords, kw_type).args),
+                    )
+                    for keyword in getattr(testdoc.keywords, kw_type)
+                ]
             else:
-                return [Keyword(name=getattr(testdoc.keywords, kw_type).name, args=list(getattr(testdoc.keywords, kw_type).args))]
+                return [
+                    Keyword(
+                        name=getattr(testdoc.keywords, kw_type).name,
+                        args=list(getattr(testdoc.keywords, kw_type).args),
+                    )
+                ]
         else:
             return []
 
@@ -103,4 +144,7 @@ class TestCasesExtractor:
         """
         Returns list of keywords.
         """
-        return [Keyword(name=keyword.name, args=list(keyword.args)) for keyword in testdoc.keywords.normal._items]
+        return [
+            Keyword(name=keyword.name, args=list(keyword.args))
+            for keyword in testdoc.keywords.normal._items
+        ]

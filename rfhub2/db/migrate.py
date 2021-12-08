@@ -2,12 +2,12 @@ from alembic.config import Config
 from alembic.runtime.migration import MigrationContext
 from alembic import command
 from pathlib import Path
+from sqlalchemy import inspect
 from sqlalchemy.engine import Connection, Engine
-from sqlalchemy.engine.reflection import Inspector
 
 
 def has_tables(connection: Connection) -> bool:
-    inspector = Inspector(connection)
+    inspector = inspect(connection)
     tables = inspector.get_table_names()
     return len(tables) > 0
 

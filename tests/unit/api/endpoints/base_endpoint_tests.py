@@ -147,9 +147,9 @@ class BaseApiEndpointTest(unittest.TestCase):
         "path": "/some/file",
     }
     COLLECTION_UPDATED = {**COLLECTION_3, **COLLECTION_TO_UPDATE}
-    COLLECTION_1_WITH_STATS = {**COLLECTION_1, "times_used": 20}
-    COLLECTION_2_WITH_STATS = {**COLLECTION_2, "times_used": 15}
-    COLLECTION_3_WITH_STATS = {**COLLECTION_3, "times_used": None}
+    COLLECTION_1_WITH_STATS = {**COLLECTION_1, "times_used": 20, "keyword_count": 3}
+    COLLECTION_2_WITH_STATS = {**COLLECTION_2, "times_used": 15, "keyword_count": 1}
+    COLLECTION_3_WITH_STATS = {**COLLECTION_3, "times_used": 0, "keyword_count": 0}
     KEYWORD_1_WITH_STATS = {**KEYWORD_1, "times_used": 10, "avg_elapsed": 100.0}
     KEYWORD_2_WITH_STATS = {**KEYWORD_2, "times_used": 10, "avg_elapsed": 500.0}
     KEYWORD_3_WITH_STATS = {**KEYWORD_3, "times_used": None, "avg_elapsed": None}

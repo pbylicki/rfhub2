@@ -5,7 +5,7 @@ from robot.running.model import TestSuite
 from robot.testdoc import TestSuiteFactory
 from typing import List, Tuple
 
-from rfhub2.model import KeywordType, MetadataItem
+from rfhub2.model import KeywordType, MetadataItem, SuiteHierarchy
 
 
 @dataclass
@@ -52,36 +52,56 @@ class Suite:
 class TestCasesExtractor:
     def __init__(self, paths: Tuple[Path, ...]) -> None:
         self.paths = paths
+        self.testdocs: List[TestSuite] = self.create_testdoc_from_paths()
 
-    def create_testdoc_from_paths(self) -> List[Suite]:
+    def create_testdoc_from_paths(self) -> List[TestSuite]:
         """
         Creates TestDoc objects based on robot.testdoc.TestSuiteFactory method.
         """
-        testdocs = [TestSuiteFactory(str(path)) for path in self.paths]
-        suites = [self.serialize_testdoc_to_suite(testdoc) for testdoc in testdocs]
-        return suites
+        return [TestSuiteFactory(str(path)) for path in self.paths]
 
-    def serialize_testdoc_to_suite(self, testdoc: TestSuite) -> Suite:
+    def get_suites(self) -> List[SuiteHierarchy]:
+        return [self.serialize_testdoc_to_suite(testdoc) for testdoc in self.testdocs]
+
+    def serialize_testdoc_to_suite(self, testdoc: TestSuite) -> SuiteHierarchy:
         """
         Serializes testdoc object into Suite dataclass object.
         """
-        return Suite(
+        return SuiteHierarchy(
             name=testdoc.name,
             doc=testdoc.doc,
             source=testdoc.source,
-            tests=self.get_tests(testdoc),
-            keywords=self.get_keywords(testdoc),
-            suites=[self.serialize_testdoc_to_suite(suite) for suite in testdoc.suites if testdoc.suites],
-            metadata=[testdoc.metadata],
-            rpa=testdoc.rpa,
+            # tests=[],#self.get_tests(testdoc),
+            keywords=[],  # self.get_keywords(testdoc),
+            suites=[
+                self.serialize_testdoc_to_suite(suite)
+                for suite in testdoc.suites
+                if testdoc.suites
+            ],
+            metadata=[],  # [testdoc.metadata],
+            rpa=testdoc.rpa if testdoc.rpa is not None else False,
         )
 
-    def get_tests(self, testdoc: TestSuite) -> List[Test]:
+    def get_test_cases(self) -> List[Test]:
         """
         Returns list of tests.
         """
-        return [
-            Test(
+        tests = []
+        for testdoc in self.testdocs:
+            tests.extend(self._traverse_suites_for_tests(testdoc))
+        return tests
+
+    def _traverse_suites_for_tests(self, testdoc: TestSuite) -> List[Test]:
+        """
+        Traverses all suites in top level suites and returns suites list.
+        """
+        tests = [self._serialize_testcase_to_test(test) for test in testdoc.tests]
+        for suite in testdoc.suites:
+            tests += self._traverse_suites_for_tests(suite)
+        return tests
+
+    def _serialize_testcase_to_test(self, test):
+        return Test(
                 doc=test.doc,
                 id=test.id,
                 longname=test.longname,
@@ -93,8 +113,6 @@ class TestCasesExtractor:
                 timeout=test.timeout,
                 keywords=self.get_keywords(test),
             )
-            for test in testdoc.tests
-        ]
 
     def get_keywords(self, testdoc: TestSuite) -> List[Keyword]:
         """

@@ -20,8 +20,7 @@ router = APIRouter()
 class DuplicatedTestcaseException(HTTPException):
     def __init__(self):
         super(DuplicatedTestcaseException, self).__init__(
-            status_code=400,
-            detail="Records already exist for provided testcase",
+            status_code=400, detail="Records already exist for provided testcase"
         )
 
 

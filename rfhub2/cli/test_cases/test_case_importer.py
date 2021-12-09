@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import Tuple, Dict, List, Optional
 
 from rfhub2.cli.api_client import Client
-from .test_cases_extractor import TestCasesExtractor, Suite
-from ...model import SuiteHierarchy, SuiteHierarchyWithId
+from rfhub2.cli.test_cases.test_cases_extractor import TestCasesExtractor, TestCase
+from rfhub2.model import SuiteHierarchy, TestCaseCreate
 
 
 class TestCaseImporter:
@@ -24,9 +24,9 @@ class TestCaseImporter:
         suites = extractor.get_suites()
         tests = extractor.get_test_cases()
         suites_with_id = self.add_test_suites(suites)
+        tc_count = self.add_test_cases(suites_with_id, tests)
         ts_count = len(suites) + sum(self.count_test_suites(suite) for suite in suites)
-        # tc_count = sum(self.count_test_cases(suite) for suite in suites)
-        return ts_count, len(tests)  # , tc_count
+        return ts_count, tc_count
 
     def add_test_suites(self, suites: List[SuiteHierarchy]) -> Optional[List[Dict]]:
         suites_with_id = []
@@ -38,14 +38,47 @@ class TestCaseImporter:
             suites_with_id.append(suite_req[1])
         return suites_with_id
 
-    def add_test_cases(self, testcases: List) -> Optional[int]:
-        pass
+    def add_test_cases(
+        self, suites: List[Dict], testcases: List[TestCase]
+    ) -> Optional[int]:
+        test_cases_with_ids = self._match_tests_with_suite_ids(suites, testcases)
+        for test_case in test_cases_with_ids:
+            test_case_req = self.client.add_test_case(test_case)
+            if test_case_req[0] != 201:
+                print(test_case_req[1]["detail"])
+                raise StopIteration
+        return len(test_cases_with_ids)
 
-    def count_test_cases(self, suite: Suite) -> int:
-        """
-        Returns recursive number of test cases.
-        """
-        return sum(len(s.tests) + self.count_test_cases(s) for s in suite.suites)
+    @staticmethod
+    def _match_tests_with_suite_ids(
+        suites: List[Dict], testcases: List[TestCase]
+    ) -> List[TestCaseCreate]:
+        suite_ids = TestCaseImporter._extract_id_from_suites(suites)
+        return [
+            TestCaseCreate(
+                name=testcase.name,
+                line=testcase.line,
+                suite_id=suite_ids.get(testcase.suite_longname),
+                doc=testcase.doc,
+                source=testcase.source,
+                template=testcase.template,
+                timeout=testcase.timeout,
+                keywords=testcase.keywords,
+                tags=testcase.tags,
+            )
+            for testcase in testcases
+        ]
+
+    @staticmethod
+    def _extract_id_from_suites(suites: List[Dict]) -> Dict:
+        flat_suites = {}
+        for suite in suites:
+            flat_suites[suite["longname"]] = suite["id"]
+            flat_suites = {
+                **flat_suites,
+                **TestCaseImporter._extract_id_from_suites(suite["suites"]),
+            }
+        return flat_suites
 
     def count_test_suites(self, suite: SuiteHierarchy) -> int:
         """

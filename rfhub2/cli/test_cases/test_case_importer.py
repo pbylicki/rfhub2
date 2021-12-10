@@ -23,9 +23,10 @@ class TestCaseImporter:
         extractor = TestCasesExtractor(self.paths)
         suites = extractor.get_suites()
         tests = extractor.get_test_cases()
+        self.client.delete_all_test_suites()
         suites_with_id = self.add_test_suites(suites)
         tc_count = self.add_test_cases(suites_with_id, tests)
-        ts_count = len(suites) + sum(self.count_test_suites(suite) for suite in suites)
+        ts_count = len(suites) + sum(TestCaseImporter._count_test_suites(suite) for suite in suites)
         return ts_count, tc_count
 
     def add_test_suites(self, suites: List[SuiteHierarchy]) -> Optional[List[Dict]]:
@@ -80,8 +81,9 @@ class TestCaseImporter:
             }
         return flat_suites
 
-    def count_test_suites(self, suite: SuiteHierarchy) -> int:
+    @staticmethod
+    def _count_test_suites(suite: SuiteHierarchy) -> int:
         """
         Returns recursive number of test suites.
         """
-        return len(suite.suites) + sum(self.count_test_suites(s) for s in suite.suites)
+        return len(suite.suites) + sum(TestCaseImporter._count_test_suites(s) for s in suite.suites)

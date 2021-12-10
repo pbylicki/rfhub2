@@ -1,5 +1,6 @@
 *** Settings ***
 Documentation    This suite contains test cases for smoke tests for IDQP project.
+Suite Setup      Run Keywords    No Operation    No Operation
 
 *** Test Cases ***
 IDQP Should Produce Results When Run

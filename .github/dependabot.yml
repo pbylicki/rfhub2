@@ -1,0 +1,44 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
+  assignees:
+  - pbylicki
+  ignore:
+  - dependency-name: sphinx
+    versions:
+    - "> 1.8.5"
+  - dependency-name: robotframework-requests
+    versions:
+    - "0.9"
+  - dependency-name: sqlalchemy
+    versions:
+    - 1.4.2
+    - 1.4.3
+    - 1.4.7
+    - 1.4.9
+  - dependency-name: robotframework
+    versions:
+    - "4.0"
+  - dependency-name: uvloop
+    versions:
+    - 0.15.0
+    - 0.15.2
+  - dependency-name: responses
+    versions:
+    - 0.13.1
+  - dependency-name: alembic
+    versions:
+    - 1.5.2
+    - 1.5.3
+    - 1.5.5
+    - 1.5.7
+  - dependency-name: robotframework-seleniumlibrary
+    versions:
+    - 5.1.1
+  - dependency-name: twine
+    versions:
+    - 3.3.0

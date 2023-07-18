@@ -21,7 +21,7 @@ setup(
         'aiofiles>=0.4.0',
         'Click>=7.0',
         'fastapi>=0.46.0',
-        'pydantic>=1.0',
+        'pydantic>=1.0,<2.0',
         'robotframework>=3.0.0',
         'SQLAlchemy>=1.2.0',
         'requests>=2.10.0',

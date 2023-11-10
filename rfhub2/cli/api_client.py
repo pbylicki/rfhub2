@@ -1,8 +1,13 @@
 from requests import session, Response
 from typing import Dict, Tuple, Optional
 
-from rfhub2.model import CollectionUpdate, KeywordCreate, KeywordStatisticsList
-
+from rfhub2.model import (
+    CollectionUpdate,
+    KeywordCreate,
+    KeywordStatisticsList,
+    SuiteHierarchy,
+    TestCaseCreate,
+)
 
 API_V1 = "api/v1"
 TEST_COLLECTION = {
@@ -69,6 +74,42 @@ class Client(object):
         Adds statistics using requests post method.
         """
         return self._post_request(endpoint="statistics/keywords", data=data.json())
+
+    def add_test_suites(self, data: SuiteHierarchy) -> Tuple[int, Dict]:
+        """
+        Adds test suites using requests post method.
+        """
+        return self._post_request(endpoint="suites", data=data.json())
+
+    def delete_test_suites(self, id: int) -> Response:
+        """
+        Deletes test suites with given id.
+        """
+        return self._delete_request(endpoint="suites", id=id)
+
+    def delete_all_test_suites(self) -> Response:
+        """
+        Deletes all test suites.
+        """
+        return self._delete_request(endpoint="suites")
+
+    def add_test_case(self, data: TestCaseCreate) -> Tuple[int, Dict]:
+        """
+        Adds test case using requests post method.
+        """
+        return self._post_request(endpoint="test_cases", data=data.json())
+
+    def delete_test_case(self, id: int) -> Response:
+        """
+        Deletes test case with given id.
+        """
+        return self._delete_request(endpoint="test_cases", id=id)
+
+    def delete_all_test_cases(self) -> Response:
+        """
+        Deletes all test cases.
+        """
+        return self._delete_request(endpoint="test_cases")
 
     def _get_request(self, endpoint: str, params: Dict) -> Dict:
         """

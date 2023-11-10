@@ -1,4 +1,6 @@
 *** Settings ***
+Documentation     This Suite containts testcases for e2e tests utilising both
+...               rfhub2-cli and rfhub2.
 Library           String
 Resource          resources/keywords.resource
 Resource          resources/e2e_keywords.resource
@@ -186,4 +188,3 @@ Test Setup For Collections Statistics
 
 Row ${m} In Column ${n} Of Table ${table} Should Contain ${value}
     Table Cell Should Contain    ${table}    ${m}    ${n}    ${value}
-

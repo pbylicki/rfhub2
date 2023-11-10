@@ -1,3 +1,4 @@
+from click import echo
 from pathlib import Path
 from typing import Dict, List, Set, Tuple, Union
 
@@ -126,7 +127,7 @@ class KeywordsImporter:
         for collection in collections:
             coll_req = self.client.add_collection(collection.collection)
             if coll_req[0] != 201:
-                print(coll_req[1]["detail"])
+                echo(coll_req[1]["detail"])
                 raise StopIteration
             collection_id = coll_req[1]["id"]
             for keyword in collection.keywords:
@@ -140,7 +141,7 @@ class KeywordsImporter:
                     "keywords": len(collection.keywords),
                 }
             )
-            print(
+            echo(
                 f"{collection.collection.name} library with {len(collection.keywords)} keywords loaded."
             )
         return loaded_collections
